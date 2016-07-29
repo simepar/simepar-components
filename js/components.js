@@ -1,10 +1,16 @@
+/** @function WeatherElement
+ *  Create and configure the generic weather element based on the element set as parameter
+ *  @param {String} selector - div id
+ *  @param {Number} value    - the value for the element from config.min to config.max
+ *  @param {Object} el       - object that contains all the properties/values to customize the element and the element itself
+*/
 function WeatherElement(selector, value, el) {
     var we = this;
     
     // properties
-    we.selector = selector;
-    we.value    = value;
-    we.element  = el;
+    we.selector = selector; // div selector
+    we.value    = value;    // the value for the element
+    we.element  = el;       // the element itself
     
     // functions
     we.createSVG   = createSVG;
@@ -16,6 +22,9 @@ function WeatherElement(selector, value, el) {
     
     /////////////////////////
     
+    /** @function createSVG
+     *  Create and configure the svg element without its elements
+    */
     function createSVG() {
         var deferred = $.Deferred();
         var margin = {top: 5, right: 5, bottom: 5, left: 5};
@@ -36,22 +45,18 @@ function WeatherElement(selector, value, el) {
         // append a g element where all contents will be placed in
         we.elementGroup = we.svg.append("g")
             .attr("transform", "translate("+margin.left+","+margin.top+")");
-        
-        //TODO: REMOVE ALL OF THIS
-        // we.elementGroup.append("rect")
-        //     .attr({ width: we.element.config.width - margin.left - margin.right, 
-        //             height: we.element.config.height - margin.top - margin.bottom })
-        //     .attr("stroke", "green")
-        //     .attr("fill", "none");
             
         deferred.resolve();
         return deferred.promise();
     }
     
+    /** @function createOuterElement
+     *  Create and configure the outer element
+    */
     function createOuterElement() {
         var deferred = $.Deferred();
         
-        // outer drop element
+        // outer element properties
         we.elementGroup.append("path")
             .attr("d", we.element.outerd)
             .attr("transform", we.element.transformOuter)
@@ -79,18 +84,22 @@ function WeatherElement(selector, value, el) {
         return deferred.promise();
     }
     
+    /** @function createInnerElement
+     *  Create and configure the inner element
+    */
     function createInnerElement() {
         var deferred = $.Deferred();
         
         // The inner drop element with the clipping wave attached.
         we.elementGroup.append("g")
                 .attr("clip-path", "url(#clipWave" + we.selector.split("#")[1] + ")")
-            .append("path")
+            .append("path") // the inner element itself
                 .attr("d", we.element.innerd)
                 .attr("transform", we.element.transformInner)
                 .style("fill", we.element.config.liquidColor)
                 .style("opacity", we.element.config.liquidOpacity);
         
+        // wave animation
         if (we.element.config.waveAnimate) 
             we.animateWave();
                 
@@ -193,7 +202,7 @@ function WeatherElement(selector, value, el) {
             });
     }
     
-    function update(value) {       
+    function update(value) {
         if (we.element.fillPercent)
             we.fillPercent = we.element.fillPercent(value);
         else
@@ -244,6 +253,12 @@ function WeatherElement(selector, value, el) {
     }
 }
 
+/** @function Drop
+ *  Create and configure the drop element with its own properties
+ *  @param {String} selector - div id
+ *  @param {Number} value    - the value for the element from config.min to config.max
+ *  @param {Object} config   - object that contains all the properties/values to customize the element
+*/
 function Drop(selector, value, config) {
     var drop = this;
     drop.config = config == null ? loadDefaultSettings() : drop.config = config;
@@ -253,38 +268,45 @@ function Drop(selector, value, config) {
     drop.config.width = 375;
     drop.config.height = 315;
     
-    // element path
+    // outer and inner elements' path
     drop.outerd = "M146.831,0c0,0-116.22,107.715-116.22,181.074c0,68.393,52.043,112.589,116.22,112.589  c64.192,0,116.22-44.196,116.22-112.589C263.051,107.715,146.831,0,146.831,0z";
     drop.innerd = "M146.831,0c0,0-116.22,107.715-116.22,181.074c0,68.393,52.043,112.589,116.22,112.589  c64.192,0,116.22-44.196,116.22-112.589C263.051,107.715,146.831,0,146.831,0z";
+    
+    // traslating the outer and inner elements to the most left and vertical centered
     drop.transformOuter = "translate(-25, 5)";
     drop.transformInner = "translate(-15, 17) scale(0.93)";
     
+    // text labels configs
     drop.textPixels = drop.config.textSize * drop.config.height / 7;
     drop.textMinAnchor = "middle";
     drop.textMaxAnchor = "middle";
     drop.transformTextMin = "translate(285, 300)";
     drop.transformTextMax = "translate(285, 35)";  
     
+    // instatiate the weather element for drop element
     var we = new WeatherElement(selector, value, drop);
     
-    we.createSVG().then(function() {        
-        we.createOuter().then(function() {
-            we.createWave().then(function() {
-                we.createInner().then(function() {
-                    console.log("Drop element created.");
-                    
-                    // responsive
+    we.createSVG().then(function() {                // create the svg
+        we.createOuter().then(function() {          // create the outer path and text labels
+            we.createWave().then(function() {       // create the wave path and defs
+                we.createInner().then(function() {  // create the inner path and wave animation
+                    // TODO: responsiveness in a better way
                     $(we.selector).width("30%");
                     $(we.selector).height("30%");
                     
-                    // when update...
-                    drop.update = we.update;
+                    drop.update = we.update; // for updating the element
                 });
             });
         });
     });
 }
 
+/** @function Ruler
+ *  Create and configure the ruler element with its own properties
+ *  @param {String} selector - div id
+ *  @param {Number} value    - the value for the element from config.min to config.max
+ *  @param {Object} config   - object that contains all the properties/values to customize the element
+*/
 function Ruler(selector, value, config) {
     var ruler = this;
     ruler.config = config == null ? loadDefaultSettings() : ruler.config = config;
@@ -294,38 +316,45 @@ function Ruler(selector, value, config) {
     ruler.config.width = 375;
     ruler.config.height = 315;
     
-    // element path
+    // outer and inner elements' path
     ruler.outerd = "M297,106c0-4.418-3.582-8-8-8H8c-4.418,0-8,3.582-8,8v85c0,4.418,3.582,8,8,8h281c4.418,0,8-3.582,8-8V106z M281,183h-18   v-43c0-4.418-3.582-8-8-8s-8,3.582-8,8v43h-20v-28c0-4.418-3.582-8-8-8s-8,3.582-8,8v28h-19v-43c0-4.418-3.582-8-8-8s-8,3.582-8,8   v43h-20v-28c0-4.418-3.582-8-8-8s-8,3.582-8,8v28h-20v-43c0-4.418-3.582-8-8-8s-8,3.582-8,8v43H85v-28c0-4.418-3.582-8-8-8   s-8,3.582-8,8v28H49v-43c0-4.418-3.582-8-8-8s-8,3.582-8,8v43H16v-69h265V183z";
     ruler.innerd = "M16,183h17v-43c0-4.418,3.582-8,8-8s8,3.582,8,8v43h20v-28c0-4.418,3.582-8,8-8s8,3.582,8,8v28h19   v-43c0-4.418,3.582-8,8-8s8,3.582,8,8v43h20v-28c0-4.418,3.582-8,8-8s8,3.582,8,8v28h20v-43c0-4.418,3.582-8,8-8s8,3.582,8,8v43h19   v-28c0-4.418,3.582-8,8-8s8,3.582,8,8v28h20v-43c0-4.418,3.582-8,8-8s8,3.582,8,8v43h18v-69H16V183z";
+    
+    // traslating the outer and inner elements to the most left and vertical centered
     ruler.transformOuter = "translate(-90, 301) rotate(270)";
     ruler.transformInner = "translate(-90, 301) rotate(270)";
     
+    // text labels configs
     ruler.textPixels = ruler.config.textSize * ruler.config.height / 7;
     ruler.textMinAnchor = "start";
     ruler.textMaxAnchor = "start";
     ruler.transformTextMin = "translate(125, 297)";
     ruler.transformTextMax = "translate(125, 40)";  
     
+    // instatiate the weather element for ruler element
     var we = new WeatherElement(selector, value, ruler);
     
-    we.createSVG().then(function() {        
-        we.createOuter().then(function() {
-            we.createWave().then(function() {
-                we.createInner().then(function() {
-                    console.log("Ruler element created.");
-                    
-                    // responsive
+    we.createSVG().then(function() {                // create the svg
+        we.createOuter().then(function() {          // create the outer path and text labels
+            we.createWave().then(function() {       // create the wave path and defs
+                we.createInner().then(function() {  // create the inner path and wave animation
+                    // TODO: responsiveness in a better way
                     $(we.selector).width("30%");
                     $(we.selector).height("30%");
                     
-                    // when update...
-                    ruler.update = we.update;
+                    ruler.update = we.update; // for updating the element
                 });
             });
         });
     });
 }
 
+/** @function Thermo
+ *  Create and configure the thermometer element with its own properties
+ *  @param {String} selector - div id
+ *  @param {Number} value    - the value for the element from config.min to config.max
+ *  @param {Object} config   - object that contains all the properties/values to customize the element
+*/
 function Thermo(selector, value, config) {
     var thermo = this;
     thermo.config = config == null ? loadDefaultSettings() : thermo.config = config;
@@ -335,22 +364,32 @@ function Thermo(selector, value, config) {
     thermo.config.width = 375;
     thermo.config.height = 315;
     
-    // element path
+    // outer and inner elements' path
     thermo.outerd = "M30.5,60L30.5,60c-0.453,0-0.914-0.026-1.368-0.076c-5.485-0.608-9.923-5.029-10.551-10.512 c-0.502-4.383,1.374-8.605,4.919-11.151V7c0-3.859,3.14-7,7-7s7,3.141,7,7v31.261c3.141,2.257,5,5.857,5,9.739 c0,3.205-1.248,6.219-3.515,8.485C36.719,58.751,33.706,60,30.5,60z M30.5,2c-2.757,0-5,2.243-5 5v32.328l-0.454,0.297 c-3.199,2.088-4.915,5.75-4.478,9.559c0.523,4.565,4.217,8.246,8.785,8.752c3.064,0.346,6.061-0.707,8.218-2.864 C39.46,53.183,40.5,50.671,40.5,48c0-3.387-1.7-6.518-4.546-8.375L35.5,39.329V7C35.5,4.243,33.257,2,30.5,2z";
     thermo.innerd = "M31.5,43.101V6c0-0.553-0.448-1-1-1s-1,0.447-1,1v37.101c-2.282,0.463-4,2.48-4,4.899 c0,2.761,2.239,5,5,5s5-2.239,5-5C35.5,45.581,33.782,43.564,31.5,43.101z";
+    
+    // traslating the outer and inner elements to the most left and vertical centered
     thermo.transformOuter = "translate(-85, 0) scale(5)";
     thermo.transformInner = "translate(-85, 0) scale(5)";
     
+    // text labels configs
     thermo.textPixels = thermo.config.textSize * thermo.config.height / 7;
     thermo.textMinAnchor = "start";
     thermo.textMaxAnchor = "start";
     thermo.transformTextMin = "translate(115, 200)";
     thermo.transformTextMax = "translate(130, 35)";
     
+    // until the minimum value, thermometer has it filled on the element. So because of that, we used another scale different from min to max => 0 to 100.
+    // we used the scale min to max => 37.5 to 100. The 37.5 is because that's the amount needed to fill the "circle portion" inside de element
+    // basically, this function returns the number that matches from min to max into the scale from 37.5 to 100.
+    // In other words, min = 37.5, max = 100 and the value X in the first scale is calculated to match its correspondent value in the second scale
     thermo.fillPercent = function(value) { 
+        // the formula to find the X value is:
+        // (value - min) / (max - min) = (X - 37.5) / (100 - 37.5)
         return ((((value - thermo.config.minValue) * (100-37.5)) + ((thermo.config.maxValue - thermo.config.minValue) * 37.5)) / (thermo.config.maxValue - thermo.config.minValue)) / 100;
     }
     
+    // instatiate the weather element for thermo element
     var we = new WeatherElement(selector, value, thermo);
     
     // functions
@@ -358,9 +397,13 @@ function Thermo(selector, value, config) {
     
     /////////////////////////
     
+    /** @function fixOuterElement
+     *  Add the markers at the left side of the thermometer
+    */
     function fixOuterElement() {
         var deferred = $.Deferred();
         
+        // d attribute for the paths, which are the markers
         var ds = ["M26.5,8h-2c-0.552,0-1-0.447-1-1s0.448-1,1-1h2c0.552,0,1,0.447,1,1S27.052,5,26.5,5z",
                   "M26.5,8h-2c-0.552,0-1-0.447-1-1s0.448-1,1-1h2c0.552,0,1,0.447,1,1S27.052,8,26.5,8z",
                   "M26.5,13h-2c-0.552,0-1-0.447-1-1s0.448-1,1-1h2c0.552,0,1,0.447,1,1S27.052,13,26.5,13z",
@@ -370,6 +413,7 @@ function Thermo(selector, value, config) {
                   "M26.5,33h-2c-0.552,0-1-0.447-1-1s0.448-1,1-1h2c0.552,0,1,0.447,1,1S27.052,33,26.5,33z",
                   "M26.5,38h-2c-0.552,0-1-0.447-1-1s0.448-1,1-1h2c0.552,0,1,0.447,1,1S27.052,38,26.5,38z"]
         
+        // create all the paths in their positions, sizes, and color
         we.elementGroup.selectAll("path")
             .data(ds).enter()
             .append("path")
@@ -381,19 +425,16 @@ function Thermo(selector, value, config) {
         return deferred.promise();
     }
     
-    we.createSVG().then(function() {
-        we.createOuter().then(function() {        
-            thermo.fixOuterElement().then(function() {
-                we.createWave().then(function() {
-                    we.createInner().then(function() {
-                        console.log("Thermo element created.");
-                        
-                        // responsive
+    we.createSVG().then(function() {                    // create the svg
+        we.createOuter().then(function() {              // create the outer path and text labels
+            thermo.fixOuterElement().then(function() {  // create the paths for the markers on the left side of the thermometer
+                we.createWave().then(function() {       // create the wave path and defs
+                    we.createInner().then(function() {  // create the inner path and wave animation
+                        // TODO: responsiveness in a better way
                         $(we.selector).width("30%");
                         $(we.selector).height("30%");
                         
-                        // when update...
-                        thermo.update = we.update;
+                        thermo.update = we.update; // for updating the element
                     });
                 });
             });
@@ -401,6 +442,12 @@ function Thermo(selector, value, config) {
     });
 }
 
+/** @function Leaf
+ *  Create and configure the wet leaf element with its own properties
+ *  @param {String} selector - div id
+ *  @param {Number} value    - the value for the element from config.min to config.max
+ *  @param {Object} config   - object that contains all the properties/values to customize the element
+*/
 function Leaf(selector, value, config) {
     var leaf = this;
     leaf.config = config == null ? loadDefaultSettings() : leaf.config = config;
@@ -410,38 +457,43 @@ function Leaf(selector, value, config) {
     leaf.config.width = 375;
     leaf.config.height = 315;
     
-    // element path
+    // outer and inner elements' path
     leaf.outerd = "M44.142,24.938c9.279,19.309,9.176,42.223-0.321,68.108c-28.871,78.752,1.61,124.571,1.92,125.022    c17.334,26.978,39.466,40.624,65.829,40.624c19.874,0,41.881-7.664,65.405-22.773l2.807-1.795    c-37.181-34.794-78.393-72.481-84.403-122.798c-0.838-7.006,4.998-10.595,10.459-10.138c-3.796,2.23-6.505,6.695-4.835,11.999    c15.246,48.489,47.771,84.599,84.186,117.484c0.696,0.631,1.403,1.256,2.099,1.882c0.702,0.626,1.398,1.262,2.099,1.887    c9.763,8.692,19.749,17.187,29.741,25.64c9.274,7.843,18.536,15.659,27.592,23.584c9.339,8.175,20.712-7.375,11.417-15.507    c-17.106-14.968-35-29.491-52.21-44.595c-0.702-0.615-1.387-1.246-2.089-1.866c-0.702-0.62-1.392-1.246-2.094-1.871    c19.091-13.07,34.756-26.853,38.655-45.471c3.361-16.056-2.252-34.669-17.149-56.893C188.973,66.319,77.369,19.825,24.376,0    C31.686,6.081,39.002,14.245,44.142,24.938z";
     leaf.innerd = "M44.142,24.938c9.279,19.309,9.176,42.223-0.321,68.108c-28.871,78.752,1.61,124.571,1.92,125.022    c17.334,26.978,39.466,40.624,65.829,40.624c19.874,0,41.881-7.664,65.405-22.773l2.807-1.795    c-37.181-34.794-78.393-72.481-84.403-122.798c-0.838-7.006,4.998-10.595,10.459-10.138c-3.796,2.23-6.505,6.695-4.835,11.999    c15.246,48.489,47.771,84.599,84.186,117.484c0.696,0.631,1.403,1.256,2.099,1.882c0.702,0.626,1.398,1.262,2.099,1.887    c9.763,8.692,19.749,17.187,29.741,25.64c9.274,7.843,18.536,15.659,27.592,23.584c9.339,8.175,20.712-7.375,11.417-15.507    c-17.106-14.968-35-29.491-52.21-44.595c-0.702-0.615-1.387-1.246-2.089-1.866c-0.702-0.62-1.392-1.246-2.094-1.871    c19.091-13.07,34.756-26.853,38.655-45.471c3.361-16.056-2.252-34.669-17.149-56.893C188.973,66.319,77.369,19.825,24.376,0    C31.686,6.081,39.002,14.245,44.142,24.938z";
+    
+    // traslating the outer and inner elements to the most left and vertical centered
     leaf.transformOuter = "translate(-20, 10)";
     leaf.transformInner = "translate(-20, 10)";
     
+    // text labels configs
     leaf.textPixels = leaf.config.textSize * leaf.config.height / 7;
     leaf.textMinAnchor = "start";
     leaf.textMaxAnchor = "middle";
     leaf.transformTextMin = "translate(255, 300)";
     leaf.transformTextMax = "translate(255, 35)";
     
-    var we = new WeatherElement(selector, value, leaf);
+    // instatiate the weather element for leaf element
+    var we = new WeatherElement(selector, value, leaf);  
     
-    we.createSVG().then(function() {        
-        we.createOuter().then(function() {
-            we.createWave().then(function() {
-                we.createInner().then(function() {
-                    console.log("Leaf element created.");
-                    
-                    // responsive
+    we.createSVG().then(function() {                // create the svg
+        we.createOuter().then(function() {          // create the outer path and text labels
+            we.createWave().then(function() {       // create the wave path and defs
+                we.createInner().then(function() {  // create the inner path and wave animation
+                    // TODO: responsiveness in a better way
                     $(we.selector).width("30%");
                     $(we.selector).height("30%");
                     
-                    // when update...
-                    leaf.update = we.update;
+                    leaf.update = we.update; // for updating the element
                 });
             });
         });
     });
 }
 
+/** @function loadDefaultSettings
+ *  Load the default settings to create the weather elements
+ *  NOTE: not all of the properties are being used at this moment.
+*/
 function loadDefaultSettings() {
     return {
         minValue: 0, // The gauge minimum value.
