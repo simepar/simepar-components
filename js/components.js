@@ -254,7 +254,6 @@ function Drop(selector, value, config) {
     drop.config.height = 315;
     
     // element path
-    //drop.d = "M25.081,30.759L25.081,30.759c-5.663,5.663-14.844,5.663-20.506,0l0,0	c-5.663-5.663-5.663-14.843,0-20.506L14.828,0l10.253,10.253C30.744,15.916,30.744,25.097,25.081,30.759z";
     drop.outerd = "M146.831,0c0,0-116.22,107.715-116.22,181.074c0,68.393,52.043,112.589,116.22,112.589  c64.192,0,116.22-44.196,116.22-112.589C263.051,107.715,146.831,0,146.831,0z";
     drop.innerd = "M146.831,0c0,0-116.22,107.715-116.22,181.074c0,68.393,52.043,112.589,116.22,112.589  c64.192,0,116.22-44.196,116.22-112.589C263.051,107.715,146.831,0,146.831,0z";
     drop.transformOuter = "translate(-25, 5)";
@@ -462,10 +461,10 @@ function loadDefaultSettings() {
         waveAnimate: true, // Controls if the wave scrolls or is static.
         waveColor: "#178BCA", // The color of the fill wave.
         waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
-        textVertPosition: .5, // The height at which to display the percentage text withing the wave circle. 0 = bottom, 1 = top.
+        //textVertPosition: .5, // The height at which to display the percentage text withing the wave circle. 0 = bottom, 1 = top.
         textSize: 1, // The relative height of the text to display in the wave circle. 1 = 50%
-        valueCountUp: false, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
-        displayPercent: false, // If true, a % symbol is displayed after the value.
+        //valueCountUp: false, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
+        //displayPercent: false, // If true, a % symbol is displayed after the value.
         textColor: "#045681", // The color of the value text when the wave does not overlap it.
         waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
         scale: 1, // scale
