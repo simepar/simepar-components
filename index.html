@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simepar Weather Components</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    
+</head>
+
+<body>
+    <div class="container-fluid" style="padding-top: 50px">
+        <div id="div-drop" onclick="drop.update(NewValue(config.minValue, config.maxValue));"></div>
+        <div id="div-ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
+        <div id="div-thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
+        <div id="div-leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
+    </div>
+
+    <!-- Third party JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- D3.js -->
+    <script src="js/d3.v3.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="js/components.js"></script>
+
+    <script>
+        var config = loadDefaultSettings();
+        config.strokeThickness = 8;
+        config.waveAnimateTime = 5000;
+        config.waveHeight = 0.05;
+        config.waveCount = 1;
+        config.minValue = 0;
+        config.maxValue = 100;
+        config.scale = 0.3; 
+        var drop = new Drop("#div-drop", 100, config);
+        
+        var rulerConfig = loadDefaultSettings();
+        rulerConfig.maxValue = 9999.99;
+        rulerConfig.minValue = 1000.00;
+        rulerConfig.waveAnimateTime = 5000;
+        rulerConfig.waveHeight = 0.05;
+        rulerConfig.waveCount = 1;
+        rulerConfig.textVertPosition = 0.5;
+        rulerConfig.strokeThickness = 8;
+        rulerConfig.strokeColor = "white";
+        rulerConfig.displayPercent = false;
+        rulerConfig.textSize = 1;
+        rulerConfig.outerColor = "#178BCA";
+        rulerConfig.scale = 0.3;
+        var ruler = new Ruler("#div-ruler", 9999, rulerConfig);
+        
+        var thermoConfig = loadDefaultSettings();
+        thermoConfig.waveAnimateTime = 5000;
+        thermoConfig.strokeThickness = 0;
+        thermoConfig.waveHeight = 0;
+        thermoConfig.waveAnimate = true;
+        thermoConfig.displayPercent = false;
+        thermoConfig.outerColor = "#178BCA";
+        thermoConfig.minValue = -20;
+        thermoConfig.maxValue = 40;
+        thermoConfig.scale = 0.3;
+        var thermo = new Thermo("#div-thermo", -20, thermoConfig);
+        
+        var leafConfig = loadDefaultSettings();
+        leafConfig.strokeThickness = 8;
+        leafConfig.displayPercent = false;
+        leafConfig.minValue = 0;
+        leafConfig.maxValue = 10;
+        leafConfig.scale = 0.3;
+        var leaf = new Leaf("#div-leaf", 7, leafConfig);
+        
+        function NewValue(min, max) {            
+            return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
+        }
+    </script>
+</body>
+
+</html>
