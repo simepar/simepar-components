@@ -14,6 +14,9 @@
     <!-- Custom styles for this template -->
     <link href="css/page.css" rel="stylesheet">
 
+    <!-- Simepar FontIcons -->
+    <link rel="stylesheet" href="css/font-styles.css">
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -21,13 +24,17 @@
     <![endif]-->
     
     <style>
-        .navbar-inverse {
-            background-color: #DCA617;
-            border-color: #DCA617;
-        }
-        
         .navbar-inverse .navbar-brand {
             color: white;
+        }
+        
+        .simepar-logo:before{
+            color: white;
+        }
+        
+        .simepar-logo {
+            margin-right: 10%;
+            margin-top: 0.7%;
         }
     </style>
   </head>
@@ -43,8 +50,9 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Simepar Components</a>
+          <a class="navbar-brand"  target="_blank" href="https://github.com/simepar/simepar-components">Simepar Components</a>
         </div>
+        <a href="http://simepar.br" target="_blank"><span class="simepar-logo pull-right"></span></a>
       </div>
     </nav>
 
@@ -53,6 +61,7 @@
       <div class="container">
         <h1>Simepar Components</h1>
         <p>Simpear Components is a JavaScript library that contains SVG Icons to represent weather data.</p>
+        <label>This project is inpired by Curtis Bratton’s D3 Liquid Fill Gauge. You can find his project <a href="http://bl.ocks.org/brattonc/5e5ce9beee483220e2f6" target="_blank">here</a>.</label>
         <!--<p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>-->
       </div>
     </div>
@@ -85,7 +94,7 @@
       <hr>
 
       <footer>
-        <p>&copy; 2016 Simepar</p>
+        <p>Copyright &copy; 2016 Simepar. Todos os direitos reservados</p>
       </footer>
     </div> <!-- /container -->
 

@@ -1,0 +1,83 @@
+@font-face {
+	font-family: 'icomoon';
+	src:url('fonts/icomoon.eot?-tw7vv6');
+	src:url('fonts/icomoon.eot?#iefix-tw7vv6') format('embedded-opentype'),
+		url('fonts/icomoon.woff?-tw7vv6') format('woff'),
+		url('fonts/icomoon.ttf?-tw7vv6') format('truetype'),
+		url('fonts/icomoon.svg?-tw7vv6#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="simepar-"], [class*=" simepar-"] {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	display: inline-block;
+	vertical-align: top;
+	white-space: nowrap;
+	position: relative;
+	margin-right: -.16em;
+	-moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    /* padding here for text, icons replicate this using size and position:absolute - padding makes touch-target bigger */
+    padding: 0.143em;
+    /* units used in font: 1em = 2048, icons 2400 wide, so icons are 1.171875em (2400/2048). Add padding x2 to get size: */
+    height: 1.45788em;
+    width: 1.45788em;
+    font-size: 1.815em;
+    /* text hidden old-school */
+    text-align: left;
+    text-indent: -9999px;
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* position:absolute stacks pseudo elements - extra &lt;span> in markup = 2 extra pseudo elements */
+[class^="simepar-"]:before,
+[class^="simepar-"]:after,
+[class^="simepar-"] span:before,
+[class^="simepar-"] span:after {
+  display: block;
+  position: absolute;
+  white-space: normal;
+  /* match padding above */
+  top: 0.143em;
+  left: 0.143em;
+  /* undo text hidden */
+  text-indent: 0;
+  /* inherits size from parent, ems cascade */
+  font-size: 1em;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: antialiased;
+  /* screenreaders */
+  speak: none;
+  /* transitions here */ }
+
+
+.simepar-superior:before {
+	content: "\10e73";
+	color: #E0A810;
+}
+.simepar-inferior:before {
+	content: "\10e74";
+	color: #4E5052;
+}
+.simepar-logo:before {
+	content: "\10e74";
+	color: #4E5052; 
+}
+.simepar-logo:after {
+	content: "\10e73";
+	color: #E0A810;
+}
+
