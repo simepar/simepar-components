@@ -1,3 +1,6 @@
+![Alt text](simepar.png)
+## Simepar Components
+
 (C) Copyleft SIMEPAR - Sistema Meteorológico do Paraná. See LICENSE for more details
 
 Page: https://simepar.github.io/Simepar-Components/
