@@ -19,6 +19,17 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    
+    <style>
+        .navbar-inverse {
+            background-color: #DCA617;
+            border-color: #DCA617;
+        }
+        
+        .navbar-inverse .navbar-brand {
+            color: white;
+        }
+    </style>
   </head>
 
   <body>
@@ -97,38 +108,50 @@
         config.waveCount = 1;
         config.minValue = 0;
         config.maxValue = 100; 
-        var drop = new Drop("#drop", 100, config);
+        var drop = new Drop("#drop", 50, config);
         
         var rulerConfig = loadDefaultSettings();
-        rulerConfig.maxValue = 9999.99;
-        rulerConfig.minValue = 1000.00;
+        rulerConfig.maxValue = 1000;
+        rulerConfig.minValue = 0;
         rulerConfig.waveAnimateTime = 5000;
         rulerConfig.waveHeight = 0.05;
         rulerConfig.waveCount = 1;
         rulerConfig.textVertPosition = 0.5;
         rulerConfig.strokeThickness = 8;
         rulerConfig.strokeColor = "white";
-        rulerConfig.displayPercent = false;
         rulerConfig.textSize = 1;
-        rulerConfig.outerColor = "#178BCA";
-        var ruler = new Ruler("#ruler", 9999, rulerConfig);
+        rulerConfig.outerColor = "#C0C0C0";
+        rulerConfig.liquidColor = "rgb(174, 226, 67)";
+        rulerConfig.minTextColor = "rgb(174, 226, 67)";
+        rulerConfig.maxTextColor = "rgb(174, 226, 67)";
+        var ruler = new Ruler("#ruler", 570, rulerConfig);
         
         var thermoConfig = loadDefaultSettings();
         thermoConfig.waveAnimateTime = 5000;
         thermoConfig.strokeThickness = 0;
         thermoConfig.waveHeight = 0;
         thermoConfig.waveAnimate = true;
-        thermoConfig.displayPercent = false;
-        thermoConfig.outerColor = "#178BCA";
-        thermoConfig.minValue = -20;
-        thermoConfig.maxValue = 40;
-        var thermo = new Thermo("#thermo", -20, thermoConfig);
+        thermoConfig.outerColor = "rgb(192, 192, 192)";
+        thermoConfig.strokeColor = "rgb(194, 106, 62)";
+        thermoConfig.liquidColor = "rgb(194, 106, 62)";
+        thermoConfig.minTextColor = "rgb(194, 106, 62)";
+        thermoConfig.maxTextColor = "rgb(194, 106, 62)";
+        thermoConfig.liquidOpacity = 0.7;
+        thermoConfig.minValue = -10;
+        thermoConfig.maxValue = 35;
+        var thermo = new Thermo("#thermo", 10, thermoConfig);
         
         var leafConfig = loadDefaultSettings();
         leafConfig.strokeThickness = 8;
         leafConfig.displayPercent = false;
         leafConfig.minValue = 0;
         leafConfig.maxValue = 10;
+        leafConfig.outerColor = "none";
+        leafConfig.strokeColor = "rgb(35, 99, 31)";
+        leafConfig.minTextColor = "rgb(35, 99, 31)";
+        leafConfig.maxTextColor = "rgb(35, 99, 31)";
+        leafConfig.liquidColor = "rgb(35, 99, 31)";
+        leafConfig.liquidOpacity = 0.7;
         var leaf = new Leaf("#leaf", 7, leafConfig);
         
         function NewValue(min, max) {            
