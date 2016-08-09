@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    
+
     <title>Simepar Components</title>
 
     <!-- Bootstrap core CSS -->
@@ -22,81 +23,76 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+
     <style>
         .navbar-inverse .navbar-brand {
             color: white;
         }
         
-        .simepar-logo:before{
+        #simepar-logo {
             color: white;
         }
         
-        .simepar-logo {
-            margin-right: 10%;
-            margin-top: 0.7%;
+        #drop-header {
+            padding-top: 50px;
         }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
 
     <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand"  target="_blank" href="https://github.com/simepar/simepar-components">Simepar Components</a>
+        <div class="container">
+            <a class="navbar-brand" target="_blank" href="https://github.com/simepar/simepar-components">Simepar Components</a>
+            <a href="http://simepar.br" target="_blank"><span id="simepar-logo" class="fs-logo pull-right"></span></a>
         </div>
-        <a href="http://simepar.br" target="_blank"><span class="simepar-logo pull-right"></span></a>
-      </div>
     </nav>
 
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
-      <div class="container">
-        <h1>Simepar Components</h1>
-        <p>Simpear Components is a JavaScript library that contains SVG Icons to represent weather data.</p>
-        <label>This project is inpired by Curtis Bratton’s D3 Liquid Fill Gauge. You can find his project <a href="http://bl.ocks.org/brattonc/5e5ce9beee483220e2f6" target="_blank">here</a>.</label>
-        <!--<p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>-->
-      </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-xs-12">
+                    <h1>Simepar Components</h1>
+                    <p>Simpear Components is a JavaScript library that contains SVG Icons to represent weather data.</p>
+                    <label>This project is inpired by Curtis Bratton’s D3 Liquid Fill Gauge. You can find his project <a href="http://bl.ocks.org/brattonc/5e5ce9beee483220e2f6"
+                        target="_blank">here</a>.</label>
+                </div>
+                <div class="col-lg-4 col-xs-12">
+                    <div id="drop-header" class="pull-right" onclick="dropHeader.update(NewValue(headerConfig.minValue, headerConfig.maxValue));"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-3">
-          <h2>Drop</h2>
-          <div id="drop" onclick="drop.update(NewValue(config.minValue, config.maxValue));"></div>
-          <!--<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>-->
+        <!-- Example row of columns -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Drop</h2>
+                <div id="drop" onclick="drop.update(NewValue(config.minValue, config.maxValue));"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Thermometer</h2>
+                <div id="thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Ruler</h2>
+                <div id="ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Leaf</h2>
+                <div id="leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
+            </div>
         </div>
-        <div class="col-md-3">
-          <h2>Thermometer</h2>
-          <div id="thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
-          <!--<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>-->
-       </div>
-        <div class="col-md-3">
-          <h2>Ruler</h2>
-          <div id="ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
-          <!--<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>-->
-        </div>
-        <div class="col-md-3">
-          <h2>Leaf</h2>
-          <div id="leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
-          <!--<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>-->
-        </div>
-      </div>
 
-      <hr>
+        <hr>
 
-      <footer>
-        <p>Copyright &copy; 2016 Simepar. Todos os direitos reservados</p>
-      </footer>
-    </div> <!-- /container -->
+        <footer>
+            <p>Copyright &copy; 2016 Simepar. Todos os direitos reservados</p>
+        </footer>
+    </div>
+    <!-- /container -->
 
 
     <!-- Third party JS -->
@@ -108,8 +104,15 @@
 
     <!-- Custom JS -->
     <script src="js/components.js"></script>
-    
+
     <script>
+        var headerConfig = loadDefaultSettings();
+        headerConfig.strokeThickness = 8;
+        headerConfig.waveAnimateTime = 2000;
+        headerConfig.waveHeight = 0.08;
+        headerConfig.waveCount = 1;
+        var dropHeader = new Drop("#drop-header", 50, headerConfig);
+        
         var config = loadDefaultSettings();
         config.strokeThickness = 8;
         config.waveAnimateTime = 5000;
@@ -167,5 +170,6 @@
             return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
         }
     </script>
-  </body>
+</body>
+
 </html>
