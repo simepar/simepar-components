@@ -3,7 +3,7 @@
 
 (C) Copyleft SIMEPAR - Sistema Meteorológico do Paraná. See LICENSE for more details
 
-Page: https://simepar.github.io/Simepar-Components/
+Page: https://simepar.github.io/simepar-components/
 
 # Simepar Components
 
