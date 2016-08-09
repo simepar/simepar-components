@@ -81,7 +81,7 @@
                 <div id="ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Leaf</h2>
+                <h2>Leaf Wetness</h2>
                 <div id="leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
             </div>
         </div>
@@ -111,6 +111,10 @@
         headerConfig.waveAnimateTime = 2000;
         headerConfig.waveHeight = 0.08;
         headerConfig.waveCount = 1;
+        headerConfig.liquidColor = "rgb(99, 99, 99)";
+        headerConfig.strokeColor = "rgb(99, 99, 99)";
+        headerConfig.minTextColor = "rgb(99, 99, 99)";
+        headerConfig.maxTextColor = "rgb(99, 99, 99)";
         var dropHeader = new Drop("#drop-header", 50, headerConfig);
         
         var config = loadDefaultSettings();
