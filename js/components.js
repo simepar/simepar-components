@@ -520,9 +520,9 @@ function loadDefaultSettings() {
         textColor: "#045681", // The color of the value text when the wave does not overlap it.
         waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
         scale: 1, // scale
-        liquidColor: "#178BCA",
-        minTextColor: "#045681",
-        maxTextColor: "#045681",
-        liquidOpacity: 0.7
+        liquidColor: "#178BCA", // the color of the liquid
+        minTextColor: "#045681", // the color of the text for the minimum value
+        maxTextColor: "#045681", // the color of the text for the maximum value
+        liquidOpacity: 0.7 // the liquid opacity
     };
 }
