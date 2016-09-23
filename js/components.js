@@ -291,8 +291,8 @@ function Drop(selector, value, config) {
             we.createWave().then(function() {       // create the wave path and defs
                 we.createInner().then(function() {  // create the inner path and wave animation
                     // TODO: responsiveness in a better way
-                    $(we.selector).width("30%");
-                    $(we.selector).height("30%");
+                    $(we.selector).width("100%");
+                    $(we.selector).height("100%");
                     
                     drop.update = we.update; // for updating the element
                 });
