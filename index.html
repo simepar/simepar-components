@@ -14,10 +14,13 @@
 
 <body>
     <div class="container-fluid" style="padding-top: 50px">
-        <div id="div-drop" onclick="drop.update(NewValue(config.minValue, config.maxValue));"></div>
-        <div id="div-ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
-        <div id="div-thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
-        <div id="div-leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
+        
+        <div style="width:30%">
+            <div id="div-drop" onclick="drop.update(NewValue(config.minValue, config.maxValue));"></div>
+            <div id="div-ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
+            <div id="div-thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
+            <div id="div-leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
+        </div>
     </div>
 
     <!-- Third party JS -->
