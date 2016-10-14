@@ -114,10 +114,13 @@ function WeatherElement(selector, value, el) {
         we.fillCircleMargin = (we.element.config.thickness * we.radius) + (we.element.config.fillGap * we.radius);
         we.fillCircleRadius = we.radius - we.fillCircleMargin;
         
+        if (value > we.element.config.maxValue) we.value = we.element.config.maxValue;
+        if (value < we.element.config.minValue) we.value = we.element.config.minValue;
+        
         if (we.element.fillPercent)
-            we.fillPercent = we.element.fillPercent(value);
+            we.fillPercent = we.element.fillPercent(we.value);
         else
-            we.fillPercent = (((value-(we.element.config.minValue))*100)/(we.element.config.maxValue-we.element.config.minValue))/100;
+            we.fillPercent = (((we.value-(we.element.config.minValue))*100)/(we.element.config.maxValue-we.element.config.minValue))/100;
 
         if(we.element.config.waveHeightScaling){
             we.waveHeightScale = d3.scale.linear()
