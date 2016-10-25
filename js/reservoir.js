@@ -1,54 +1,117 @@
-/**
- * dam svg = <polygon points=""></polygon>
- * 
- * jusante (downstream): do mais alto para o mais baixo
- * montante (upstream): do mais baixo para o mais alto
- * 
- */
+function loadReservoirSettings() {
+    return {
+        downStream: {
+            minValue: 0,
+            maxValue: 100,
+            scale: 1,
+            waveHeight: 0.05, // The wave height as a percentage of the radius of the wave circle.
+            waveCount: 1, // The number of full waves per width of the wave circle.
+            waveRiseTime: 1000, // The amount of time in milliseconds for the wave to rise from 0 to it's final height.
+            waveAnimateTime: 5000, // The amount of time in milliseconds for a full wave to enter the wave circle.
+            waveRise: true, // Control if the wave should rise from 0 to it's full height, or start at it's full height.
+            waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
+            waveAnimate: true, // Controls if the wave scrolls or is static.
+            waveColor: "#178BCA", // The color of the fill wave.
+            waveOpacity: 0.7, // the wave opacity
+            waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
+            valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
+            textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
+            minTextColor: "#045681", // the color of the text for the minimum value
+            maxTextColor: "#045681", // the color of the text for the maximum value
+            valueTextColor: "#045681", // The color of the value text when the wave does not overlap it.
+            waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
+            ruler: {
+                color: "#045681", // The color of the value text when the wave does not overlap it.
+                waveColor: "#A4DBf8", // The color of the fill wave.
+                textSize: 0.3, // The relative height of the text to display in the wave circle. 1 = 50%
+            },
+        },
+        upStream: {
+            minValue: 0,
+            maxValue: 100,
+            scale: 1,
+            waveHeight: 0.05, // The wave height as a percentage of the radius of the wave circle.
+            waveCount: 1, // The number of full waves per width of the wave circle.
+            waveRiseTime: 1000, // The amount of time in milliseconds for the wave to rise from 0 to it's final height.
+            waveAnimateTime: 5000, // The amount of time in milliseconds for a full wave to enter the wave circle.
+            waveRise: true, // Control if the wave should rise from 0 to it's full height, or start at it's full height.
+            waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
+            waveAnimate: true, // Controls if the wave scrolls or is static.
+            waveColor: "#178BCA", // The color of the fill wave.
+            waveOpacity: 0.7, // the wave opacity
+            waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
+            valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
+            textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
+            minTextColor: "#045681", // the color of the text for the minimum value
+            maxTextColor: "#045681", // the color of the text for the maximum value
+            valueTextColor: "#045681", // The color of the value text when the wave does not overlap it.
+            waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
+            ruler: {
+                color: "#045681", // The color of the value text when the wave does not overlap it.
+                waveColor: "#A4DBf8", // The color of the fill wave.
+                textSize: 0.3, // The relative height of the text to display in the wave circle. 1 = 50%
+            },
+        },
+        dam: {
+            strokeColor: "#000",
+            strokeThickness: 1,
+            fillColor: "#000"
+        }
+    };
+}
 
-function ReservoirElement(selector, config, values) {
+function ReservoirElement(selector, values, config) {
     var re = this;
     
     // properties
     re.selector = selector;
-    re.config = config == null ? loadDefaultSettings() : config;
+    re.config = config == null ? loadReservoirSettings() : config;
     re.downStreamValue = values.down;
     re.upStreamValue = values.up;
     
     // functions
     re.createSVG = createSVG;
     re.createDam = createDam;
-    re.createDownstream = createDownstream;
-    re.createUpstream = createUpstream;
-    //re.createWave = createWave;
-    re.animateWave = animateWave;
-    
+    re.createDownStream = createDownStream;
+    re.createUpStream = createUpStream;
+    re.update = update;
+    re.resize = resize;
+
     /////////////////////////////////////
     
     (function() {
         re.createSVG().then(function () {
-            re.createDownstream().then(function () {
-                re.createUpstream().then(function() {
-                    re.createDam();
+            re.createDownStream().then(function () {
+                re.createUpStream().then(function() {
+                    re.createDam().then(function() {
+                        // responsiveness
+                    });
                 });
             });
         });
     })();
-    
+
+    function resize() {
+        
+    }
+
     function createSVG() {
         var deferred = $.Deferred();
         var container = d3.select(re.selector);
         
-        // gets actual svg's width and height
-        var width = 500;  //parseInt(re.svg.style("width"));
-        var height = 250; //parseInt(re.svg.style("height"));
+        var width = 500, height = 250;
         
         // appends an svg to the div
-        re.svg = container.style("transform", "scale(" + re.config.scale + ")") // @TODO: check if it is really necessary
+        re.svg = container
+            .append("div") //container.style("transform", "scale(" + re.config.scale + ")")
+                .classed("reservoir-container", true)
             .append("svg")
+                .attr("id", "reservoir-svg")
                 .attr({ width: width, height: height })
-                .attr("preserveAspectRatio", "xMinYMid meet")
-                .attr("viewBox", "0 0 " + width + " " + height);            
+                .attr("class", "reservoir-content")
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", "0 0 " + width + " " + height)
+                .classed("reservoir-content", true);
         
         // append a g element where all contents will be placed in
         re.svg.backgroundGroup = re.svg.append("g").attr("id", "backgroundGroup");
@@ -63,16 +126,127 @@ function ReservoirElement(selector, config, values) {
         return deferred.promise();
     }
 
+    function update(values) {
+        updateSVG(re.downStreamSVG, re.config.downStream, values.down); // updating downstream
+        updateSVG(re.upStreamSVG, re.config.upStream, values.up); // updating upstream
+    }
+
+    function updateSVG(svg, config, value) {
+        setSVGProperties(svg, config, value);
+
+        var newWavePosition = config.waveAnimate ? svg.waveAnimateScale(1) : 0;
+
+        svg.wave.transition()
+            .duration(0)
+            .transition()
+            .duration(config.waveAnimate ? (config.waveAnimateTime * (1 - svg.wave.attr('T'))) : (svg.config.waveRiseTime))
+            .ease('linear')
+            .attr('d', svg.clipArea)
+            .attr('transform','translate('+newWavePosition+', 0)')
+            .attr('T','1')
+            .each("end", function() {
+                if (config.waveAnimate) {
+                    svg.wave.attr('transform', 'translate('+ svg.waveAnimateScale(0) +', 0)');
+                    animateWave(svg, config.waveAnimateTime);
+                }
+            });
+
+        svg.waveGroup.transition()
+                .duration(config.waveRiseTime)
+                .attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(svg.fillPercent)+')');
+
+        var translate;
+        if (svg.attr("id") == "downStream")
+            translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
+        else
+            translate = "translate("+(svg.radius+20)+","+ svg.textHeight +")";
+
+        var textTween = function(){
+            var i = d3.interpolate(this.textContent, parseFloat(value).toFixed(2));
+            return function(t) { this.textContent = svg.textRounder(i(t)); }
+        };
+
+        svg.valueText1.transition()
+            .duration(config.waveRiseTime)
+            .attr('transform', translate)
+            .tween("text", textTween);
+
+        svg.valueText2.transition()
+            .duration(config.waveRiseTime)
+            .attr('transform', translate)
+            .tween("text", textTween);
+    }
+
+    function createDownStream() {
+        var deferred = $.Deferred();
+
+        var width = parseInt(re.svg.style("width")) / 1.9;
+        var height = parseInt(re.svg.style("height"));
+
+        re.downStreamSVG = re.svg.append("svg")
+            .attr("id", "downStream")
+            .attr({ width: width, height: height })
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .attr("viewBox", "0 0 " + width + " " + height)
+            .classed("reservoir-content", true);
+        
+        // setting properties
+        setSVGProperties(re.downStreamSVG, re.config.downStream, re.downStreamValue)
+
+        // create wave passing wave downstream config and its value
+        createWave(re.downStreamSVG, re.config.downStream, re.downStreamValue);
+
+        // update text labels
+        updateTextLabels(re.downStreamSVG, re.config.downStream);
+
+        // create side-markers to represent a ruler
+        createRuler(re.downStreamSVG, re.config.downStream);
+
+        deferred.resolve();
+        return deferred.promise();
+    }
+
+    function createUpStream() {
+        var deferred = $.Deferred();
+
+        var width = parseInt(re.svg.style("width")) / 2;
+        var height = parseInt(re.svg.style("height"));
+        var transform = "translate("+(width+1)+", 0)";
+
+        re.upStreamSVG = re.svg.append("svg")
+            .attr("id", "upStream")
+            .attr("x", width+1) // +1 only to not overlay the downstream group
+            .attr({ width: width, height: height })
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .attr("viewBox", "0 0 " + width + " " + height)
+            .classed("reservoir-content", true);
+                    
+        // setting properties
+        setSVGProperties(re.upStreamSVG, re.config.upStream, re.upStreamValue)
+
+        // create wave passing wave upstream config and its value
+        createWave(re.upStreamSVG, re.config.upStream, re.upStreamValue);
+
+        // update text labels
+        updateTextLabels(re.upStreamSVG, re.config.upStream);
+
+        // create side-markers to represent a ruler
+        createRuler(re.upStreamSVG, re.config.upStream);
+
+        deferred.resolve();
+        return deferred.promise();
+    }
+
     function createDam() {
         var deferred = $.Deferred();
         
         // translating dam to the middle of the svg
-        var translate = parseInt(re.svg.style("width")) / 2.35;
+        var translate = parseInt(re.svg.style("width")) / 2.3;
         
         // append dam element
         re.svg.append("g").attr("id", "damGroup").append("polygon")
             .attr("points", "0.678,0 0.678,443.842 139.225,443.842 62.338,0")
-            .attr("transform", "translate(" + translate + ")")
+            .attr("transform", "translate(" + translate + ", 0) scale(0.565)")
             .style("stroke-width", re.config.dam.strokeThickness)
             .style("stroke", re.config.dam.strokeColor)
             .style("fill", re.config.dam.fillColor);
@@ -81,249 +255,284 @@ function ReservoirElement(selector, config, values) {
         return deferred.promise();
     }
 
-    function createDownstream() {
-        var deferred = $.Deferred();
-
+    function setSVGProperties(svg, config, value) {
         var width = parseInt(re.svg.style("width")) / 2;
         var height = parseInt(re.svg.style("height"));
 
-        re.svg.downStreamGroup = re.svg.append("g")
-            .attr("id", "downStreamGroup");
+        // general
+        svg.radius = Math.min(width, height) / 2;
+        svg.fillPercent = (((value - (config.minValue)) * 100) / (config.maxValue - config.minValue)) / 100;
+        //svg.config = config;
 
-        // re.svg.downStreamGroup.append("rect")
-        //     .attr("id", "downstream")
-        //     .attr({ width: width, height: height })
-        //     .style("stroke-width", 1)
-        //     .style("stroke", "green")
-        //     .style("fill", "none");
-        
-        // create wave passing wave downstream config and its value
-        createWave(re.svg.downStreamGroup, re.config.downStream, re.downStreamValue);
+        // wave
+        var range, domain;
 
-        deferred.resolve();
-        return deferred.promise();
-    }
-
-    function createUpstream() {
-        var deferred = $.Deferred();
-
-        var width = parseInt(re.svg.style("width")) / 2;
-        var height = parseInt(re.svg.style("height"));
-        var transform = "translate(" + (width + 1) + ")";
-
-        re.svg.upStreamGroup = re.svg.append("g")
-            .attr("id", "upStreamGroup")
-            .attr("transform", transform); // +1 only to not overlay the downstream group
-
-        // re.svg.upStreamGroup.append("rect")
-        //     .attr("id", "upstream")
-        //     .attr({ width: width - 1, height: height })
-        //     .style("stroke-width", 1)
-        //     .style("stroke", "red")
-        //     .style("fill", "none");
-        
-        // create wave passing wave upstream config and its value
-        createWave(re.svg.upStreamGroup, re.config.upStream, re.upStreamValue);
-
-        deferred.resolve();
-        return deferred.promise();
-    }
-
-    function createWave(group, waveConfig, value) {
-        var deferred = $.Deferred();
-
-        var width = parseInt(re.svg.style("width")) / 2;
-        var height = parseInt(re.svg.style("height"));
-        var elementId = group.attr("id").split("Group")[0];
-        var radius = width/2;
-
-        if (value > waveConfig.maxValue) value = waveConfig.maxValue;
-        if (value < waveConfig.minValue) value = waveConfig.minValue;
-
-        var fillPercent = (((value - (waveConfig.minValue)) * 100) / (waveConfig.maxValue - waveConfig.minValue)) / 100;
-
-        var waveHeightScale;
-        if (waveConfig.waveHeightScaling) {
-            waveHeightScale = d3.scale.linear()
-                .range([0, waveConfig.waveHeight, 0])
-                .domain([0, 50, 100]);
+        if (config.waveHeightScaling) {
+            range = [0, config.waveHeight, 0];
+            domain = [0, 50, 100];
         } else {
-            waveHeightScale = d3.scale.linear()
-                .range([waveConfig.waveHeight, waveConfig.waveHeight])
-                .domain([0, 100]);
+            range = [config.waveHeight, config.waveHeight];
+            domain = [0, 100];
         }
 
-        var fillCircleRadius = radius;
-        var waveHeight = fillCircleRadius * waveHeightScale(fillPercent * 100);
-
-        var waveLength = fillCircleRadius * 2 / waveConfig.waveCount;
-        var waveClipCount = 1 + waveConfig.waveCount;
-        var waveClipWidth = waveLength * waveClipCount;
-
-        // Data for building the clip wave area.
-        var data = [];
-        for (var i = 0; i <= 40 * waveClipCount; i++) {
-            data.push({ x: i / (40 * waveClipCount), y: (i / (40)) });
-        }
+        svg.waveAnimateTime = config.waveAnimateTime;
+        svg.waveHeightScale = d3.scale.linear().range(range).domain(domain);
+        svg.waveHeight = svg.radius * svg.waveHeightScale(svg.fillPercent * 100);
+        svg.waveLength = svg.radius * 2 / config.waveCount;
+        svg.waveClipCount = 1 + config.waveCount;
+        svg.waveClipWidth = svg.waveLength * svg.waveClipCount;
+        svg.waveGroupXPosition = svg.radius * 2 - svg.waveClipWidth;
 
         // Scales for controlling the size of the clipping path.
-        var waveScaleX = d3.scale.linear().range([0, waveClipWidth]).domain([0, 1]);
-        var waveScaleY = d3.scale.linear().range([0, waveHeight]).domain([0, 1]);
+        svg.waveScaleX = d3.scale.linear().range([0, svg.waveClipWidth]).domain([0, 1]);
+        svg.waveScaleY = d3.scale.linear().range([0, svg.waveHeight]).domain([0, 1]);
 
         // Scales for controlling the position of the clipping path.
-        var waveRiseScale = d3.scale.linear()
-        // The clipping area size is the height of the fill circle + the wave height, so we position the clip wave
-        // such that the it will overlap the fill circle at all when at 0%, and will totally cover the fill
-        // circle at 100%.
-            .range([(fillCircleRadius * 2 + waveHeight), (waveHeight)])
+        svg.waveRiseScale = d3.scale.linear()
+            // The clipping area size is the height of the fill circle + the wave height, so we position the clip wave
+            // such that the it will overlap the fill circle at all when at 0%, and will totally cover the fill
+            // circle at 100%.
+            .range([(svg.radius * 2 + svg.waveHeight), (svg.waveHeight)])
             .domain([0, 1]);
-            
-        re.waveAnimateScale = d3.scale.linear()
-            .range([0, waveClipWidth - fillCircleRadius * 2]) // Push the clip area one full wave then snap back.
+
+        svg.waveAnimateScale = d3.scale.linear()
+            .range([0, svg.waveClipWidth - svg.radius * 2]) // Push the clip area one full wave then snap back.
             .domain([0, 1]);
 
         // The clipping wave area.
-        var clipArea = d3.svg.area()
-            .x(function (d) { return waveScaleX(d.x); })
-            .y0(function (d) { return waveScaleY(Math.sin(Math.PI * 2 * waveConfig.waveOffset * -1 + Math.PI * 2 * (1 - waveConfig.waveCount) + d.y * 2 * Math.PI)); })
-            .y1(function (d) { return (fillCircleRadius * 2 + waveHeight); });
-        
-        re.waveGroup = group.append("defs")
-            .append("clipPath")
-            .attr("id", "clipWave" + elementId);
+        svg.clipArea = d3.svg.area()
+            .x(function(d) { return svg.waveScaleX(d.x); } )
+            .y0(function(d) { return svg.waveScaleY(Math.sin(Math.PI*2*config.waveOffset*-1 + Math.PI*2*(1-config.waveCount) + d.y*2*Math.PI));} )
+            .y1(function(d) { return (svg.radius * 2 + svg.waveHeight); } );
 
-        if (elementId == "upStream") {
-            re.waveUp = re.waveGroup.append("path")
-                .datum(data)
-                .attr("d", clipArea)
-                .attr("T", 0);
-                
-            re.upConfig = waveConfig;
-        } else {
-            re.waveDown = re.waveGroup.append("path")
-                .datum(data)
-                .attr("d", clipArea)
-                .attr("T", 0);
-            re.downConfig = waveConfig;
-        }
-        
-        // The inner rect with the clipping wave attached.
-        var g = group.append("g")
-                .attr("clip-path", "url(#clipWave" + elementId + ")")
-        g.append("rect")
+        // text
+        svg.rulerTextPixels = (config.ruler.textSize * svg.radius / 2);
+        svg.textPixels = (config.textSize * svg.radius / 2);
+        svg.textFinalValue = parseFloat(value).toFixed(2);
+        svg.textStartValue = config.valueCountUp ? config.minValue : svg.textFinalValue;
+        svg.textHeight = value >= ((90 * config.maxValue)/100) ? svg.waveRiseScale(svg.fillPercent)+25 : svg.waveRiseScale(svg.fillPercent)-5;
+
+        // Rounding functions so that the correct number of decimal places is always displayed as the value counts up.
+        svg.textRounder = function(value) { return Math.round(value); };
+        if (parseFloat(svg.textFinalValue) != parseFloat(svg.textRounder(svg.textFinalValue))) svg.textRounder = function(value) { return parseFloat(value).toFixed(1); };
+        if (parseFloat(svg.textFinalValue) != parseFloat(svg.textRounder(svg.textFinalValue))) svg.textRounder = function(value) { return parseFloat(value).toFixed(2); };
+    }
+
+    function createWave(svg, config, value) {
+        var width = parseInt(re.svg.style("width")) / 2;
+        var height = parseInt(re.svg.style("height"));
+
+        // Data for building the clip wave area.
+        var data = [];
+        for(var i = 0; i <= 40 * svg.waveClipCount; i++)
+            data.push({ x: i/(40 * svg.waveClipCount), y: (i/(40)) });
+
+        svg.outerGroup = svg.append("g").attr("id", "outerGroup");
+
+        // Draw the outer circle.
+        svg.outerGroup.append("rect")
             .attr({ width: width, height: height })
-            .style("fill", waveConfig.waveColor);
+            .style("stroke", config.circleColor)
+            .style("fill", "none");
 
-        // Make the wave rise. wave and waveGroup are separate so that horizontal and vertical movement can be controlled independently.
-        var waveGroupXPosition = fillCircleRadius * 2 - waveClipWidth;
+        // Text where the wave does not overlap.
+        svg.valueText1 = svg.outerGroup.append("text");
+        svg.maxText1   = svg.outerGroup.append("text");
+        svg.minText1   = svg.outerGroup.append("text");
 
-        if (waveConfig.waveRise) {
-            re.waveGroup.attr('transform', 'translate(' + waveGroupXPosition + ',' + waveRiseScale(0) + ')')
+        svg.rulerOuterGroup = svg.outerGroup.append("g").attr("id", "rulerOuterGroup");
+
+        svg.waveGroup = svg.outerGroup.append("defs")
+            .append("clipPath")
+            .attr("id", "clipWave" + svg.attr("id"));
+
+        svg.wave = svg.waveGroup.append("path")
+            .datum(data)
+            .attr("d", svg.clipArea)
+            .attr("T", 0);
+
+        // The inner circle with the clipping wave attached.
+        svg.innerGroup = svg.outerGroup.append("g")
+            .attr("clip-path", "url(#clipWave" + svg.attr("id") + ")");
+
+        svg.innerGroup.append("rect")
+            .attr({ width: width, height: height })
+            .style("fill", config.waveColor);
+
+        // Text where the wave does overlap.
+        svg.valueText2 = svg.innerGroup.append("text");
+        svg.maxText2   = svg.innerGroup.append("text");
+        svg.minText2   = svg.innerGroup.append("text");     
+
+        svg.rulerInnerGroup = svg.innerGroup.append("g").attr("id", "rulerInnerGroup");
+
+
+        if (config.waveRise) {
+            svg.waveGroup.attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(0)+')')
                 .transition()
-                .duration(waveConfig.waveRiseTime)
-                .attr('transform', 'translate(' + waveGroupXPosition + ',' + waveRiseScale(fillPercent) + ')')
-                .each("start", function () { elementId == "upStream" ? re.waveUp.attr('transform', 'translate(1,0)') : re.waveDown.attr('transform', 'translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
-        } else {
-            re.waveGroup.attr('transform', 'translate(' + waveGroupXPosition + ',' + waveRiseScale(fillPercent) + ')');
-        }
-        
-        if (waveConfig.waveAnimate) re.animateWave();
+                .duration(config.waveRiseTime)
+                .attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(svg.fillPercent)+')')
+                .each("start", function(){ svg.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
+        } else
+            svg.waveGroup.attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(svg.fillPercent)+')');
 
-        deferred.resolve();
-        return deferred.promise();
+        if (config.waveAnimate) animateWave(svg);
     }
 
-    function animateWave() {
-        if (re.waveUp) {
-            re.waveUp.attr('transform', 'translate(' + re.waveAnimateScale(re.waveUp.attr('T')) + ',0)');
-            re.waveUp.transition()
-                .duration(re.upConfig.waveAnimateTime * (1 - re.waveUp.attr('T')))
-                .ease('linear')
-                .attr('transform', 'translate(' + re.waveAnimateScale(1) + ',0)')
-                .attr('T', 1)
-                .each('end', function () {
-                    re.waveUp.attr('T', 0);
-                    re.animateWave(re.upConfig.waveAnimateTime);
-                });
+    function animateWave(svg) {
+        svg.wave.attr('transform', 'translate(' + svg.waveAnimateScale(svg.wave.attr('T')) + ',0)');
+        svg.wave.transition()
+            .duration(svg.waveAnimateTime * (1 - svg.wave.attr('T')))
+            .ease('linear')
+            .attr('transform', 'translate(' + svg.waveAnimateScale(1) + ',0)')
+            .attr('T', 1)
+            .each('end', function () {
+                svg.wave.attr('T', 0);
+                animateWave(svg, svg.waveAnimateTime);
+            });
+    }
+
+    function updateTextLabels(svg, config) {
+        var width = parseInt(svg.attr("width"));
+        var height = parseInt(svg.attr("height"));
+
+        var coords = {};
+        var textAnchor, translate;
+
+        if (svg.attr("id") == "downStream") {
+            coords.max = { x: 22, y: (svg.rulerTextPixels-((20 * svg.rulerTextPixels)/100)) };
+            coords.min = { x: 22, y: height-2 };
+            textAnchor = "start";
+            translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
         }
+        else {
+            coords.max = { x: width-22, y: (svg.rulerTextPixels-((20 * svg.rulerTextPixels)/100)) };
+            coords.min = { x: width-22, y: height-2 };
+            textAnchor = "end";
+            translate = "translate("+(svg.radius+20)+","+ svg.textHeight +")";
+        }
+
+        // Text where the wave does not overlap.
+        svg.valueText1
+            .text(svg.textRounder(svg.textStartValue))
+            .attr("text-anchor", "middle")
+            .attr("font-size", svg.textPixels + "px")
+            .style("fill", config.valueTextColor)
+            .attr('transform', translate);
+
+        svg.maxText1
+            .text(svg.textRounder(config.maxValue))
+            .attr("text-anchor", textAnchor)
+            .attr(coords.max)
+            .attr("font-size", svg.rulerTextPixels + "px")
+            .style("fill", config.valueTextColor);
+
+        svg.minText1
+            .text(svg.textRounder(svg.textStartValue))
+            .attr("text-anchor", textAnchor)
+            .attr(coords.min)
+            .attr("font-size", svg.rulerTextPixels + "px")
+            .style("fill", config.valueTextColor);
+
+        // Text where the wave does overlap.
+        svg.valueText2
+            .text(svg.textRounder(svg.textStartValue))
+            .attr("text-anchor", "middle")
+            .attr("font-size", svg.textPixels + "px")
+            .style("fill", config.waveTextColor)
+            .attr('transform', translate);
+
+        svg.maxText2
+            .text(svg.textRounder(config.maxValue))
+            .attr("text-anchor", textAnchor)
+            .attr(coords.max)
+            .attr("font-size", svg.rulerTextPixels + "px")
+            .style("fill", config.waveTextColor);
+
+        svg.minText2
+            .text(svg.textRounder(svg.textStartValue))
+            .attr("text-anchor", textAnchor)
+            .attr(coords.min)
+            .attr("font-size", svg.rulerTextPixels + "px")
+            .style("fill", config.waveTextColor);
+
+        // Make the value count up.
+        if (config.valueCountUp) {
+            var textTween = function(){
+                var i = d3.interpolate(this.textContent, svg.textFinalValue);
+                return function(t) { this.textContent = svg.textRounder(i(t)); }
+            };
+
+            svg.valueText1.transition()
+                .duration(config.waveRiseTime)
+                .attr('transform', translate)
+                .tween("text", textTween);
+
+            svg.valueText2.transition()
+                .duration(config.waveRiseTime)
+                .attr('transform', translate)
+                .tween("text", textTween);
+        }
+    }
+
+    function createRuler(svg, config) {
+        var height = parseInt(svg.attr("height"));
+        var width = parseInt(svg.attr("width"));
         
-        if (re.waveDown) {            
-            re.waveDown.attr('transform', 'translate(' + re.waveAnimateScale(re.waveDown.attr('T')) + ',0)');
-            re.waveDown.transition()
-                .duration(re.downConfig.waveAnimateTime * (1 - re.waveDown.attr('T')))
-                .ease('linear')
-                .attr('transform', 'translate(' + re.waveAnimateScale(1) + ',0)')
-                .attr('T', 1)
-                .each('end', function () {
-                    re.waveDown.attr('T', 0);
-                    re.animateWave(re.downConfig.waveAnimateTime);
-                });
+        var ruler = [];
+        var total = parseInt(height/5);
+        var x, y=0, w;
+
+        for (var i=0; i < total; i++) {
+            if (svg.attr("id") == "downStream")
+                x = 0;
+            else
+                x = i % 5 == 0 ? width-20 : width - 10;
+
+            w = i % 5 == 0 ? 20 : 10;
+            ruler.push({ x: x, y: y, width: w, height: 2 });
+            y += 5;
         }
+
+        ruler.push({ 
+            x: svg.attr("id") == "downStream" ? 0 : width-20, 
+            y: height-2, 
+            width: 20, 
+            height: 2 
+        });
+
+        svg.rulerOuterGroup.selectAll("rect")
+            .data(ruler)
+            .enter()
+            .append("rect")
+                .attr("fill", config.ruler.color)
+                .attr("width", function(d) { return d.width })
+                .attr("height", function(d) { return d.height })
+                .attr("y", function(d) { return d.y })
+                .attr("x", function(d) { return d.x });
+
+        svg.rulerInnerGroup.selectAll("rect")
+            .data(ruler)
+            .enter()
+            .append("rect")
+                .attr("fill", config.ruler.waveColor)
+                .attr("width", function(d) { return d.width })
+                .attr("height", function(d) { return d.height })
+                .attr("y", function(d) { return d.y })
+                .attr("x", function(d) { return d.x });
     }
 }
 
-/** @function loadReservoirSettings
- *  @description Load the default settings to create the reservoir elements
- *  NOTE: not all of the properties are being used at this moment.
-*/
-function loadReservoirSettings() {
-    return {
-        downStream: {
-            minValue: 0,
-            maxValue: 100,
-            thickness: 0.05, // @TODO - This don't work as expected. - The outer circle thickness as a percentage of it's radius.
-            fillGap: 0.05, // @TODO - This don't work as expected. - The size of the gap between the outer circle and wave circle as a percentage of the outer circles radius.
-            waveHeight: 0.05, // The wave height as a percentage of the radius of the wave circle.
-            waveCount: 1, // The number of full waves per width of the wave circle.
-            waveRiseTime: 1000, // The amount of time in milliseconds for the wave to rise from 0 to it's final height.
-            waveAnimateTime: 10000, // The amount of time in milliseconds for a full wave to enter the wave circle.
-            waveRise: true, // Control if the wave should rise from 0 to it's full height, or start at it's full height.
-            waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
-            waveAnimate: true, // Controls if the wave scrolls or is static.
-            waveColor: "#178BCA", // The color of the fill wave.
-            waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
-            liquidColor: "blue", // the color of the liquid
-            minTextColor: "#045681", // the color of the text for the minimum value
-            maxTextColor: "#045681", // the color of the text for the maximum value
-            liquidOpacity: 0.7 // the liquid opacity
-        },
-        upStream: {
-            minValue: 0,
-            maxValue: 100,
-            thickness: 0.05, // @TODO - This don't work as expected. - The outer circle thickness as a percentage of it's radius.
-            fillGap: 0.05, // @TODO - This don't work as expected. - The size of the gap between the outer circle and wave circle as a percentage of the outer circles radius.
-            waveHeight: 0.05, // The wave height as a percentage of the radius of the wave circle.
-            waveCount: 1, // The number of full waves per width of the wave circle.
-            waveRiseTime: 1000, // The amount of time in milliseconds for the wave to rise from 0 to it's final height.
-            waveAnimateTime: 10000, // The amount of time in milliseconds for a full wave to enter the wave circle.
-            waveRise: true, // Control if the wave should rise from 0 to it's full height, or start at it's full height.
-            waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
-            waveAnimate: true, // Controls if the wave scrolls or is static.
-            waveColor: "#178BCA", // The color of the fill wave.
-            waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
-            liquidColor: "#178BCA", // the color of the liquid
-            minTextColor: "#045681", // the color of the text for the minimum value
-            maxTextColor: "#045681", // the color of the text for the maximum value
-            liquidOpacity: 0.7 // the liquid opacity
-        },
-        dam: {
-            strokeColor: "#000",
-            strokeThickness: 1,
-            fillColor: "#000"
-        },
-        scale: 1, // scale
-    };
-}
-
-(function () {
-    var values = {}
-    values.down = 50;
-    values.up = 73;
-
+(function() {
     var config = loadReservoirSettings();
-    config.upStream.waveAnimateTime = 1000;
+    var values = { down: 80, up: 100 };
 
-    var re = new ReservoirElement("#div-reservoir", config, values);
+    var reservoir = new ReservoirElement("#div-reservoir", values, config);
 
-    
+    setInterval(function() {
+        values.down = Math.random() > .5 ? Math.round(Math.random() * (config.downStream.maxValue - config.downStream.minValue) + config.downStream.minValue) : (Math.random() * (config.downStream.maxValue - config.downStream.minValue) + config.downStream.minValue).toFixed(0);
+        values.up = Math.random() > .5 ? Math.round(Math.random() * (config.upStream.maxValue - config.upStream.minValue) + config.upStream.minValue) : (Math.random() * (config.upStream.maxValue - config.upStream.minValue) + config.upStream.minValue).toFixed(0);
+
+        reservoir.update(values); 
+    }, 5000);
 })();

@@ -1,0 +1,15 @@
+.reservoir-container { 
+	display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+
+.reservoir-content { 
+	display: inline-block;
+    position: absolute;
+    top: 0px;
+    left: 0;
+}
