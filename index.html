@@ -12,9 +12,11 @@
 </head>
 
 <body>
-    <div id="div-reservoir" style="width: 50%">
-        
-    </div>
+    <div id="div-drop" onclick="drop.update(NewValue(dropConfig.minValue, dropConfig.maxValue));"></div>
+    <div id="div-ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
+    <div id="div-thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
+    <div id="div-leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
+    <div id="div-reservoir" style="width: 50%"></div>
 
     <!-- Third party JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -24,9 +26,75 @@
     <script src="https://d3js.org/d3.v3.min.js"></script>
 
     <!-- Custom JS -->
+    <script src="js/components.js"></script>
     <script src="js/reservoir.js"></script>
 
     <script>
+        var initialValue = 78;
+
+        // drop
+        var dropConfig = loadDefaultSettings();
+        /* custom configuration */
+        dropConfig.strokeThickness = 8;
+        dropConfig.waveAnimateTime = 5000;
+        dropConfig.waveHeight = 0.05;
+        dropConfig.waveCount = 1;
+        dropConfig.minValue = 0;
+        dropConfig.maxValue = 100;
+        dropConfig.scale = 0.3; 
+        var drop = new Drop("#div-drop", initialValue, dropConfig);
+
+        // ruler
+        var rulerConfig = loadDefaultSettings();
+        rulerConfig.maxValue = 1000;
+        rulerConfig.minValue = 0;
+        rulerConfig.waveAnimateTime = 5000;
+        rulerConfig.waveHeight = 0.05;
+        rulerConfig.waveCount = 1;
+        rulerConfig.textVertPosition = 0.5;
+        rulerConfig.strokeThickness = 8;
+        rulerConfig.strokeColor = "white";
+        rulerConfig.textSize = 1;
+        rulerConfig.outerColor = "#C0C0C0";
+        rulerConfig.liquidColor = "rgb(174, 226, 67)";
+        rulerConfig.minTextColor = "rgb(174, 226, 67)";
+        rulerConfig.maxTextColor = "rgb(174, 226, 67)";
+        rulerConfig.scale = 0.3; 
+        var ruler = new Ruler("#div-ruler", 570, rulerConfig);
+        
+        // thermometer
+        var thermoConfig = loadDefaultSettings();
+        thermoConfig.waveAnimateTime = 5000;
+        thermoConfig.strokeThickness = 0;
+        thermoConfig.waveHeight = 0;
+        thermoConfig.waveAnimate = true;
+        thermoConfig.outerColor = "rgb(192, 192, 192)";
+        thermoConfig.strokeColor = "rgb(194, 106, 62)";
+        thermoConfig.liquidColor = "rgb(194, 106, 62)";
+        thermoConfig.minTextColor = "rgb(194, 106, 62)";
+        thermoConfig.maxTextColor = "rgb(194, 106, 62)";
+        thermoConfig.liquidOpacity = 0.7;
+        thermoConfig.minValue = -10;
+        thermoConfig.maxValue = 35;
+        thermoConfig.scale = 0.3; 
+        var thermo = new Thermo("#div-thermo", 10, thermoConfig);
+        
+        // leaf
+        var leafConfig = loadDefaultSettings();
+        leafConfig.strokeThickness = 8;
+        leafConfig.displayPercent = false;
+        leafConfig.minValue = 0;
+        leafConfig.maxValue = 10;
+        leafConfig.outerColor = "none";
+        leafConfig.strokeColor = "rgb(35, 99, 31)";
+        leafConfig.minTextColor = "rgb(35, 99, 31)";
+        leafConfig.maxTextColor = "rgb(35, 99, 31)";
+        leafConfig.liquidColor = "rgb(35, 99, 31)";
+        leafConfig.liquidOpacity = 0.7;
+        leafConfig.scale = 0.3; 
+        var leaf = new Leaf("#div-leaf", 7, leafConfig);
+
+        // reservoir
         var values = { down: 78, up: 30 };
         var config = loadReservoirSettings();
 
@@ -39,6 +107,11 @@
 
             reservoir.update(values); 
         }, 3000);
+
+        // generating random values
+        function NewValue(min, max) {            
+            return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
+        }
     </script>
 </body>
 
