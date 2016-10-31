@@ -117,13 +117,13 @@ function ReservoirElement(selector, values, config) {
                 .style("display", "block");
         
         // append a g element where all contents will be placed in
-        re.svg.backgroundGroup = re.svg.append("g").attr("id", "backgroundGroup");
+        // re.svg.backgroundGroup = re.svg.append("g").attr("id", "backgroundGroup");
             
         // background rect. @TODO: this may not stay in the final version
-        re.svg.backgroundGroup.append("rect")
-            .attr("id", "rectBackground")
-            .attr({ stroke: "#000", fill: "none" })
-            .attr({ width: width, height: height });
+        // re.svg.backgroundGroup.append("rect")
+        //     .attr("id", "rectBackground")
+        //     .attr({ stroke: "#000", fill: "none" })
+        //     .attr({ width: width, height: height });
 
         deferred.resolve();
         return deferred.promise();

@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <div id="div-reservoir" style="border: 1px solid black;">
+    <div id="div-reservoir" style="width: 50%">
         
     </div>
 
@@ -27,7 +27,7 @@
     <script src="js/reservoir.js"></script>
 
     <script>
-        var values = { down: 570, up: 800 };
+        var values = { down: 78, up: 30 };
         var config = loadReservoirSettings();
 
         var reservoir = new ReservoirElement("#div-reservoir", values, config);
@@ -38,7 +38,7 @@
             values.up = (Math.random() * (config.upStream.maxValue - config.upStream.minValue) + config.upStream.minValue);
 
             reservoir.update(values); 
-        }, 5000);
+        }, 3000);
     </script>
 </body>
 
