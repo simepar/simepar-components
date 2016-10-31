@@ -12,21 +12,23 @@ Simpear Components is a JavaScript library that contains SVG Icons to represent 
 - Drop: used to represent **preciptation** and **relative humidity**;
 - Ruler: used to represent **river level**;
 - Thermometer: used to represent **temperature**;
-- Leaf: used to represent **leaf wetness**.
+- Leaf: used to represent **leaf wetness**;
+- Reservoir: used to represent a storage space for fluids.
 
 ## Getting Started
 On your HTML page, add the file components.js as follows:
 
 Note that in this example, the file is inside the folder js/
 ```html
-<script src="js/components.js"></script>
+<script src="js/components.js"></script> <!-- weather components -->
+<script src="js/reservoir.js"></script> <!-- reservoir component -->
 ```
 
 ### How to Use
 
 ```javascript
+/* weather elements */
 var initialValue = 78;
-
 var config = loadDefaultSettings();
 /* custom configuration */
 config.strokeThickness = 8;
@@ -38,9 +40,15 @@ config.maxValue = 100;
 config.scale = 0.3; 
 
 var drop = new Drop("#container", initialValue, config);
+
+/* reservoir component */
+var values = { down: 78, up: 30 }; // must have 'down' and 'up' properties!
+var config = loadReservoirSettings();
+
+var reservoir = new ReservoirElement("#reservoir-container", values, config);
 ```
 
-#### Configuration parameters:
+#### Configuration parameters (Weather Elements):
 ```javascript
 // Default Settings
 // return of loadDefaultSettings
@@ -72,6 +80,73 @@ liquidColor: "#178BCA", // the color of the liquid
 minTextColor: "#045681", // the color of the text for the minimum value
 maxTextColor: "#045681", // the color of the text for the maximum value
 liquidOpacity: 0.7 // the liquid opacity
+```
+
+#### Configuration parameters (Reservoir):
+```javascript
+{
+    downStream: {
+        minValue: 0,
+        maxValue: 100,
+        scale: 1,
+        waveHeight: 0.05, // The wave height as a percentage of the radius of the wave circle.
+        waveCount: 1, // The number of full waves per width of the wave circle.
+        waveRiseTime: 1000, // The amount of time in milliseconds for the wave to rise from 0 to it's final height.
+        waveAnimateTime: 5000, // The amount of time in milliseconds for a full wave to enter the wave circle.
+        waveRise: true, // Control if the wave should rise from 0 to it's full height, or start at it's full height.
+        waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
+        waveAnimate: true, // Controls if the wave scrolls or is static.
+        waveColor: "#178BCA", // The color of the fill wave.
+        waveOpacity: 0.7, // the wave opacity
+        waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
+        valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
+        textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
+        decimalPlaces: 2, // how many decimal places it should be displayed
+        minTextColor: "#045681", // the color of the text for the minimum value
+        maxTextColor: "#045681", // the color of the text for the maximum value
+        valueTextColor: "#045681", // The color of the value text when the wave does not overlap it.
+        waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
+        ruler: {
+            color: "#045681", // The color of the value text when the wave does not overlap it.
+            waveColor: "#A4DBf8", // The color of the fill wave.
+            textSize: 0.25, // The relative height of the text to display in the wave circle. 1 = 50%
+            decimalPlaces: 2, // how many decimal places it should be displayed
+        },
+    },
+    upStream: {
+        minValue: 0,
+        maxValue: 100,
+        scale: 1,
+        waveHeight: 0.05, // The wave height as a percentage of the radius of the wave circle.
+        waveCount: 1, // The number of full waves per width of the wave circle.
+        waveRiseTime: 1000, // The amount of time in milliseconds for the wave to rise from 0 to it's final height.
+        waveAnimateTime: 5000, // The amount of time in milliseconds for a full wave to enter the wave circle.
+        waveRise: true, // Control if the wave should rise from 0 to it's full height, or start at it's full height.
+        waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
+        waveAnimate: true, // Controls if the wave scrolls or is static.
+        waveColor: "#178BCA", // The color of the fill wave.
+        waveOpacity: 0.7, // the wave opacity
+        waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
+        valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
+        textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
+        decimalPlaces: 2, // how many decimal places it should be displayed
+        minTextColor: "#045681", // the color of the text for the minimum value
+        maxTextColor: "#045681", // the color of the text for the maximum value
+        valueTextColor: "#045681", // The color of the value text when the wave does not overlap it.
+        waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
+        ruler: {
+            color: "#045681", // The color of the value text when the wave does not overlap it.
+            waveColor: "#A4DBf8", // The color of the fill wave.
+            textSize: 0.25, // The relative height of the text to display in the wave circle. 1 = 50%
+            decimalPlaces: 2, // how many decimal places it should be displayed
+        },
+    },
+    dam: {
+        strokeColor: "#000",
+        strokeThickness: 2,
+        fillColor: "#000"
+    }
+}
 ```
 
 ## Built With
