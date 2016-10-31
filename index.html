@@ -54,13 +54,13 @@
     <div class="jumbotron">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-xs-12">
+                <div class="col-md-4 col-lg-8 col-xs-12">
                     <h1>Simepar Components</h1>
                     <p>Simpear Components is a JavaScript library that contains SVG Icons to represent weather data.</p>
                     <label>This project is inpired by Curtis Bratton’s D3 Liquid Fill Gauge. You can find his project <a href="http://bl.ocks.org/brattonc/5e5ce9beee483220e2f6"
                         target="_blank">here</a>.</label>
                 </div>
-                <div class="col-lg-4 col-xs-12">
+                <div class="col-md-4 col-lg-4 col-xs-12">
                     <div id="drop-header" class="pull-right" onclick="dropHeader.update(NewValue(headerConfig.minValue, headerConfig.maxValue));"></div>
                 </div>
             </div>
@@ -68,7 +68,6 @@
     </div>
 
     <div class="container">
-        <!-- Example row of columns -->
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Drop</h2>
@@ -85,6 +84,13 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Leaf Wetness</h2>
                 <div id="leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Reservoir</h2>
+                <div id="reservoir"></div>
             </div>
         </div>
 
@@ -106,6 +112,7 @@
 
     <!-- Custom JS -->
     <script src="js/components.js"></script>
+    <script src="js/reservoir.js"></script>
 
     <script>
         var headerConfig = loadDefaultSettings();
@@ -172,6 +179,20 @@
         leafConfig.liquidOpacity = 0.7;
         var leaf = new Leaf("#leaf", 7, leafConfig);
         
+        // reservoir
+        var values = { down: 78, up: 30 };
+        var reConfig = loadReservoirSettings();
+
+        var reservoir = new ReservoirElement("#reservoir", values, reConfig);
+
+        setInterval(function() {
+            // generating random values
+            values.down = (Math.random() * (reConfig.downStream.maxValue - reConfig.downStream.minValue) + reConfig.downStream.minValue);
+            values.up = (Math.random() * (reConfig.upStream.maxValue - reConfig.upStream.minValue) + reConfig.upStream.minValue);
+
+            reservoir.update(values); 
+        }, 3000);
+
         function NewValue(min, max) {            
             return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
         }
