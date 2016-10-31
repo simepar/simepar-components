@@ -8,15 +8,12 @@
     <title>Simepar Weather Components</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/reservoir.css">
-    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">    
 </head>
 
 <body>
-    <div class="container-fluid" style="padding-top: 50px">
-        <div id="div-reservoir" class="reservoir-container"></div>
-        <!--<div id="div-ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>-->
+    <div id="div-reservoir" style="border: 1px solid black;">
+        
     </div>
 
     <!-- Third party JS -->
@@ -29,21 +26,20 @@
     <!-- Custom JS -->
     <script src="js/reservoir.js"></script>
 
-    <!--<script>
-        var config = loadDefaultSettings();
-        config.strokeThickness = 8;
-        config.waveAnimateTime = 5000;
-        config.waveHeight = 0.05;
-        config.waveCount = 1;
-        config.minValue = 0;
-        config.maxValue = 100;
-        config.scale = 0.3; 
-        var drop = new Drop("#div-drop", -500, config);
+    <script>
+        var values = { down: 570, up: 800 };
+        var config = loadReservoirSettings();
 
-        function NewValue(min, max) {            
-            return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
-        }
-    </script>-->
+        var reservoir = new ReservoirElement("#div-reservoir", values, config);
+
+        setInterval(function() {
+            // generating random values
+            values.down = (Math.random() * (config.downStream.maxValue - config.downStream.minValue) + config.downStream.minValue);
+            values.up = (Math.random() * (config.upStream.maxValue - config.upStream.minValue) + config.upStream.minValue);
+
+            reservoir.update(values); 
+        }, 5000);
+    </script>
 </body>
 
 </html>

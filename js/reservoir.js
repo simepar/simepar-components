@@ -16,6 +16,7 @@ function loadReservoirSettings() {
             waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
             valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
             textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
+            decimalPlaces: 2, // how many decimal places it should be displayed
             minTextColor: "#045681", // the color of the text for the minimum value
             maxTextColor: "#045681", // the color of the text for the maximum value
             valueTextColor: "#045681", // The color of the value text when the wave does not overlap it.
@@ -23,7 +24,8 @@ function loadReservoirSettings() {
             ruler: {
                 color: "#045681", // The color of the value text when the wave does not overlap it.
                 waveColor: "#A4DBf8", // The color of the fill wave.
-                textSize: 0.3, // The relative height of the text to display in the wave circle. 1 = 50%
+                textSize: 0.25, // The relative height of the text to display in the wave circle. 1 = 50%
+                decimalPlaces: 2, // how many decimal places it should be displayed
             },
         },
         upStream: {
@@ -42,6 +44,7 @@ function loadReservoirSettings() {
             waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
             valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
             textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
+            decimalPlaces: 2, // how many decimal places it should be displayed
             minTextColor: "#045681", // the color of the text for the minimum value
             maxTextColor: "#045681", // the color of the text for the maximum value
             valueTextColor: "#045681", // The color of the value text when the wave does not overlap it.
@@ -49,12 +52,13 @@ function loadReservoirSettings() {
             ruler: {
                 color: "#045681", // The color of the value text when the wave does not overlap it.
                 waveColor: "#A4DBf8", // The color of the fill wave.
-                textSize: 0.3, // The relative height of the text to display in the wave circle. 1 = 50%
+                textSize: 0.25, // The relative height of the text to display in the wave circle. 1 = 50%
+                decimalPlaces: 2, // how many decimal places it should be displayed
             },
         },
         dam: {
             strokeColor: "#000",
-            strokeThickness: 1,
+            strokeThickness: 2,
             fillColor: "#000"
         }
     };
@@ -75,43 +79,42 @@ function ReservoirElement(selector, values, config) {
     re.createDownStream = createDownStream;
     re.createUpStream = createUpStream;
     re.update = update;
-    re.resize = resize;
 
     /////////////////////////////////////
     
+    // creates and displays the svg fully working
     (function() {
         re.createSVG().then(function () {
             re.createDownStream().then(function () {
                 re.createUpStream().then(function() {
                     re.createDam().then(function() {
-                        // responsiveness
+                        // fit svg to its container div
+                        re.svg.attr({ width: "100%", height: "100%" });
                     });
                 });
             });
         });
     })();
 
-    function resize() {
-        
-    }
-
+    /** @function update
+     *  @description Creates the main svg
+    */
     function createSVG() {
         var deferred = $.Deferred();
         var container = d3.select(re.selector);
         
-        var width = 500, height = 250;
-        
+        var width = 500, // parseInt(container.style("width")), 
+            height = width/2;
+
         // appends an svg to the div
-        re.svg = container
-            .append("div") //container.style("transform", "scale(" + re.config.scale + ")")
-                .classed("reservoir-container", true)
+        re.svg = container.style("transform", "scale("+re.config.scale+")")
             .append("svg")
                 .attr("id", "reservoir-svg")
                 .attr({ width: width, height: height })
-                .attr("class", "reservoir-content")
                 .attr("preserveAspectRatio", "xMinYMin meet")
                 .attr("viewBox", "0 0 " + width + " " + height)
-                .classed("reservoir-content", true);
+                .style("margin", "0 auto")
+                .style("display", "block");
         
         // append a g element where all contents will be placed in
         re.svg.backgroundGroup = re.svg.append("g").attr("id", "backgroundGroup");
@@ -126,11 +129,21 @@ function ReservoirElement(selector, values, config) {
         return deferred.promise();
     }
 
+    /** @function update
+     *  @description Update the whole svg
+     *  @param {Object} values - current value for both up and downstreams, used to rise the wave
+    */
     function update(values) {
         updateSVG(re.downStreamSVG, re.config.downStream, values.down); // updating downstream
         updateSVG(re.upStreamSVG, re.config.upStream, values.up); // updating upstream
     }
 
+    /** @function updateSVG
+     *  @description Update the nested svg (upstream and downstream) with new config or new value
+     *  @param {Object} svg - downstream or upstream svg object
+     *  @param {Object} config - object that contains all the properties/values to customize the element
+     *  @param {Number} value - current value, used to rise the wave
+    */
     function updateSVG(svg, config, value) {
         setSVGProperties(svg, config, value);
 
@@ -159,11 +172,11 @@ function ReservoirElement(selector, values, config) {
         if (svg.attr("id") == "downStream")
             translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
         else
-            translate = "translate("+(svg.radius+20)+","+ svg.textHeight +")";
+            translate = "translate("+(svg.radius)+","+ svg.textHeight +")";
 
         var textTween = function(){
-            var i = d3.interpolate(this.textContent, parseFloat(value).toFixed(2));
-            return function(t) { this.textContent = svg.textRounder(i(t)); }
+            var i = d3.interpolate(this.textContent, value);
+            return function(t) { this.textContent = svg.textRounder(i(t)).toFixed(config.decimalPlaces); }
         };
 
         svg.valueText1.transition()
@@ -177,24 +190,28 @@ function ReservoirElement(selector, values, config) {
             .tween("text", textTween);
     }
 
+    /** @function createDownStream
+     *  @description Creates the svg that represents the downstream part of a reservoir
+    */
     function createDownStream() {
         var deferred = $.Deferred();
 
-        var width = parseInt(re.svg.style("width")) / 1.9;
+        var width = parseInt(re.svg.style("width")) / 2;
         var height = parseInt(re.svg.style("height"));
 
         re.downStreamSVG = re.svg.append("svg")
             .attr("id", "downStream")
-            .attr({ width: width, height: height })
+            //.attr({ width: width, height: height })
+            .attr({ width: "50%", height: "100%" })
             .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "0 0 " + width + " " + height)
-            .classed("reservoir-content", true);
+            .attr("viewBox", "0 0 " + width + " " + height);
+            //.attr("viewBox", "0 0 250 250");
         
         // setting properties
         setSVGProperties(re.downStreamSVG, re.config.downStream, re.downStreamValue)
 
         // create wave passing wave downstream config and its value
-        createWave(re.downStreamSVG, re.config.downStream, re.downStreamValue);
+        createWave(re.downStreamSVG, re.config.downStream);
 
         // update text labels
         updateTextLabels(re.downStreamSVG, re.config.downStream);
@@ -206,6 +223,9 @@ function ReservoirElement(selector, values, config) {
         return deferred.promise();
     }
 
+    /** @function createUpStream
+     *  @description Creates the svg that represents the upstream part of a reservoir
+    */
     function createUpStream() {
         var deferred = $.Deferred();
 
@@ -216,16 +236,17 @@ function ReservoirElement(selector, values, config) {
         re.upStreamSVG = re.svg.append("svg")
             .attr("id", "upStream")
             .attr("x", width+1) // +1 only to not overlay the downstream group
-            .attr({ width: width, height: height })
+            //.attr({ width: width, height: height })
+            .attr({ width: "50%", height: "100%" })
             .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "0 0 " + width + " " + height)
-            .classed("reservoir-content", true);
+            .attr("viewBox", "0 0 " + width + " " + height);
+            //.attr("viewBox", "0 0 250 250");
                     
         // setting properties
         setSVGProperties(re.upStreamSVG, re.config.upStream, re.upStreamValue)
 
         // create wave passing wave upstream config and its value
-        createWave(re.upStreamSVG, re.config.upStream, re.upStreamValue);
+        createWave(re.upStreamSVG, re.config.upStream);
 
         // update text labels
         updateTextLabels(re.upStreamSVG, re.config.upStream);
@@ -237,32 +258,66 @@ function ReservoirElement(selector, values, config) {
         return deferred.promise();
     }
 
+    /** @function createDam
+     *  @description Creates the polygon that represents a dam
+    */
     function createDam() {
         var deferred = $.Deferred();
         
-        // translating dam to the middle of the svg
+        // translating dam to the middle (not exactly) of the svg
         var translate = parseInt(re.svg.style("width")) / 2.3;
         
+        var width = parseInt(re.svg.style("width"));
+        var height = parseInt(re.svg.style("height"));
+
+        var scaleX = d3.scale.linear().domain([0,1]).range([0, width]);
+        var scaleY = d3.scale.linear().domain([0,1]).range([0, height]);
+
+        var points = [
+            {"x": 0.0, "y": 0.0},
+            {"x": 0.0, "y": 1.0},
+            {"x": 0.17, "y": 1.0},
+            {"x": 0.1, "y": 0.0}
+        ];
+
         // append dam element
-        re.svg.append("g").attr("id", "damGroup").append("polygon")
-            .attr("points", "0.678,0 0.678,443.842 139.225,443.842 62.338,0")
-            .attr("transform", "translate(" + translate + ", 0) scale(0.565)")
-            .style("stroke-width", re.config.dam.strokeThickness)
-            .style("stroke", re.config.dam.strokeColor)
-            .style("fill", re.config.dam.fillColor);
+        re.svg.append("g").attr("id", "damGroup")
+            .selectAll("polygon")
+            .data([points])
+            .enter()
+            .append("polygon")
+                .attr("points",function(d) {
+                    // returns points to create the element
+                    return d.map(function(d) {
+                        return [scaleX(d.x), scaleY(d.y)].join(",");
+                    }).join(" ");
+                })
+                .attr("transform", "translate("+translate+", 0)")
+                .style("stroke-width", re.config.dam.strokeThickness)
+                .style("stroke", re.config.dam.strokeColor)
+                .style("fill", re.config.dam.fillColor);
 
         deferred.resolve();
         return deferred.promise();
     }
 
+    /** @function setSVGProperties
+     *  @description Sets the svg's properties that will be used to create the wave, update text labels, etc...
+     *  @param {Object} svg - downstream or upstream svg object
+     *  @param {Object} config - object that contains all the properties/values to customize the element
+     *  @param {Number} value - current value, used to rise the wave
+    */
     function setSVGProperties(svg, config, value) {
-        var width = parseInt(re.svg.style("width")) / 2;
-        var height = parseInt(re.svg.style("height"));
+        // sets width and height to 250 in order to do all the calculations to match the viewBox of the svg. After the SVG is rendered, it is resized to fill fully its container.
+        var width = 250;
+        var height = 250;
+
+        if (value > config.maxValue) value = config.maxValue;
+        if (value < config.minValue) value = config.minValue;
 
         // general
         svg.radius = Math.min(width, height) / 2;
         svg.fillPercent = (((value - (config.minValue)) * 100) / (config.maxValue - config.minValue)) / 100;
-        //svg.config = config;
 
         // wave
         var range, domain;
@@ -308,17 +363,22 @@ function ReservoirElement(selector, values, config) {
         // text
         svg.rulerTextPixels = (config.ruler.textSize * svg.radius / 2);
         svg.textPixels = (config.textSize * svg.radius / 2);
-        svg.textFinalValue = parseFloat(value).toFixed(2);
+        svg.textFinalValue = parseFloat(value).toFixed(config.decimalPlaces);
         svg.textStartValue = config.valueCountUp ? config.minValue : svg.textFinalValue;
         svg.textHeight = value >= ((90 * config.maxValue)/100) ? svg.waveRiseScale(svg.fillPercent)+25 : svg.waveRiseScale(svg.fillPercent)-5;
 
         // Rounding functions so that the correct number of decimal places is always displayed as the value counts up.
-        svg.textRounder = function(value) { return Math.round(value); };
-        if (parseFloat(svg.textFinalValue) != parseFloat(svg.textRounder(svg.textFinalValue))) svg.textRounder = function(value) { return parseFloat(value).toFixed(1); };
-        if (parseFloat(svg.textFinalValue) != parseFloat(svg.textRounder(svg.textFinalValue))) svg.textRounder = function(value) { return parseFloat(value).toFixed(2); };
+        svg.textRounder = function(value) { return parseFloat(value); };
+        // if (parseFloat(svg.textFinalValue) != parseFloat(svg.textRounder(svg.textFinalValue))) svg.textRounder = function(value) { return parseFloat(value).toFixed(config.decimalPlaces); };
+        // if (parseFloat(svg.textFinalValue) != parseFloat(svg.textRounder(svg.textFinalValue))) svg.textRounder = function(value) { return parseFloat(value).toFixed(config.decimalPlaces); };
     }
 
-    function createWave(svg, config, value) {
+    /** @function createWave
+     *  @description Calculate and generate the clipPath to simulate a wave
+     *  @param {Object} svg - downstream or upstream svg object
+     *  @param {Object} config - object that contains all the properties/values to customize the element
+    */
+    function createWave(svg, config) {
         var width = parseInt(re.svg.style("width")) / 2;
         var height = parseInt(re.svg.style("height"));
 
@@ -327,19 +387,15 @@ function ReservoirElement(selector, values, config) {
         for(var i = 0; i <= 40 * svg.waveClipCount; i++)
             data.push({ x: i/(40 * svg.waveClipCount), y: (i/(40)) });
 
-        svg.outerGroup = svg.append("g").attr("id", "outerGroup");
+        svg.outerGroup = svg.append("g");
 
-        // Draw the outer circle.
-        svg.outerGroup.append("rect")
-            .attr({ width: width, height: height })
-            .style("stroke", config.circleColor)
-            .style("fill", "none");
-
-        // Text where the wave does not overlap.
+        // Text where the wave does not overlap. This is necessary now to guarantee that the wave will not overlap all the labels
         svg.valueText1 = svg.outerGroup.append("text");
         svg.maxText1   = svg.outerGroup.append("text");
         svg.minText1   = svg.outerGroup.append("text");
 
+        // Ruler where the wave does not overlap. This is necessary now to guarantee that the wave will not overlap all the ruler markes.
+        // Instead of creating all markers right now, it is created a group and after we append all markers to this group.
         svg.rulerOuterGroup = svg.outerGroup.append("g").attr("id", "rulerOuterGroup");
 
         svg.waveGroup = svg.outerGroup.append("defs")
@@ -351,21 +407,21 @@ function ReservoirElement(selector, values, config) {
             .attr("d", svg.clipArea)
             .attr("T", 0);
 
-        // The inner circle with the clipping wave attached.
+        // The inner rect with the clipping wave attached.
         svg.innerGroup = svg.outerGroup.append("g")
             .attr("clip-path", "url(#clipWave" + svg.attr("id") + ")");
-
         svg.innerGroup.append("rect")
             .attr({ width: width, height: height })
             .style("fill", config.waveColor);
 
-        // Text where the wave does overlap.
+        // Text where the wave does overlap. This is necessary now to guarantee that the wave will overlap all the labels
         svg.valueText2 = svg.innerGroup.append("text");
         svg.maxText2   = svg.innerGroup.append("text");
         svg.minText2   = svg.innerGroup.append("text");     
 
+        // Ruler where the wave does overlap. This is necessary now to guarantee that the wave will overlap all the ruler markes.
+        // Instead of creating all markers right now, it is created a group and after we append all markers to this group.
         svg.rulerInnerGroup = svg.innerGroup.append("g").attr("id", "rulerInnerGroup");
-
 
         if (config.waveRise) {
             svg.waveGroup.attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(0)+')')
@@ -379,6 +435,10 @@ function ReservoirElement(selector, values, config) {
         if (config.waveAnimate) animateWave(svg);
     }
 
+    /** @function animateWave
+     *  @description Animate the wave based on its value and configuration
+     *  @param {Object} svg - downstream or upstream svg object
+    */
     function animateWave(svg) {
         svg.wave.attr('transform', 'translate(' + svg.waveAnimateScale(svg.wave.attr('T')) + ',0)');
         svg.wave.transition()
@@ -392,13 +452,19 @@ function ReservoirElement(selector, values, config) {
             });
     }
 
+    /** @function updateTextLabels
+     *  @description Gets the text labels in the svg and update its values
+     *  @param {Object} svg - downstream or upstream svg object
+     *  @param {Object} config - object that contains all the properties/values to customize the element
+    */
     function updateTextLabels(svg, config) {
-        var width = parseInt(svg.attr("width"));
-        var height = parseInt(svg.attr("height"));
+        var width = parseInt(re.svg.style("width")) /2;
+        var height = parseInt(re.svg.style("height"));
 
         var coords = {};
         var textAnchor, translate;
 
+        // calculate the coordinates for all text elements
         if (svg.attr("id") == "downStream") {
             coords.max = { x: 22, y: (svg.rulerTextPixels-((20 * svg.rulerTextPixels)/100)) };
             coords.min = { x: 22, y: height-2 };
@@ -409,58 +475,58 @@ function ReservoirElement(selector, values, config) {
             coords.max = { x: width-22, y: (svg.rulerTextPixels-((20 * svg.rulerTextPixels)/100)) };
             coords.min = { x: width-22, y: height-2 };
             textAnchor = "end";
-            translate = "translate("+(svg.radius+20)+","+ svg.textHeight +")";
+            translate = "translate("+(svg.radius)+","+ svg.textHeight +")";
         }
 
-        // Text where the wave does not overlap.
-        svg.valueText1
-            .text(svg.textRounder(svg.textStartValue))
+        // Texts where the wave does not overlap
+        svg.valueText1 // current value text
+            .text(svg.textStartValue)
             .attr("text-anchor", "middle")
             .attr("font-size", svg.textPixels + "px")
             .style("fill", config.valueTextColor)
             .attr('transform', translate);
 
-        svg.maxText1
-            .text(svg.textRounder(config.maxValue))
+        svg.maxText1 // max value text
+            .text(svg.textRounder(config.maxValue).toFixed(config.ruler.decimalPlaces))
             .attr("text-anchor", textAnchor)
             .attr(coords.max)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.valueTextColor);
 
-        svg.minText1
-            .text(svg.textRounder(svg.textStartValue))
+        svg.minText1 // min value text
+            .text(svg.textRounder(svg.textStartValue).toFixed(config.ruler.decimalPlaces))
             .attr("text-anchor", textAnchor)
             .attr(coords.min)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.valueTextColor);
 
-        // Text where the wave does overlap.
-        svg.valueText2
-            .text(svg.textRounder(svg.textStartValue))
+        // Texts where the wave does overlap
+        svg.valueText2 // current value text
+            .text(svg.textStartValue)
             .attr("text-anchor", "middle")
             .attr("font-size", svg.textPixels + "px")
             .style("fill", config.waveTextColor)
             .attr('transform', translate);
 
-        svg.maxText2
-            .text(svg.textRounder(config.maxValue))
+        svg.maxText2 // max value text
+            .text(svg.textRounder(config.maxValue).toFixed(config.ruler.decimalPlaces))
             .attr("text-anchor", textAnchor)
             .attr(coords.max)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.waveTextColor);
 
-        svg.minText2
-            .text(svg.textRounder(svg.textStartValue))
+        svg.minText2 // min value text
+            .text(svg.textRounder(svg.textStartValue).toFixed(config.ruler.decimalPlaces))
             .attr("text-anchor", textAnchor)
             .attr(coords.min)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.waveTextColor);
 
-        // Make the value count up.
+        // make the value count up
         if (config.valueCountUp) {
             var textTween = function(){
                 var i = d3.interpolate(this.textContent, svg.textFinalValue);
-                return function(t) { this.textContent = svg.textRounder(i(t)); }
+                return function(t) { this.textContent = svg.textRounder(i(t)).toFixed(config.decimalPlaces); }
             };
 
             svg.valueText1.transition()
@@ -475,34 +541,42 @@ function ReservoirElement(selector, values, config) {
         }
     }
 
-    function createRuler(svg, config) {
-        var height = parseInt(svg.attr("height"));
-        var width = parseInt(svg.attr("width"));
-        
-        var ruler = [];
+    /** @function createRuler
+     *  @description Create the side markers to represent a ruler in both sides of the svg
+     *  @param {Object} svg - downstream or upstream svg object
+     *  @param {Object} config - object that contains all the properties/values to customize the element
+    */
+    function createRuler(svg, config) {        
+        var width = parseInt(re.svg.style("width")) / 2; // var height = parseInt(svg.style("height"));
+        var height = parseInt(re.svg.style("height"));   // var width = parseInt(svg.style("width"));
+
+        var coords = [];
         var total = parseInt(height/5);
         var x, y=0, w;
 
+        // calculate the [x, y] coords to create the ruler
         for (var i=0; i < total; i++) {
             if (svg.attr("id") == "downStream")
-                x = 0;
+                x = 0; // left side
             else
-                x = i % 5 == 0 ? width-20 : width - 10;
+                x = i % 5 == 0 ? width-20 : width - 10; // right side. If variable i is mod 5, it should create the bigger marker 
 
-            w = i % 5 == 0 ? 20 : 10;
-            ruler.push({ x: x, y: y, width: w, height: 2 });
+            w = i % 5 == 0 ? 20 : 10; // If variable i is mod 5, it should create the bigger marker 
+            coords.push({ x: x, y: y, width: w, height: 2 });
             y += 5;
         }
 
-        ruler.push({ 
+        // add the last marker at the bottom of the svg
+        coords.push({ 
             x: svg.attr("id") == "downStream" ? 0 : width-20, 
             y: height-2, 
             width: 20, 
             height: 2 
         });
 
+        // markers where the wave does not overlap
         svg.rulerOuterGroup.selectAll("rect")
-            .data(ruler)
+            .data(coords)
             .enter()
             .append("rect")
                 .attr("fill", config.ruler.color)
@@ -511,8 +585,9 @@ function ReservoirElement(selector, values, config) {
                 .attr("y", function(d) { return d.y })
                 .attr("x", function(d) { return d.x });
 
+        // markers where the wave does overlap
         svg.rulerInnerGroup.selectAll("rect")
-            .data(ruler)
+            .data(coords)
             .enter()
             .append("rect")
                 .attr("fill", config.ruler.waveColor)
@@ -522,17 +597,3 @@ function ReservoirElement(selector, values, config) {
                 .attr("x", function(d) { return d.x });
     }
 }
-
-(function() {
-    var config = loadReservoirSettings();
-    var values = { down: 80, up: 100 };
-
-    var reservoir = new ReservoirElement("#div-reservoir", values, config);
-
-    setInterval(function() {
-        values.down = Math.random() > .5 ? Math.round(Math.random() * (config.downStream.maxValue - config.downStream.minValue) + config.downStream.minValue) : (Math.random() * (config.downStream.maxValue - config.downStream.minValue) + config.downStream.minValue).toFixed(0);
-        values.up = Math.random() > .5 ? Math.round(Math.random() * (config.upStream.maxValue - config.upStream.minValue) + config.upStream.minValue) : (Math.random() * (config.upStream.maxValue - config.upStream.minValue) + config.upStream.minValue).toFixed(0);
-
-        reservoir.update(values); 
-    }, 5000);
-})();
