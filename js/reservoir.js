@@ -201,11 +201,10 @@ function ReservoirElement(selector, values, config) {
 
         re.downStreamSVG = re.svg.append("svg")
             .attr("id", "downStream")
-            //.attr({ width: width, height: height })
+            .attr("x", width+1) // +1 only to not overlay the downstream group
             .attr({ width: "50%", height: "100%" })
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + width + " " + height);
-            //.attr("viewBox", "0 0 250 250");
         
         // setting properties
         setSVGProperties(re.downStreamSVG, re.config.downStream, re.downStreamValue)
@@ -231,16 +230,12 @@ function ReservoirElement(selector, values, config) {
 
         var width = parseInt(re.svg.style("width")) / 2;
         var height = parseInt(re.svg.style("height"));
-        var transform = "translate("+(width+1)+", 0)";
 
         re.upStreamSVG = re.svg.append("svg")
             .attr("id", "upStream")
-            .attr("x", width+1) // +1 only to not overlay the downstream group
-            //.attr({ width: width, height: height })
             .attr({ width: "50%", height: "100%" })
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + width + " " + height);
-            //.attr("viewBox", "0 0 250 250");
                     
         // setting properties
         setSVGProperties(re.upStreamSVG, re.config.upStream, re.upStreamValue)
@@ -466,16 +461,16 @@ function ReservoirElement(selector, values, config) {
 
         // calculate the coordinates for all text elements
         if (svg.attr("id") == "downStream") {
-            coords.max = { x: 22, y: (svg.rulerTextPixels-((20 * svg.rulerTextPixels)/100)) };
-            coords.min = { x: 22, y: height-2 };
-            textAnchor = "start";
-            translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
-        }
-        else {
             coords.max = { x: width-22, y: (svg.rulerTextPixels-((20 * svg.rulerTextPixels)/100)) };
             coords.min = { x: width-22, y: height-2 };
             textAnchor = "end";
             translate = "translate("+(svg.radius)+","+ svg.textHeight +")";
+        }
+        else {
+            coords.max = { x: 22, y: (svg.rulerTextPixels-((20 * svg.rulerTextPixels)/100)) };
+            coords.min = { x: 22, y: height-2 };
+            textAnchor = "start";
+            translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
         }
 
         // Texts where the wave does not overlap
@@ -546,7 +541,7 @@ function ReservoirElement(selector, values, config) {
      *  @param {Object} svg - downstream or upstream svg object
      *  @param {Object} config - object that contains all the properties/values to customize the element
     */
-    function createRuler(svg, config) {        
+    function createRuler(svg, config) {
         var width = parseInt(re.svg.style("width")) / 2; // var height = parseInt(svg.style("height"));
         var height = parseInt(re.svg.style("height"));   // var width = parseInt(svg.style("width"));
 
@@ -557,9 +552,9 @@ function ReservoirElement(selector, values, config) {
         // calculate the [x, y] coords to create the ruler
         for (var i=0; i < total; i++) {
             if (svg.attr("id") == "downStream")
-                x = 0; // left side
+                x = i % 5 == 0 ? width-20 : width - 10; // right side. If variable i is mod 5, it should create the bigger marker
             else
-                x = i % 5 == 0 ? width-20 : width - 10; // right side. If variable i is mod 5, it should create the bigger marker 
+                x = 0; // left side
 
             w = i % 5 == 0 ? 20 : 10; // If variable i is mod 5, it should create the bigger marker 
             coords.push({ x: x, y: y, width: w, height: 2 });
@@ -568,7 +563,7 @@ function ReservoirElement(selector, values, config) {
 
         // add the last marker at the bottom of the svg
         coords.push({ 
-            x: svg.attr("id") == "downStream" ? 0 : width-20, 
+            x: svg.attr("id") == "downStream" ? width-20 : 0, 
             y: height-2, 
             width: 20, 
             height: 2 
