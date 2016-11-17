@@ -1,3 +1,5 @@
+"use strict";
+
 /** @function WeatherElement
  *  Create and configure the generic weather element based on the element set as parameter
  *  @param {String} selector - div id
@@ -114,6 +116,9 @@ function WeatherElement(selector, value, el) {
         we.fillCircleMargin = (we.element.config.thickness * we.radius) + (we.element.config.fillGap * we.radius);
         we.fillCircleRadius = we.radius - we.fillCircleMargin;
         
+        if (value > we.element.config.maxValue) we.value = we.element.config.maxValue;
+        if (value < we.element.config.minValue) we.value = we.element.config.minValue;
+
         if (we.element.fillPercent)
             we.fillPercent = we.element.fillPercent(value);
         else

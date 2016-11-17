@@ -92,6 +92,11 @@
                 <h2>Reservoir</h2>
                 <div id="reservoir"></div>
             </div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Gate</h2>
+                <div id="gate"></div>
+            </div>
         </div>
 
         <hr>
@@ -113,6 +118,7 @@
     <!-- Custom JS -->
     <script src="js/components.js"></script>
     <script src="js/reservoir.js"></script>
+    <script src="js/gate.js"></script>
 
     <script>
         var headerConfig = loadDefaultSettings();
@@ -192,6 +198,12 @@
 
             reservoir.update(values); 
         }, 3000);
+
+        var gateConfig = loadGateSettings();
+        var gate = new GateElement("#gate", 50, gateConfig);
+        
+        // setting size to stay kind of the same size as the others
+        d3.select("#gate > svg").attr("width", "55%");
 
         function NewValue(min, max) {            
             return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
