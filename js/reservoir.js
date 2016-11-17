@@ -96,7 +96,7 @@ function ReservoirElement(selector, values, config) {
         });
     })();
 
-    /** @function update
+    /** @function createSVG
      *  @description Creates the main svg
     */
     function createSVG() {
@@ -115,15 +115,6 @@ function ReservoirElement(selector, values, config) {
                 .attr("viewBox", "0 0 " + width + " " + height)
                 .style("margin", "0 auto")
                 .style("display", "block");
-        
-        // append a g element where all contents will be placed in
-        // re.svg.backgroundGroup = re.svg.append("g").attr("id", "backgroundGroup");
-            
-        // background rect. @TODO: this may not stay in the final version
-        // re.svg.backgroundGroup.append("rect")
-        //     .attr("id", "rectBackground")
-        //     .attr({ stroke: "#000", fill: "none" })
-        //     .attr({ width: width, height: height });
 
         deferred.resolve();
         return deferred.promise();
@@ -170,9 +161,9 @@ function ReservoirElement(selector, values, config) {
 
         var translate;
         if (svg.attr("id") == "downStream")
-            translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
-        else
             translate = "translate("+(svg.radius)+","+ svg.textHeight +")";
+        else
+            translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
 
         var textTween = function(){
             var i = d3.interpolate(this.textContent, value);
