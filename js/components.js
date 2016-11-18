@@ -206,6 +206,9 @@ function WeatherElement(selector, value, el) {
     }
     
     function update(value) {
+        if (value > we.element.config.maxValue) value = we.element.config.maxValue;
+        if (value < we.element.config.minValue) value = we.element.config.minValue;
+
         if (we.element.fillPercent)
             we.fillPercent = we.element.fillPercent(value);
         else
