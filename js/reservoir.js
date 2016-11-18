@@ -12,7 +12,7 @@ function loadReservoirSettings() {
             waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
             waveAnimate: true, // Controls if the wave scrolls or is static.
             waveColor: "#178BCA", // The color of the fill wave.
-            waveOpacity: 0.7, // the wave opacity
+            waveOpacity: 0.9, // the wave opacity
             waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
             valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
             textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
@@ -40,7 +40,7 @@ function loadReservoirSettings() {
             waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
             waveAnimate: true, // Controls if the wave scrolls or is static.
             waveColor: "#178BCA", // The color of the fill wave.
-            waveOpacity: 0.7, // the wave opacity
+            waveOpacity: 0.9, // the wave opacity
             waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
             valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
             textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
@@ -96,7 +96,7 @@ function ReservoirElement(selector, values, config) {
         });
     })();
 
-    /** @function update
+    /** @function createSVG
      *  @description Creates the main svg
     */
     function createSVG() {
@@ -113,17 +113,8 @@ function ReservoirElement(selector, values, config) {
                 .attr({ width: width, height: height })
                 .attr("preserveAspectRatio", "xMinYMin meet")
                 .attr("viewBox", "0 0 " + width + " " + height)
-                .style("margin", "0 auto")
-                .style("display", "block");
-        
-        // append a g element where all contents will be placed in
-        // re.svg.backgroundGroup = re.svg.append("g").attr("id", "backgroundGroup");
-            
-        // background rect. @TODO: this may not stay in the final version
-        // re.svg.backgroundGroup.append("rect")
-        //     .attr("id", "rectBackground")
-        //     .attr({ stroke: "#000", fill: "none" })
-        //     .attr({ width: width, height: height });
+                .style("margin", "0 auto")  // center svg 
+                .style("display", "block"); // in its container
 
         deferred.resolve();
         return deferred.promise();
@@ -207,7 +198,7 @@ function ReservoirElement(selector, values, config) {
             .attr("viewBox", "0 0 " + width + " " + height);
         
         // setting properties
-        setSVGProperties(re.downStreamSVG, re.config.downStream, re.downStreamValue)
+        setSVGProperties(re.downStreamSVG, re.config.downStream, re.downStreamValue);
 
         // create wave passing wave downstream config and its value
         createWave(re.downStreamSVG, re.config.downStream);
@@ -265,15 +256,15 @@ function ReservoirElement(selector, values, config) {
         var width = parseInt(re.svg.style("width"));
         var height = parseInt(re.svg.style("height"));
 
+        // scales to create the dam element
         var scaleX = d3.scale.linear().domain([0,1]).range([0, width]);
         var scaleY = d3.scale.linear().domain([0,1]).range([0, height]);
 
-        var points = [
-            {"x": 0.0, "y": 0.0},
+        // points to create dam element
+        var points = [{"x": 0.0, "y": 0.0},
             {"x": 0.0, "y": 1.0},
             {"x": 0.17, "y": 1.0},
-            {"x": 0.1, "y": 0.0}
-        ];
+            {"x": 0.1, "y": 0.0}];
 
         // append dam element
         re.svg.append("g").attr("id", "damGroup")
@@ -407,7 +398,8 @@ function ReservoirElement(selector, values, config) {
             .attr("clip-path", "url(#clipWave" + svg.attr("id") + ")");
         svg.innerGroup.append("rect")
             .attr({ width: width, height: height })
-            .style("fill", config.waveColor);
+            .style("fill", config.waveColor)
+            .style("opacity", config.waveOpacity);
 
         // Text where the wave does overlap. This is necessary now to guarantee that the wave will overlap all the labels
         svg.valueText2 = svg.innerGroup.append("text");

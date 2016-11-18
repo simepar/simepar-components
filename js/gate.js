@@ -23,30 +23,25 @@ function loadGateSettings() {
         valueTextColor: "#045681", // The color of the value text when the wave does not overlap it.
         waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
 
+
         outterCircleColor: "#FFD05B",
         outterCircleStroke: "none",
-        outterCircleThickness: 0,
-        
+        outterCircleThickness: 0,        
         fenceColor: "#FFFFFF",
         fenceStroke: "none",
         fenceThickness: 0,
-
         pileColor: "#FFFFFF",
         pileStroke: "none",
         pileThickness: 0,
-
         backgroundColor: "#F9B54C",
         backgroundStroke: "none",
         backgroundThickness: 0,
-
         damColor: "#E6E9EE",
         damStroke: "#E6E9EE",
         damThickness: 2,
-
         fallingWaterColor: "#54C0EB",
         fallingWaterStroke: "none",
         fallingWaterThickness: 0,
-
         holeColor: "#324A5E",
         gapColor: "#ACB3BA",
     };
@@ -146,7 +141,7 @@ function GateElement(selector, value, config) {
             .attr("d", "M37.6,387.2H470c1.2-2,2.8-4.4,4-6.4c21.6-37.2,34-80.8,34-126.8c0-20-2.4-39.6-6.8-58.4H6.8   C2.4,214.4,0,234,0,254c0,48,13.2,92.8,36.4,131.2C36.8,386,37.2,386.4,37.6,387.2z")
             .style("fill", gate.config.backgroundColor)
             .style("stroke", gate.config.backgroundStroke)
-            .style("stroke-width", gate.config.backgroundThickness)
+            .style("stroke-width", gate.config.backgroundThickness);
 
         deferred.resolve();
         return deferred.promise();
@@ -210,18 +205,19 @@ function GateElement(selector, value, config) {
     }
 
     function setSVGProperties(svg, config, value) {
-        
-    }
+        // sets width and height to 508 in order to do all the calculations to match the viewBox of the svg. 
+        // After the SVG is rendered, it is resized to fill fully its container.
+        var width = 508, 
+            height = 508;
 
-    function createWave(config, value) {
-        var deferred = $.Deferred();
+        if (value > config.maxValue) value = config.maxValue;
+        if (value < config.minValue) value = config.minValue;
 
-        var width = gate.svg.attr("width"),
-            height = gate.svg.attr("height");
+        // general
+        svg.radius = Math.min(width, height) / 2;
+        svg.fillPercent = (((value - (config.minValue)) * 100) / (config.maxValue - config.minValue)) / 100;
 
-        var radius = Math.min(width, height) / 2;        
-        var fillPercent = (((value - (config.minValue)) * 100) / (config.maxValue - config.minValue)) / 100;
-
+        // wave
         var range, domain;
         if (config.waveHeightScaling) {
             range = [0, config.waveHeight, 0];
@@ -230,71 +226,81 @@ function GateElement(selector, value, config) {
             range = [config.waveHeight, config.waveHeight];
             domain = [0, 100];
         }
-        
-        var waveHeightScale = d3.scale.linear().range(range).domain(domain);
-        var waveHeight = waveHeightScale(fillPercent * 100);
-        var waveLength = radius * 2 / config.waveCount;
-        var waveClipCount = 1 + config.waveCount;
-        var waveClipWidth = waveLength * waveClipCount;
-        var waveGroupXPosition = radius * 2 - waveClipWidth;
 
-        // data for building the clip wave area.
-        var data = [];
-        for (var i=0; i <= 40 * waveClipCount; i++)
-            data.push({ x: i/(40 * waveClipCount), y: (i/(40)) });
-        
+        svg.waveAnimateTime = config.waveAnimateTime;
+        svg.waveHeightScale = d3.scale.linear().range(range).domain(domain);
+        svg.waveHeight = svg.radius * svg.waveHeightScale(svg.fillPercent * 100);
+        svg.waveLength = svg.radius * 2 / config.waveCount;
+        svg.waveClipCount = 1 + config.waveCount;
+        svg.waveClipWidth = svg.waveLength * svg.waveClipCount;
+        svg.waveGroupXPosition = svg.radius * 2 - svg.waveClipWidth;
+
         // Scales for controlling the size of the clipping path.
-        var waveScaleX = d3.scale.linear().range([0, waveClipWidth]).domain([0,1]);
-        var waveScaleY = d3.scale.linear().range([0, waveHeight]).domain([0,1]);
+        svg.waveScaleX = d3.scale.linear().range([0, svg.waveClipWidth]).domain([0, 1]);
+        svg.waveScaleY = d3.scale.linear().range([0, svg.waveHeight]).domain([0, 1]);
 
         // Scales for controlling the position of the clipping path.
-        var waveRiseScale = d3.scale.linear()
+        svg.waveRiseScale = d3.scale.linear()
             // The clipping area size is the height of the fill circle + the wave height, so we position the clip wave
             // such that the it will overlap the fill circle at all when at 0%, and will totally cover the fill
             // circle at 100%.
-            .range([(radius * 2 + waveHeight), (waveHeight)])
+            .range([(svg.radius * 2 + svg.waveHeight), (svg.waveHeight)])
             .domain([0, 1]);
-        
-        gate.waveAnimateScale = d3.scale.linear()
-            .range([0, waveClipWidth - radius * 2]) // Push the clip area one full wave then snap back.
+
+        svg.waveAnimateScale = d3.scale.linear()
+            .range([0, svg.waveClipWidth - svg.radius * 2]) // Push the clip area one full wave then snap back.
             .domain([0, 1]);
-        
+
         // The clipping wave area.
-        var clipArea = d3.svg.area()
-            .x(function(d) { return waveScaleX(d.x); } )
-            .y0(function(d) { return waveScaleY(Math.sin(Math.PI * 2 * config.waveOffset * -1 + Math.PI * 2 * (1 - config.waveCount) + d.y * 2 * Math.PI));} )
-            .y1(function(d) { return (radius * 2 + waveHeight); } );
-        
-        var waveGroup = gate.svg.append("defs")
+        svg.clipArea = d3.svg.area()
+            .x(function(d) { return svg.waveScaleX(d.x); } )
+            .y0(function(d) { return svg.waveScaleY(Math.sin(Math.PI*2*config.waveOffset*-1 + Math.PI*2*(1-config.waveCount) + d.y*2*Math.PI));} )
+            .y1(function(d) { return (svg.radius * 2 + svg.waveHeight); } );
+    }
+
+    function createWave(config, value) {
+        var deferred = $.Deferred();
+
+        setSVGProperties(gate.svg, config, value);
+
+        var width = 508;
+        var height = 508;
+        var svg = gate.svg;       
+
+        // Data for building the clip wave area.
+        var data = [];
+        for(var i = 0; i <= 40 * svg.waveClipCount; i++)
+            data.push({ x: i/(40 * svg.waveClipCount), y: (i/(40)) });
+
+        svg.outerGroup = svg.append("g");
+
+        svg.waveGroup = svg.outerGroup.append("defs")
             .append("clipPath")
             .attr("id", "clipWaveGate");
-        
-        gate.wave = waveGroup.append("path")
-            .datum(data)
-            .attr("d", clipArea)
-            .attr("T", 0);
-        
-        gate.svg.append("g")
-                .attr("clip-path", "url(#clipWaveGate)")
-            .append("circle")
-                .attr({ cx: width/2, cy: height/2 })
-                .attr("r", width/2)
-                .attr({ width: width, height: height })
-                .style("fill", config.waveColor)
-                .style("opacity", config.waveOpacity);
 
-        var waveGroupXPosition = radius * 2 - waveClipWidth;
-        
+        svg.wave = svg.waveGroup.append("path")
+            .datum(data)
+            .attr("d", svg.clipArea)
+            .attr("T", 0);
+
+        // The inner rect with the clipping wave attached.
+        svg.innerGroup = svg.outerGroup.append("g")
+            .attr("clip-path", "url(#clipWaveGate)");
+        svg.innerGroup.append("circle")
+            .attr({ cx: width/2, cy: height/2 })
+            .attr("r", width/2)
+            .style("fill", config.waveColor)
+            .style("opacity", config.waveOpacity);
+
         if (config.waveRise) {
-            waveGroup.attr('transform','translate('+waveGroupXPosition+','+waveRiseScale(0)+')')
+            svg.waveGroup.attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(0)+')')
                 .transition()
                 .duration(config.waveRiseTime)
-                .attr('transform','translate('+waveGroupXPosition+','+waveRiseScale(fillPercent)+')')
-                .each("start", function(){ gate.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
-        } else {
-            we.waveGroup.attr('transform','translate('+waveGroupXPosition+','+waveRiseScale(fillPercent)+')');
-        }
-        
+                .attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(svg.fillPercent)+')')
+                .each("start", function(){ svg.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
+        } else
+            svg.waveGroup.attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(svg.fillPercent)+')');
+
         if (config.waveAnimate) animateWave();
 
         deferred.resolve();
@@ -302,15 +308,17 @@ function GateElement(selector, value, config) {
     }
 
     function animateWave() {
-        gate.wave.attr('transform','translate('+gate.waveAnimateScale(gate.wave.attr('T'))+',0)');
-        gate.wave.transition()
-            .duration(gate.config.waveAnimateTime * (1-gate.wave.attr('T')))
+        var svg = gate.svg;
+
+        svg.wave.attr('transform', 'translate(' + svg.waveAnimateScale(svg.wave.attr('T')) + ',0)');
+        svg.wave.transition()
+            .duration(svg.waveAnimateTime * (1 - svg.wave.attr('T')))
             .ease('linear')
-            .attr('transform','translate('+gate.waveAnimateScale(1)+',0)')
+            .attr('transform', 'translate(' + svg.waveAnimateScale(1) + ',0)')
             .attr('T', 1)
-            .each('end', function() {
-                gate.wave.attr('T', 0);
-                animateWave(gate.config.waveAnimateTime);
+            .each('end', function () {
+                svg.wave.attr('T', 0);
+                animateWave(svg, svg.waveAnimateTime);
             });
     }
 

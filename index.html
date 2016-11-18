@@ -95,7 +95,7 @@
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Gate</h2>
-                <div id="gate"></div>
+                <div id="gate" onclick="gate.update(NewValue(gateConfig.minValue, gateConfig.maxValue));"></div>
             </div>
         </div>
 
@@ -131,7 +131,8 @@
         headerConfig.minTextColor = "rgb(99, 99, 99)";
         headerConfig.maxTextColor = "rgb(99, 99, 99)";
         var dropHeader = new Drop("#drop-header", 50, headerConfig);
-        
+        d3.select("#drop-header > svg").attr("width", "55%");
+
         var config = loadDefaultSettings();
         config.strokeThickness = 8;
         config.waveAnimateTime = 5000;
@@ -140,7 +141,8 @@
         config.minValue = 0;
         config.maxValue = 100; 
         var drop = new Drop("#drop", 50, config);
-        
+        d3.select("#drop > svg").attr("width", "65%");
+
         var rulerConfig = loadDefaultSettings();
         rulerConfig.maxValue = 1000;
         rulerConfig.minValue = 0;
@@ -156,6 +158,7 @@
         rulerConfig.minTextColor = "rgb(174, 226, 67)";
         rulerConfig.maxTextColor = "rgb(174, 226, 67)";
         var ruler = new Ruler("#ruler", 570, rulerConfig);
+        d3.select("#ruler > svg").attr("width", "65%");
         
         var thermoConfig = loadDefaultSettings();
         thermoConfig.waveAnimateTime = 5000;
@@ -171,6 +174,7 @@
         thermoConfig.minValue = -10;
         thermoConfig.maxValue = 35;
         var thermo = new Thermo("#thermo", 10, thermoConfig);
+        d3.select("#thermo > svg").attr("width", "65%");
         
         var leafConfig = loadDefaultSettings();
         leafConfig.strokeThickness = 8;
@@ -184,6 +188,7 @@
         leafConfig.liquidColor = "rgb(35, 99, 31)";
         leafConfig.liquidOpacity = 0.7;
         var leaf = new Leaf("#leaf", 7, leafConfig);
+        d3.select("#leaf > svg").attr("width", "65%");
         
         // reservoir
         var values = { down: 78, up: 30 };
@@ -191,19 +196,18 @@
 
         var reservoir = new ReservoirElement("#reservoir", values, reConfig);
 
+        // gate
+        var gateConfig = loadGateSettings();
+        var gate = new GateElement("#gate", 33, gateConfig);
+        d3.select("#gate > svg").attr("width", "55%"); // setting size to stay kind of the same size as the others
+
         setInterval(function() {
             // generating random values
             values.down = (Math.random() * (reConfig.downStream.maxValue - reConfig.downStream.minValue) + reConfig.downStream.minValue);
             values.up = (Math.random() * (reConfig.upStream.maxValue - reConfig.upStream.minValue) + reConfig.upStream.minValue);
 
-            reservoir.update(values); 
+            reservoir.update(values);
         }, 3000);
-
-        var gateConfig = loadGateSettings();
-        var gate = new GateElement("#gate", 33, gateConfig);
-        
-        // setting size to stay kind of the same size as the others
-        //d3.select("#gate > svg").attr("width", "55%");
 
         function NewValue(min, max) {            
             return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);

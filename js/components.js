@@ -1,5 +1,3 @@
-"use strict";
-
 /** @function WeatherElement
  *  Create and configure the generic weather element based on the element set as parameter
  *  @param {String} selector - div id
@@ -116,13 +114,13 @@ function WeatherElement(selector, value, el) {
         we.fillCircleMargin = (we.element.config.thickness * we.radius) + (we.element.config.fillGap * we.radius);
         we.fillCircleRadius = we.radius - we.fillCircleMargin;
         
-        if (value > we.element.config.maxValue) value = we.element.config.maxValue;
-        if (value < we.element.config.minValue) value = we.element.config.minValue;
-
+        if (value > we.element.config.maxValue) we.value = we.element.config.maxValue;
+        if (value < we.element.config.minValue) we.value = we.element.config.minValue;
+        
         if (we.element.fillPercent)
-            we.fillPercent = we.element.fillPercent(value);
+            we.fillPercent = we.element.fillPercent(we.value);
         else
-            we.fillPercent = (((value-(we.element.config.minValue))*100)/(we.element.config.maxValue-we.element.config.minValue))/100;
+            we.fillPercent = (((we.value-(we.element.config.minValue))*100)/(we.element.config.maxValue-we.element.config.minValue))/100;
 
         if(we.element.config.waveHeightScaling){
             we.waveHeightScale = d3.scale.linear()
@@ -299,8 +297,8 @@ function Drop(selector, value, config) {
             we.createWave().then(function() {       // create the wave path and defs
                 we.createInner().then(function() {  // create the inner path and wave animation
                     // TODO: responsiveness in a better way
-                    $(we.selector).width("50%");
-                    $(we.selector).height("50%");
+                    $(we.selector).width("100%");
+                    $(we.selector).height("100%");
                     
                     drop.update = we.update; // for updating the element
                 });
@@ -347,8 +345,8 @@ function Ruler(selector, value, config) {
             we.createWave().then(function() {       // create the wave path and defs
                 we.createInner().then(function() {  // create the inner path and wave animation
                     // TODO: responsiveness in a better way
-                    $(we.selector).width("50%");
-                    $(we.selector).height("50%");
+                    $(we.selector).width("100%");
+                    $(we.selector).height("100%");
                     
                     ruler.update = we.update; // for updating the element
                 });
@@ -439,8 +437,8 @@ function Thermo(selector, value, config) {
                 we.createWave().then(function() {       // create the wave path and defs
                     we.createInner().then(function() {  // create the inner path and wave animation
                         // TODO: responsiveness in a better way
-                        $(we.selector).width("50%");
-                        $(we.selector).height("50%");
+                        $(we.selector).width("100%");
+                        $(we.selector).height("100%");
                         
                         thermo.update = we.update; // for updating the element
                     });
@@ -488,8 +486,8 @@ function Leaf(selector, value, config) {
             we.createWave().then(function() {       // create the wave path and defs
                 we.createInner().then(function() {  // create the inner path and wave animation
                     // TODO: responsiveness in a better way
-                    $(we.selector).width("50%");
-                    $(we.selector).height("50%");
+                    $(we.selector).width("100%");
+                    $(we.selector).height("100%");
                     
                     leaf.update = we.update; // for updating the element
                 });
@@ -528,9 +526,9 @@ function loadDefaultSettings() {
         textColor: "#045681", // The color of the value text when the wave does not overlap it.
         waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
         scale: 1, // scale
-        liquidColor: "#178BCA",
-        minTextColor: "#045681",
-        maxTextColor: "#045681",
-        liquidOpacity: 0.7
+        liquidColor: "#178BCA", // the color of the liquid
+        minTextColor: "#045681", // the color of the text for the minimum value
+        maxTextColor: "#045681", // the color of the text for the maximum value
+        liquidOpacity: 0.7 // the liquid opacity
     };
 }
