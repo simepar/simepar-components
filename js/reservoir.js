@@ -198,7 +198,7 @@ function ReservoirElement(selector, values, config) {
             .attr("viewBox", "0 0 " + width + " " + height);
         
         // setting properties
-        setSVGProperties(re.downStreamSVG, re.config.downStream, re.downStreamValue)
+        setSVGProperties(re.downStreamSVG, re.config.downStream, re.downStreamValue);
 
         // create wave passing wave downstream config and its value
         createWave(re.downStreamSVG, re.config.downStream);
