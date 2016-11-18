@@ -200,10 +200,10 @@
         }, 3000);
 
         var gateConfig = loadGateSettings();
-        var gate = new GateElement("#gate", 50, gateConfig);
+        var gate = new GateElement("#gate", 33, gateConfig);
         
         // setting size to stay kind of the same size as the others
-        d3.select("#gate > svg").attr("width", "55%");
+        //d3.select("#gate > svg").attr("width", "55%");
 
         function NewValue(min, max) {            
             return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);

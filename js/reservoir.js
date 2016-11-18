@@ -170,9 +170,9 @@ function ReservoirElement(selector, values, config) {
 
         var translate;
         if (svg.attr("id") == "downStream")
-            translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
-        else
             translate = "translate("+(svg.radius)+","+ svg.textHeight +")";
+        else
+            translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
 
         var textTween = function(){
             var i = d3.interpolate(this.textContent, value);

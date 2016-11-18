@@ -209,10 +209,17 @@ function GateElement(selector, value, config) {
         return deferred.promise();
     }
 
+    function setSVGProperties(svg, config, value) {
+        
+    }
+
     function createWave(config, value) {
         var deferred = $.Deferred();
 
-        var radius = Math.min(gate.svg.attr("width"), gate.svg.attr("height")) / 2;        
+        var width = gate.svg.attr("width"),
+            height = gate.svg.attr("height");
+
+        var radius = Math.min(width, height) / 2;        
         var fillPercent = (((value - (config.minValue)) * 100) / (config.maxValue - config.minValue)) / 100;
 
         var range, domain;
@@ -230,7 +237,7 @@ function GateElement(selector, value, config) {
         var waveClipCount = 1 + config.waveCount;
         var waveClipWidth = waveLength * waveClipCount;
         var waveGroupXPosition = radius * 2 - waveClipWidth;
-        
+
         // data for building the clip wave area.
         var data = [];
         for (var i=0; i <= 40 * waveClipCount; i++)
@@ -267,6 +274,15 @@ function GateElement(selector, value, config) {
             .attr("d", clipArea)
             .attr("T", 0);
         
+        gate.svg.append("g")
+                .attr("clip-path", "url(#clipWaveGate)")
+            .append("circle")
+                .attr({ cx: width/2, cy: height/2 })
+                .attr("r", width/2)
+                .attr({ width: width, height: height })
+                .style("fill", config.waveColor)
+                .style("opacity", config.waveOpacity);
+
         var waveGroupXPosition = radius * 2 - waveClipWidth;
         
         if (config.waveRise) {
@@ -298,7 +314,28 @@ function GateElement(selector, value, config) {
             });
     }
 
-    function update() {
+    function update(value) {
+        setSVGProperties(gate.svg, gate.config, value);
 
+        var newWavePosition = gate.config.waveAnimate ? gate.svg.waveAnimateScale(1) : 0;
+
+        gate.svg.wave.transition()
+            .duration(0)
+            .transition()
+            .duration(gate.config.waveAnimate ? (gate.config.waveAnimateTime * (1 - gate.svg.wave.attr('T'))) : (gate.config.waveRiseTime))
+            .ease('linear')
+            .attr('d', gate.svg.clipArea)
+            .attr('transform','translate('+newWavePosition+', 0)')
+            .attr('T','1')
+            .each("end", function() {
+                if (gate.config.waveAnimate) {
+                    gate.svg.wave.attr('transform', 'translate('+ gate.svg.waveAnimateScale(0) +', 0)');
+                    animateWave(gate.config.waveAnimateTime);
+                }
+            });
+
+        gate.svg.waveGroup.transition()
+            .duration(gate.config.waveRiseTime)
+            .attr('transform','translate('+gate.svg.waveGroupXPosition+','+gate.svg.waveRiseScale(gate.svg.fillPercent)+')');
     }
 }
