@@ -54,13 +54,13 @@
     <div class="jumbotron">
         <div class="container">
             <div class="row">
-                <div class="col-md-4 col-lg-8 col-xs-12">
+                <div class="col-md-12 col-lg-8 col-xs-12">
                     <h1>Simepar Components</h1>
                     <p>Simepar Components is a JavaScript library that contains SVG Icons to represent weather data.</p>
                     <label>This project is inspired by Curtis Bratton’s D3 Liquid Fill Gauge. You can find his project <a href="http://bl.ocks.org/brattonc/5e5ce9beee483220e2f6"
                         target="_blank">here</a>.</label>
                 </div>
-                <div class="col-md-4 col-lg-4 col-xs-12">
+                <div class="col-lg-4 col-xs-12">
                     <div id="drop-header" class="pull-right" onclick="dropHeader.update(NewValue(headerConfig.minValue, headerConfig.maxValue));"></div>
                 </div>
             </div>
@@ -126,10 +126,10 @@
         headerConfig.waveAnimateTime = 2000;
         headerConfig.waveHeight = 0.08;
         headerConfig.waveCount = 1;
-        headerConfig.liquidColor = "rgb(99, 99, 99)";
-        headerConfig.strokeColor = "rgb(99, 99, 99)";
-        headerConfig.minTextColor = "rgb(99, 99, 99)";
-        headerConfig.maxTextColor = "rgb(99, 99, 99)";
+        headerConfig.liquidColor = "#636363";
+        headerConfig.strokeColor = "#636363";
+        headerConfig.minTextColor = "#636363";
+        headerConfig.maxTextColor = "#636363";
         var dropHeader = new Drop("#drop-header", 50, headerConfig);
         d3.select("#drop-header > svg").attr("width", "55%");
 
@@ -153,7 +153,7 @@
         rulerConfig.strokeThickness = 8;
         rulerConfig.strokeColor = "white";
         rulerConfig.textSize = 1;
-        rulerConfig.outerColor = "#C0C0C0";
+        rulerConfig.outerColor = "#636363";
         rulerConfig.liquidColor = "rgb(174, 226, 67)";
         rulerConfig.minTextColor = "rgb(174, 226, 67)";
         rulerConfig.maxTextColor = "rgb(174, 226, 67)";
@@ -165,7 +165,7 @@
         thermoConfig.strokeThickness = 0;
         thermoConfig.waveHeight = 0;
         thermoConfig.waveAnimate = true;
-        thermoConfig.outerColor = "rgb(192, 192, 192)";
+        thermoConfig.outerColor = "#636363";
         thermoConfig.strokeColor = "rgb(194, 106, 62)";
         thermoConfig.liquidColor = "rgb(194, 106, 62)";
         thermoConfig.minTextColor = "rgb(194, 106, 62)";
@@ -198,8 +198,8 @@
 
         // gate
         var gateConfig = loadGateSettings();
-        var gate = new GateElement("#gate", 33, gateConfig);
-        d3.select("#gate > svg").attr("width", "55%"); // setting size to stay kind of the same size as the others
+        var gate = new GateElement("#gate", 0, gateConfig);
+        //d3.select("#gate > svg").attr("width", "85%"); // setting size to stay kind of the same size as the others
 
         setInterval(function() {
             // generating random values

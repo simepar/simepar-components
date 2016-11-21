@@ -57,9 +57,9 @@ function loadReservoirSettings() {
             },
         },
         dam: {
-            strokeColor: "#000",
+            strokeColor: "#636363",
             strokeThickness: 2,
-            fillColor: "#000"
+            fillColor: "#636363"
         }
     };
 }
