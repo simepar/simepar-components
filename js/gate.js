@@ -199,6 +199,12 @@ function GateElement(selector, value, config, isOpen) {
             .attr({ x: 50, y: 55 })
             .style("fill", gate.config.gateColor);
 
+        // gate.svg.gateGroup.append("image")
+        //     .attr("xlink:href", "/img/gate.png")
+        //     .attr({ x: 50, y: 55 })
+        //     .attr("width", 50)
+        //     .attr("height", 50);
+
         deferred.resolve();
         return deferred.promise();
     }
