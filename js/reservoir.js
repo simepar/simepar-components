@@ -343,7 +343,7 @@ function ReservoirElement(selector, values, config) {
         // The clipping wave area.
         svg.clipArea = d3.svg.area()
             .x(function(d) { return svg.waveScaleX(d.x); } )
-            .y0(function(d) { return svg.waveScaleY(Math.sin(Math.PI*2*config.waveOffset*-1 + Math.PI*2*(1-config.waveCount) + d.y*2*Math.PI));} )
+            .y0(function(d) { return svg.waveScaleY(Math.sin(Math.PI*2*config.waveOffset*-1 + Math.PI*2*(1-config.waveCount) + d.y*2*Math.PI)); })
             .y1(function(d) { return (svg.radius * 2 + svg.waveHeight); } );
 
         // text
