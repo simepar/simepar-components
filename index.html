@@ -95,7 +95,7 @@
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Gate</h2>
-                <div id="gate" onclick="gate.update(NewValue(gateConfig.minValue, gateConfig.maxValue), Math.random() >= 0.5);"></div>
+                <div id="gate"></div>
             </div>
         </div>
 
@@ -193,13 +193,7 @@
         // reservoir
         var values = { down: 30, up: 70 };
         var reConfig = loadReservoirSettings();
-
         var reservoir = new ReservoirElement("#reservoir", values, reConfig);
-
-        // gate
-        var gateConfig = loadGateSettings();
-        var gate = new GateElement("#gate", 50, gateConfig, true);
-        //d3.select("#gate > svg").attr("width", "50%"); // setting size to stay kind of the same size as the others
 
         setInterval(function() {
             // generating random values
@@ -207,6 +201,19 @@
             values.up = (Math.random() * (reConfig.upStream.maxValue - reConfig.upStream.minValue) + reConfig.upStream.minValue);
 
             reservoir.update(values);
+        }, 3000);
+
+
+        // gate
+        var gateConfig = loadGateSettings();
+        var gate = new GateElement("#gate", 50, gateConfig, true);
+        d3.select("#gate > svg").attr("width", "60%");
+
+        setInterval(function() {
+            var value = NewValue(gateConfig.minValue, gateConfig.maxValue),
+                isOpen = Math.random() >= .5; 
+
+            gate.update(value, isOpen);
         }, 3000);
 
         function NewValue(min, max) {

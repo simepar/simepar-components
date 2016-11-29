@@ -82,8 +82,8 @@ function GateElement(selector, value, config, isOpen) {
         var deferred = $.Deferred();
         var container = d3.select(gate.selector);      
 
-        var width = 500, 
-            height = 250;
+        var width = 375, 
+            height = 315;
 
         // appends an svg to the div
         gate.svg = container.style("transform", "scale("+gate.config.scale+")")
@@ -108,9 +108,9 @@ function GateElement(selector, value, config, isOpen) {
         // background group
         gate.svg.fenceGroup = gate.svg.append("g")
             .attr("id", "fenceGroup")
-            .attr("transform", "translate(0, -95)");
+            .attr("transform", "translate(-65, -95)");
 
-        // appending piles
+        // // appending piles
         gate.svg.fenceGroup.selectAll("path.pile")
             .data(piles).enter()
             .append("path")
@@ -148,10 +148,10 @@ function GateElement(selector, value, config, isOpen) {
         var deferred = $.Deferred();
         var container = d3.select(gate.selector);
 
-        var points = [{"x": 0.05, "y": 0.15},
-            {"x": 0.0, "y": 1.0},
-            {"x": 0.3, "y": 1},
-            {"x": 0.25, "y": 0.15}];
+        var points = [{"x": 0.03, "y": 0.11},
+            {"x": -0.05, "y": 1.0},
+            {"x": 0.35, "y": 1},
+            {"x": 0.27, "y": 0.11}];
 
         var width = parseInt(gate.svg.style("width"));
         var height = parseInt(gate.svg.style("height"));
@@ -164,7 +164,7 @@ function GateElement(selector, value, config, isOpen) {
 
         // gate group
         gate.svg.damGroup = gate.svg.append("g").attr("id", "damGroup")
-            .attr("transform", "translate("+ width/2.8 +", 0)");
+            .attr("transform", "translate("+ width/2.83 +", 0)");
         
         // dam element
         gate.svg.damGroup.selectAll("polygon.dam")
@@ -187,23 +187,23 @@ function GateElement(selector, value, config, isOpen) {
         // falling water
         gate.svg.gateGroup.append("path")
                 .attr("d", "M160.4,397.2H112l4.4-150c0.4-9.6,9.2-17.6,19.6-17.6l0,0c10.8,0,19.6,7.6,19.6,17.6L160.4,397.2z")
-                .attr("transform", "translate(-88.2, -220) scale(1.2)" )
+                .attr("transform", "translate(-145, -280) scale(1.5)" )
                 .style("fill", function() { return gate.isOpen ? gate.config.fallingWaterColor : gate.config.backgroundColor; })
                 .style("opacity", function() { return gate.isOpen ? gate.config.fallingWaterOpacity : 1; })
                 .style("stroke", function() { return gate.isOpen ? gate.config.fallingWaterStroke : gate.config.backgroundColor; })
                 .style("stroke-width", function() { return gate.isOpen ? gate.config.fallingWaterThickness : 1; });
 
         // gate element
+        var elem = { w: 62, h: 62, x: 28, y: 55 };
         gate.svg.gateGroup.append("rect")
-            .attr({ width: 50, height: 50 })
-            .attr({ x: 50, y: 55 })
+            .attr({ width: elem.w, height: elem.h })
+            .attr({ x: elem.x, y: elem.y })
             .style("fill", gate.config.gateColor);
 
-        // gate.svg.gateGroup.append("image")
-        //     .attr("xlink:href", "/img/gate.png")
-        //     .attr({ x: 50, y: 55 })
-        //     .attr("width", 50)
-        //     .attr("height", 50);
+        gate.svg.gateGroup.append("image")
+            .attr("xlink:href", "/img/gate_.png")
+            .attr({ width: elem.w, height: elem.h })
+            .attr({ x: elem.x, y: elem.y });
 
         deferred.resolve();
         return deferred.promise();
@@ -217,8 +217,8 @@ function GateElement(selector, value, config, isOpen) {
     */
     function setSVGProperties(svg, config, value) {
         // sets width and height in order to do all the calculations to match the viewBox of the svg. After the SVG is rendered, it is resized to fill fully its container.
-        var width = 500;
-        var height = 250;
+        var width = 375;
+        var height = 315;
 
         if (value > config.maxValue) value = config.maxValue;
         if (value < config.minValue) value = config.minValue;
@@ -348,8 +348,8 @@ function GateElement(selector, value, config, isOpen) {
      *  @param {Boolean} isOpen - whether or not the gate is open
     */
     function update(value, isOpen) {
-        console.log("Comporta:", isOpen ? "aberta." : "fechada.");
-        console.log("Valor atual:", isOpen ? value : 0);
+        // console.log("Comporta:", isOpen ? "aberta." : "fechada.");
+        // console.log("Valor atual:", isOpen ? value : 0);
 
         gate.isOpen = isOpen;
         gate.isOpen ? setSVGProperties(gate.svg, gate.config, value) : setSVGProperties(gate.svg, gate.config, 0);
