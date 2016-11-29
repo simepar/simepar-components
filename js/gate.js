@@ -201,7 +201,7 @@ function GateElement(selector, value, config, isOpen) {
             .style("fill", gate.config.gateColor);
 
         gate.svg.gateGroup.append("image")
-            .attr("xlink:href", window.location.href + "/img/gate_.png")
+            .attr("xlink:href", window.location.href + "img/gate_.png")
             .attr({ width: elem.w, height: elem.h })
             .attr({ x: elem.x, y: elem.y });
 
