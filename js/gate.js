@@ -187,21 +187,21 @@ function GateElement(selector, value, config, isOpen) {
         // falling water
         gate.svg.gateGroup.append("path")
                 .attr("d", "M160.4,397.2H112l4.4-150c0.4-9.6,9.2-17.6,19.6-17.6l0,0c10.8,0,19.6,7.6,19.6,17.6L160.4,397.2z")
-                .attr("transform", "translate(-145, -280) scale(1.5)" )
+                .attr("transform", "translate(-148, -280) scale(1.5)" )
                 .style("fill", function() { return gate.isOpen ? gate.config.fallingWaterColor : gate.config.backgroundColor; })
                 .style("opacity", function() { return gate.isOpen ? gate.config.fallingWaterOpacity : 1; })
                 .style("stroke", function() { return gate.isOpen ? gate.config.fallingWaterStroke : gate.config.backgroundColor; })
                 .style("stroke-width", function() { return gate.isOpen ? gate.config.fallingWaterThickness : 1; });
 
         // gate element
-        var elem = { w: 62, h: 62, x: 28, y: 55 };
+        var elem = { w: 62, h: 62, x: 25, y: 55 };
         gate.svg.gateGroup.append("rect")
             .attr({ width: elem.w, height: elem.h })
             .attr({ x: elem.x, y: elem.y })
             .style("fill", gate.config.gateColor);
 
         gate.svg.gateGroup.append("image")
-            .attr("xlink:href", "../img/gate_.png")
+            .attr("xlink:href", window.location.href + "/img/gate_.png")
             .attr({ width: elem.w, height: elem.h })
             .attr({ x: elem.x, y: elem.y });
 
@@ -348,8 +348,7 @@ function GateElement(selector, value, config, isOpen) {
      *  @param {Boolean} isOpen - whether or not the gate is open
     */
     function update(value, isOpen) {
-        // console.log("Comporta:", isOpen ? "aberta." : "fechada.");
-        // console.log("Valor atual:", isOpen ? value : 0);
+        // console.log("Comporta: %s // Valor: %s", isOpen ? "aberta" : "fechada", isOpen ? value : 0);
 
         gate.isOpen = isOpen;
         gate.isOpen ? setSVGProperties(gate.svg, gate.config, value) : setSVGProperties(gate.svg, gate.config, 0);

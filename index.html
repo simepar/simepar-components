@@ -97,6 +97,10 @@
                 <h2>Gate</h2>
                 <div id="gate"></div>
             </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Flow</h2>
+                <div id="flow"></div>
+            </div>
         </div>
 
         <hr>
@@ -119,6 +123,7 @@
     <script src="js/components.js"></script>
     <script src="js/reservoir.js"></script>
     <script src="js/gate.js"></script>
+    <script src="js/flow.js"></script>
 
     <script>
         var headerConfig = loadDefaultSettings();
@@ -195,24 +200,26 @@
         var reConfig = loadReservoirSettings();
         var reservoir = new ReservoirElement("#reservoir", values, reConfig);
 
-        setInterval(function() {
-            // generating random values
-            values.down = (Math.random() * (reConfig.downStream.maxValue - reConfig.downStream.minValue) + reConfig.downStream.minValue);
-            values.up = (Math.random() * (reConfig.upStream.maxValue - reConfig.upStream.minValue) + reConfig.upStream.minValue);
-
-            reservoir.update(values);
-        }, 3000);
-
-
         // gate
         var gateConfig = loadGateSettings();
-        var gate = new GateElement("#gate", 50, gateConfig, true);
+        var gate = new GateElement("#gate", 50, gateConfig, false);
         d3.select("#gate > svg").attr("width", "60%");
 
-        setInterval(function() {
-            var value = NewValue(gateConfig.minValue, gateConfig.maxValue),
-                isOpen = Math.random() >= .5; 
+        // flow
+        /*var flowConfig = loadFlowSettings();
+        var flow = new FlowElement("#flow", 50, flowConfig);
+        d3.select("#flow > svg").attr("width", "60%");*/
 
+        // random values (every 3 sseconds)
+        setInterval(function() {
+            // generating reservoir random values
+            values.down = (Math.random() * (reConfig.downStream.maxValue - reConfig.downStream.minValue) + reConfig.downStream.minValue);
+            values.up = (Math.random() * (reConfig.upStream.maxValue - reConfig.upStream.minValue) + reConfig.upStream.minValue);
+            reservoir.update(values);
+
+            // gate random values
+            var value = NewValue(gateConfig.minValue, gateConfig.maxValue),
+                isOpen = Math.random() > .4; 
             gate.update(value, isOpen);
         }, 3000);
 
