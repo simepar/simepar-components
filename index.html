@@ -123,7 +123,7 @@
     <script src="js/components.js"></script>
     <script src="js/reservoir.js"></script>
     <script src="js/gate.js"></script>
-    <!--<script src="js/flow.js"></script>-->
+    <script src="js/flow.js"></script>
 
     <script>
         var headerConfig = loadDefaultSettings();
@@ -205,12 +205,7 @@
         var gate = new GateElement("#gate", 50, gateConfig, false);
         d3.select("#gate > svg").attr("width", "60%");
 
-        // flow
-        /*var flowConfig = loadFlowSettings();
-        var flow = new FlowElement("#flow", 50, flowConfig);
-        d3.select("#flow > svg").attr("width", "60%");*/
-
-        // random values (every 3 sseconds)
+        // random values (every 3 seconds)
         setInterval(function() {
             // generating reservoir random values
             values.down = (Math.random() * (reConfig.downStream.maxValue - reConfig.downStream.minValue) + reConfig.downStream.minValue);
