@@ -23,7 +23,7 @@ function loadFlowSettings() {
         endWaveColor: "#178bca",  // The color of the fill wave. Used to create the color scale.
         waveOpacity: 1.0,         // Flow's liquid opacity.
         waveOffset: 0,            // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
-        valueCountUp: false,      // If true, the displayed value counts up from minimum value to it's final value upon loading. If false, the final value is displayed.
+        valueCountUp: true,      // If true, the displayed value counts up from minimum value to it's final value upon loading. If false, the final value is displayed.
         scale: 1,                 // Scale of the parent div.
         text: {
             valueTextSize: 1,              // The relative height of the text to display in the wave. 1 = 100%
