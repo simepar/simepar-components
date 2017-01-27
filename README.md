@@ -8,14 +8,10 @@ Page: https://simepar.github.io/simepar-components/
 # Simepar Components
 
 ## What is it about?
-Simpear Components is a JavaScript library that contains SVG Icons to represent weather data. Currently, the elements are: 
-- Drop: used to represent **preciptation** and **relative humidity**;
-- Ruler: used to represent **river level**;
-- Thermometer: used to represent **temperature**;
-- Leaf: used to represent **leaf wetness**.
+Simpear Components is a JavaScript library that contains SVG Icons to represent weather data.
 
 ## Getting Started
-On your HTML page, add the file components.js as follows:
+On your HTML page, add the file flow.js as follows:
 
 Note that in this example, the file is inside the folder js/
 ```html
@@ -25,17 +21,13 @@ Note that in this example, the file is inside the folder js/
 ### How to Use
 
 ```javascript
-var initialValue = 78;
+var initialValue = 425;
 
 var config = loadFlowSettings();
 /* custom configuration */
-config.strokeThickness = 8;
-config.waveAnimateTime = 5000;
-config.waveHeight = 0.05;
-config.waveCount = 1;
+config.waveCount = 2;
 config.minValue = 0;
-config.maxValue = 100;
-config.scale = 0.3; 
+config.maxValue = 1000; 
 
 var flow = new FlowElement("#container", initialValue, config);
 ```
