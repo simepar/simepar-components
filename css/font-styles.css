@@ -1,0 +1,200 @@
+.margin{
+	    margin: 20px 0 20px 0;
+			text-align: center;
+}
+
+@font-face {
+	font-family: 'icomoon';
+	src:url('fonts/icomoon.eot?-judm9m');
+	src:url('fonts/icomoon.eot?#iefix-judm9m') format('embedded-opentype'),
+		url('fonts/icomoon.woff?-judm9m') format('woff'),
+		url('fonts/icomoon.ttf?-judm9m') format('truetype'),
+		url('fonts/icomoon.svg?-judm9m#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="fs-"], [class*=" fs-"] {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 0.0;
+	display: inline-block;
+	vertical-align: top;
+	white-space: nowrap;
+	position: relative;
+	/*margin-right: -.16em;*/
+	-moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    /* padding here for text, icons replicate this using size and position:absolute - padding makes touch-target bigger */
+    padding: 0.2em 0;
+    /* units used in font: 1em = 2048, icons 2400 wide, so icons are 1.171875em (2400/2048). Add padding x2 to get size: */
+    /*height: 1.45788em;
+    width: 1.45788em;*/
+    font-size: 2.815em;
+    /* text hidden old-school */
+    text-align: left;
+    text-indent: -9999px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+/* position:absolute stacks pseudo elements - extra &lt;span> in markup = 2 extra pseudo elements */
+[class^="fs-"]:before,
+[class^="fs-"]:after,
+[class^="fs-"] span:before,
+[class^="fs-"] span:after {
+  display: block;
+  /*position: absolute;*/
+  white-space: normal;
+  /* match padding above */
+  top: 0.143em;
+  /*left: 0.143em;*/
+  /* undo text hidden */
+  text-indent: 0;
+  /* inherits size from parent, ems cascade */
+  font-size: 0.6em;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: antialiased;
+  /* screenreaders */
+  speak: none;
+  /* transitions here */ }
+
+[class^="fs-animation-signal"]:before {
+	color: #D8D8D8;
+	content: "\f51b";
+}
+
+/*[class^="fs-animation-signal"]:after {
+}*/
+
+.fs-logo-superior:before {
+	content: "\f50f";
+	color: #ef9a01
+}
+
+.fs-logo-inferior:before {
+	content: "\f510";
+
+}
+
+.fs-logo:after {
+	content: "\f510";
+}
+
+.fs-logo:before {
+	content: "\f50f";
+	color: #ef9a01;
+}
+
+.fs-weather-lightning:after {
+    content: "\e92c";
+}
+.fs-weather-common:after {
+    content: "\e929";
+}
+.fs-weather-hydro:after {
+    content: "\e92a";
+}
+.fs-weather-station:after {
+    content: "\e92b";
+}
+.fs-animation-signal-lvl-1:after {
+	content: "\f511";
+}
+.fs-animation-signal-lvl-2:after {
+	content: "\f512";
+}
+.fs-animation-signal-lvl-3:after {
+	content: "\f513";
+}
+.fs-animation-signal-lvl-4:after {
+	content: "\f514";
+}
+.fs-animation-signal-lvl-5:after {
+	content: "\f515";
+}
+.fs-animation-signal-lvl-6:after {
+	content: "\f516";
+}
+.fs-animation-signal-lvl-7:after {
+	content: "\f517";
+}
+.fs-animation-signal-lvl-8:after {
+	content: "\f518";
+}
+.fs-animation-signal-lvl-9:after {
+	content: "\f519";
+}
+.fs-animation-signal-lvl-10:after {
+	content: "\f51a";
+}
+.fs-chart-area:before {
+    content: "\e901";
+}
+.fs-chart-areaspline:before {
+    content: "\e905";
+}
+.fs-chart-bar:before {
+    content: "\e909";
+}
+.fs-chart-line:before {
+    content: "\e913";
+}
+.fs-chart-point:before {
+    content: "\e917";
+}
+.fs-chart-spline:before {
+    content: "\e925";
+}
+.fs-icon-dashboard:before {
+    content: "\e910";
+}
+.fs-icon-dashboard2:before {
+    content: "\e911";
+}
+.fs-chart-trend-down:before {
+    content: "\e900";
+}
+.fs-chart-trend-up:before {
+    content: "\e902";
+}
+.fs-chart-distance:before {
+    content: "\e903";
+}
+.fs-weather-leaf-wet:before {
+    content: "\e906";
+}
+.fs-weather-level:before {
+    content: "\e907";
+}
+.fs-weather-preciptation:before {
+    content: "\e908";
+}
+.fs-weather-pressure:before {
+    content: "\e90a";
+}
+.fs-weather-temperature:before {
+    content: "\e90b";
+}
+.fs-weather-humidity:before {
+    content: "\e90c";
+}
+.fs-weather-solar-radiation:before {
+    content: "\e90d";
+}
+.fs-weather-wind:before {
+    content: "\e90e";
+}
+.fs-weather-wind-direction:before {
+    content: "\e90f";
+}
+.fs-icon-lightning:before {
+    content: "\e904";
+}

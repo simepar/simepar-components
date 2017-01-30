@@ -1,0 +1,39 @@
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+#simepar-logo{
+    top: 18px;
+}
+
+@media(max-width: 320px){ 
+    #simepar-logo{
+        top: 18px;
+        font-size:30px;
+    }
+    
+    #drop, #ruler, #thermo, #leaf {
+        margin: auto;
+        padding-left: 60px;
+    }
+    
+    #ruler {
+        padding-left: 100px !important;
+    }
+}
+
+@media(max-width: 1200px){ 
+    .container{
+        text-align: center;
+    }
+    
+    #drop-header {
+        display: none;
+    }
+    
+    #drop, #ruler, #thermo, #leaf {
+        margin: auto;
+    }
+}
