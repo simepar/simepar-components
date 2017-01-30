@@ -96,7 +96,7 @@
         var config = loadFlowSettings();
         var flow = FlowElement("#flow-container", 55, config);
 
-        // random values (every 3 seconds)
+        // random values (every 5 seconds)
         setInterval(function() {
             var value = NewValue(config.minValue, config.maxValue);
             flow.update(value);
