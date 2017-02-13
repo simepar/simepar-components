@@ -97,10 +97,14 @@
                 <h2>Gate</h2>
                 <div id="gate"></div>
             </div>
-            <!--<div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Flow</h2>
-                <div id="flow"></div>
-            </div>-->
+                <div id="flow" onclick="flow.update(NewValue(flowConfig.minValue, flowConfig.maxValue));"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Cylinder</h2>
+                <div id="cylinder" onclick="cylinder.update(NewValue(cylinderConfig.minValue, cylinderConfig.maxValue));"></div>
+            </div>
         </div>
 
         <hr>
@@ -124,6 +128,7 @@
     <script src="js/reservoir.js"></script>
     <script src="js/gate.js"></script>
     <script src="js/flow.js"></script>
+    <script src="js/cylinder.js"></script>
 
     <script>
         var headerConfig = loadDefaultSettings();
@@ -195,6 +200,11 @@
         var leaf = new Leaf("#leaf", 7, leafConfig);
         d3.select("#leaf > svg").attr("width", "65%");
         
+        // cylinder
+        var cylinderConfig = loadCylinderSettings();
+        var cylinder = new CylinderElement("#cylinder", 50, cylinderConfig);
+        d3.select("#cylinder > svg").attr("width", "35%");
+
         // reservoir
         var values = { down: 30, up: 70 };
         var reConfig = loadReservoirSettings();
@@ -205,6 +215,10 @@
         var gate = new GateElement("#gate", 50, gateConfig, false);
         d3.select("#gate > svg").attr("width", "60%");
 
+        // flow
+        var flowConfig = loadFlowSettings();
+        var flow = new FlowElement("#flow", 55, flowConfig);
+
         // random values (every 3 seconds)
         setInterval(function() {
             // generating reservoir random values
@@ -213,10 +227,10 @@
             reservoir.update(values);
 
             // gate random values
-            var value = NewValue(gateConfig.minValue, gateConfig.maxValue),
+            var gateValue = NewValue(gateConfig.minValue, gateConfig.maxValue),
                 isOpen = Math.random() > .4; 
-            gate.update(value, isOpen);
-        }, 3000);
+            gate.update(gateValue, isOpen);
+        }, 5000);
 
         function NewValue(min, max) {
             return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
