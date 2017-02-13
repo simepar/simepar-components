@@ -101,6 +101,10 @@
                 <h2>Flow</h2>
                 <div id="flow" onclick="flow.update(NewValue(flowConfig.minValue, flowConfig.maxValue));"></div>
             </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Cylinder</h2>
+                <div id="cylinder" onclick="cylinder.update(NewValue(cylinderConfig.minValue, cylinderConfig.maxValue));"></div>
+            </div>
         </div>
 
         <hr>
@@ -124,6 +128,7 @@
     <script src="js/reservoir.js"></script>
     <script src="js/gate.js"></script>
     <script src="js/flow.js"></script>
+    <script src="js/cylinder.js"></script>
 
     <script>
         var headerConfig = loadDefaultSettings();
@@ -195,6 +200,11 @@
         var leaf = new Leaf("#leaf", 7, leafConfig);
         d3.select("#leaf > svg").attr("width", "65%");
         
+        // cylinder
+        var cylinderConfig = loadCylinderSettings();
+        var cylinder = new CylinderElement("#cylinder", 50, cylinderConfig);
+        d3.select("#cylinder > svg").attr("width", "35%");
+
         // reservoir
         var values = { down: 30, up: 70 };
         var reConfig = loadReservoirSettings();
