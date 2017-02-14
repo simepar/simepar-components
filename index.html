@@ -92,12 +92,12 @@
     <script src="js/cylinder.js"></script>
     <script>
         var config = loadCylinderSettings();
-        var cylinder = new CylinderElement("#cylinder", 50, config);
+        var cylinder = new CylinderElement("#cylinder", 100, config);
         d3.select("#cylinder-svg").attr("width", "60%");
 
         setInterval(function() {
             cylinder.update(NewValue(config.minValue, config.maxValue));
-        }, 3000)
+        }, 3000);
 
         function NewValue(min, max) {
             return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
