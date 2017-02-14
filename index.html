@@ -74,6 +74,10 @@
                 <div id="drop" onclick="drop.update(NewValue(config.minValue, config.maxValue));"></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Cylinder</h2>
+                <div id="cylinder" onclick="cylinder.update(NewValue(cylinderConfig.minValue, cylinderConfig.maxValue));"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Thermometer</h2>
                 <div id="thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
             </div>
@@ -81,29 +85,24 @@
                 <h2>Ruler</h2>
                 <div id="ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
             </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Leaf Wetness</h2>
-                <div id="leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
-            </div>
         </div>
 
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Leaf Wetness</h2>
+                <div id="leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Reservoir</h2>
                 <div id="reservoir"></div>
-            </div>
-
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Gate</h2>
-                <div id="gate"></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Flow</h2>
                 <div id="flow" onclick="flow.update(NewValue(flowConfig.minValue, flowConfig.maxValue));"></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Cylinder</h2>
-                <div id="cylinder" onclick="cylinder.update(NewValue(cylinderConfig.minValue, cylinderConfig.maxValue));"></div>
+                <h2>Gate</h2>
+                <div id="gate"></div>
             </div>
         </div>
 
@@ -203,7 +202,7 @@
         // cylinder
         var cylinderConfig = loadCylinderSettings();
         var cylinder = new CylinderElement("#cylinder", 50, cylinderConfig);
-        d3.select("#cylinder > svg").attr("width", "35%");
+        d3.select("#cylinder > svg").attr("width", "50%");
 
         // reservoir
         var values = { down: 30, up: 70 };
