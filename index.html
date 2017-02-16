@@ -60,9 +60,6 @@
                     <label>This project is inspired by Curtis Bratton’s D3 Liquid Fill Gauge. You can find his project <a href="http://bl.ocks.org/brattonc/5e5ce9beee483220e2f6"
                         target="_blank">here</a>.</label>
                 </div>
-                <div class="col-lg-4 col-xs-12">
-                    <div id="drop-header" class="pull-right" onclick="dropHeader.update(NewValue(headerConfig.minValue, headerConfig.maxValue));"></div>
-                </div>
             </div>
         </div>
     </div>
@@ -70,39 +67,9 @@
     <div class="container">
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Drop</h2>
-                <div id="drop" onclick="drop.update(NewValue(config.minValue, config.maxValue));"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Cylinder</h2>
-                <div id="cylinder" onclick="cylinder.update(NewValue(cylinderConfig.minValue, cylinderConfig.maxValue));"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Thermometer</h2>
-                <div id="thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Ruler</h2>
-                <div id="ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Leaf Wetness</h2>
-                <div id="leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Reservoir</h2>
-                <div id="reservoir"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Flow</h2>
-                <div id="flow" onclick="flow.update(NewValue(flowConfig.minValue, flowConfig.maxValue));"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Gate</h2>
-                <div id="gate"></div>
+                <div id="gate">
+                </div>
             </div>
         </div>
 
@@ -123,111 +90,21 @@
     <script src="https://d3js.org/d3.v3.min.js"></script>
 
     <!-- Custom JS -->
-    <script src="js/components.js"></script>
-    <script src="js/reservoir.js"></script>
     <script src="js/gate.js"></script>
-    <script src="js/flow.js"></script>
-    <script src="js/cylinder.js"></script>
 
     <script>
-        var headerConfig = loadDefaultSettings();
-        headerConfig.strokeThickness = 8;
-        headerConfig.waveAnimateTime = 2000;
-        headerConfig.waveHeight = 0.08;
-        headerConfig.waveCount = 1;
-        headerConfig.liquidColor = "#636363";
-        headerConfig.strokeColor = "#636363";
-        headerConfig.minTextColor = "#636363";
-        headerConfig.maxTextColor = "#636363";
-        var dropHeader = new Drop("#drop-header", 50, headerConfig);
-        d3.select("#drop-header > svg").attr("width", "55%");
-
-        var config = loadDefaultSettings();
-        config.strokeThickness = 8;
-        config.waveAnimateTime = 5000;
-        config.waveHeight = 0.05;
-        config.waveCount = 1;
-        config.minValue = 0;
-        config.maxValue = 100; 
-        var drop = new Drop("#drop", 50, config);
-        d3.select("#drop > svg").attr("width", "65%");
-
-        var rulerConfig = loadDefaultSettings();
-        rulerConfig.maxValue = 1000;
-        rulerConfig.minValue = 0;
-        rulerConfig.waveAnimateTime = 5000;
-        rulerConfig.waveHeight = 0.05;
-        rulerConfig.waveCount = 1;
-        rulerConfig.textVertPosition = 0.5;
-        rulerConfig.strokeThickness = 8;
-        rulerConfig.strokeColor = "white";
-        rulerConfig.textSize = 1;
-        rulerConfig.outerColor = "#636363";
-        rulerConfig.liquidColor = "rgb(174, 226, 67)";
-        rulerConfig.minTextColor = "rgb(174, 226, 67)";
-        rulerConfig.maxTextColor = "rgb(174, 226, 67)";
-        var ruler = new Ruler("#ruler", 570, rulerConfig);
-        d3.select("#ruler > svg").attr("width", "65%");
-        
-        var thermoConfig = loadDefaultSettings();
-        thermoConfig.waveAnimateTime = 5000;
-        thermoConfig.strokeThickness = 0;
-        thermoConfig.waveHeight = 0;
-        thermoConfig.waveAnimate = true;
-        thermoConfig.outerColor = "#636363";
-        thermoConfig.strokeColor = "rgb(194, 106, 62)";
-        thermoConfig.liquidColor = "rgb(194, 106, 62)";
-        thermoConfig.minTextColor = "rgb(194, 106, 62)";
-        thermoConfig.maxTextColor = "rgb(194, 106, 62)";
-        thermoConfig.liquidOpacity = 0.7;
-        thermoConfig.minValue = -10;
-        thermoConfig.maxValue = 35;
-        var thermo = new Thermo("#thermo", 10, thermoConfig);
-        d3.select("#thermo > svg").attr("width", "65%");
-        
-        var leafConfig = loadDefaultSettings();
-        leafConfig.strokeThickness = 8;
-        leafConfig.displayPercent = false;
-        leafConfig.minValue = 0;
-        leafConfig.maxValue = 10;
-        leafConfig.outerColor = "none";
-        leafConfig.strokeColor = "rgb(35, 99, 31)";
-        leafConfig.minTextColor = "rgb(35, 99, 31)";
-        leafConfig.maxTextColor = "rgb(35, 99, 31)";
-        leafConfig.liquidColor = "rgb(35, 99, 31)";
-        leafConfig.liquidOpacity = 0.7;
-        var leaf = new Leaf("#leaf", 7, leafConfig);
-        d3.select("#leaf > svg").attr("width", "65%");
-        
-        // cylinder
-        var cylinderConfig = loadCylinderSettings();
-        var cylinder = new CylinderElement("#cylinder", 50, cylinderConfig);
-        d3.select("#cylinder > svg").attr("width", "50%");
-
-        // reservoir
-        var values = { down: 30, up: 70 };
-        var reConfig = loadReservoirSettings();
-        var reservoir = new ReservoirElement("#reservoir", values, reConfig);
 
         // gate
         var gateConfig = loadGateSettings();
-        var gate = new GateElement("#gate", 50, gateConfig, false);
-        d3.select("#gate > svg").attr("width", "60%");
-
-        // flow
-        var flowConfig = loadFlowSettings();
-        var flow = new FlowElement("#flow", 55, flowConfig);
+        var gate = new GateElement("#gate", 92, gateConfig, true);
+        //d3.select("#gate > svg").attr("width", "60%");
 
         // random values (every 3 seconds)
         setInterval(function() {
-            // generating reservoir random values
-            values.down = (Math.random() * (reConfig.downStream.maxValue - reConfig.downStream.minValue) + reConfig.downStream.minValue);
-            values.up = (Math.random() * (reConfig.upStream.maxValue - reConfig.upStream.minValue) + reConfig.upStream.minValue);
-            reservoir.update(values);
 
             // gate random values
             var gateValue = NewValue(gateConfig.minValue, gateConfig.maxValue),
-                isOpen = Math.random() > .4; 
+                isOpen = true; //Math.random() > .5; 
             gate.update(gateValue, isOpen);
         }, 5000);
 

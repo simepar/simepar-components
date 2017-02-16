@@ -5,10 +5,10 @@ function loadGateSettings() {
         minValue: 0,    // min value. Used to calculate scales and associated stuff.
         maxValue: 100,  // max value. Used to calculate scales and associated stuff.
         scale: 1,       // // scale of the svg's parent div. Shouldn't be used. It is an alternative way to set size.
-        waveHeight: 0.05, // The wave height as a percentage of the radius of the wave circle.
+        waveHeight: 0.01, // The wave height as a percentage of the radius of the wave circle.
         waveCount: 1, // The number of full waves per width of the wave circle.
         waveRiseTime: 1000, // The amount of time in milliseconds for the wave to rise from 0 to it's final height.
-        waveAnimateTime: 5000, // The amount of time in milliseconds for a full wave to enter the wave circle.
+        waveAnimateTime: 10000, // The amount of time in milliseconds for a full wave to enter the wave circle.
         waveRise: true, // Control if the wave should rise from 0 to it's full height, or start at it's full height.
         waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
         waveAnimate: true, // Controls if the wave scrolls or is static.
@@ -16,12 +16,6 @@ function loadGateSettings() {
         waveOpacity: 0.8, // the wave opacity
         waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
         valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
-        // textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
-        // decimalPlaces: 2, // how many decimal places it should be displayed
-        // minTextColor: "#045681", // the color of the text for the minimum value
-        // maxTextColor: "#045681", // the color of the text for the maximum value
-        // valueTextColor: "#045681", // The color of the value text when the wave does not overlap it.
-        // waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
         outterCircleColor: "none", // color of the outter circle, the one that is behind all elements.
         outterCircleStroke: "#000000",   // stroke of the outter circle, the one that is behind all elements.
         outterCircleThickness: 0,     // stroke-width of the outter circle, the one that is behind all elements.
@@ -54,22 +48,26 @@ function GateElement(selector, value, config, isOpen) {
     gate.config = config == null ? loadGateSettings() : config;
     gate.value = value;
     gate.isOpen = isOpen;
-    
+
     // functions
     gate.createSVG = createSVG;
     gate.createGate = createGate;
     gate.createWave = createWave;
+    gate.createWaterfall = createWaterfall;
     gate.update = update;
 
     /////////////////////////////////////
-    
+
     // creates and displays the svg fully working
-    (function() {
+    (function () {
         gate.createSVG().then(function () {
             gate.createGate().then(function () {
-                gate.createWave(gate.config, gate.value).then(function() {
+                gate.createWave(gate.config, gate.value).then(function () {
                     // fit svg to its container div
-                    gate.svg.attr({ width: "100%", height: "100%" });
+                    // gate.svg.attr({ width: "100%", height: "100%" });
+
+                    gate.createWaterfall().then(function () {
+                    });
                 });
             });
         });
@@ -80,18 +78,28 @@ function GateElement(selector, value, config, isOpen) {
     */
     function createSVG() {
         var deferred = $.Deferred();
-        var container = d3.select(gate.selector);      
+        var container = d3.select(gate.selector);
 
-        var width = 375, 
+        var width = 375,
             height = 315;
 
+        // appends a div that will contain the waterfall animation
+        // gate.waterfall = container.append("canvas").attr("id", "waterfall");
+
         // appends an svg to the div
-        gate.svg = container.style("transform", "scale("+gate.config.scale+")")
+        gate.svg = container.style("transform", "scale(" + gate.config.scale + ")")
             .append("svg")
-                .attr("id", "gate-svg")
-                .attr({ width: width, height: height })
-                .attr("preserveAspectRatio", "xMinYMin meet")
-                .attr("viewBox", "0 0 " + width + " " + height);
+            .attr("id", "gate-svg")
+            .attr({ width: width, height: height })
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .attr("viewBox", "0 0 " + width + " " + height);
+
+        gate.waterfall = gate.svg.append("foreignObject")
+            .attr({ width: width, height: height })
+            .append("xhtml:body")
+            .attr({ width: width, height: height });
+
+        // gate.waterfall.html("<canvas id='waterfall'></canvas>");
 
         // pile's d element
         var piles = ["M419.2,118c0-3.2-2.4-5.6-5.6-5.6s-5.6,2.4-5.6,5.6c0,2.4,1.6,4.4,3.6,5.2v73.2h3.6v-73.2   C417.6,122.4,419.2,120.4,419.2,118z",
@@ -114,24 +122,24 @@ function GateElement(selector, value, config, isOpen) {
         gate.svg.fenceGroup.selectAll("path.pile")
             .data(piles).enter()
             .append("path")
-                .attr("d", function(d) { return d; })
-                .style("fill", gate.config.pileColor)
-                .style("stroke", gate.config.pileStroke)
-                .style("stroke-width", gate.config.pileThickness);
+            .attr("d", function (d) { return d; })
+            .style("fill", gate.config.pileColor)
+            .style("stroke", gate.config.pileStroke)
+            .style("stroke-width", gate.config.pileThickness);
 
         // appending fences
         gate.svg.fenceGroup.selectAll("path.fence")
             .data(fences).enter()
             .append("path")
-                .attr("d", function(d) { return d; })
-                .style("fill", gate.config.fenceColor)
-                .style("stroke", gate.config.fenceStroke)
-                .style("stroke-width", gate.config.fenceThickness);
+            .attr("d", function (d) { return d; })
+            .style("fill", gate.config.fenceColor)
+            .style("stroke", gate.config.fenceStroke)
+            .style("stroke-width", gate.config.fenceThickness);
 
         // appending semi-circle background (under the fence)
         gate.svg.append("rect")
             .attr("id", "barrier")
-            .attr({ width: width, height: (height-100) })
+            .attr({ width: width, height: (height - 100) })
             .attr("y", 100)
             .style("fill", gate.config.backgroundColor)
             .style("stroke", gate.config.backgroundStroke)
@@ -148,50 +156,49 @@ function GateElement(selector, value, config, isOpen) {
         var deferred = $.Deferred();
         var container = d3.select(gate.selector);
 
-        var points = [{"x": 0.03, "y": 0.11},
-            {"x": -0.05, "y": 1.0},
-            {"x": 0.35, "y": 1},
-            {"x": 0.27, "y": 0.11}];
+        var points = [{ "x": 0.03, "y": 0.11 },
+        { "x": -0.05, "y": 1.0 },
+        { "x": 0.35, "y": 1 },
+        { "x": 0.27, "y": 0.11 }];
 
         var width = parseInt(gate.svg.style("width"));
         var height = parseInt(gate.svg.style("height"));
 
         // scales to create the dam element
-        var scaleX = d3.scale.linear().domain([0,1]).range([0, width]);
-        var scaleY = d3.scale.linear().domain([0,1]).range([0, height]);
+        var scaleX = d3.scale.linear().domain([0, 1]).range([0, width]);
+        var scaleY = d3.scale.linear().domain([0, 1]).range([0, height]);
 
-        var translate = "translate("+width/2+","+height/2+")";
+        var translate = "translate(" + width / 2 + "," + height / 2 + ")";
 
         // gate group
         gate.svg.damGroup = gate.svg.append("g").attr("id", "damGroup")
-            .attr("transform", "translate("+ width/2.83 +", 0)");
-        
+            .attr("transform", "translate(" + width / 2.83 + ", 0)");
+
         // dam element
         gate.svg.damGroup.selectAll("polygon.dam")
             .data([points]).enter()
             .append("polygon")
-                .attr("points", function(d) {
-                    return d.map(function(d) { // returns points to create the element
-                        return [scaleX(d.x), scaleY(d.y)].join(",");
-                    }).join(" ");
-                })
-                // .attr("transform", translate)
-                .style("fill", gate.config.damColor)
-                .style("stroke", gate.config.damStroke)
-                .style("stroke-width", gate.config.damThickness);
+            .attr("points", function (d) {
+                return d.map(function (d) { // returns points to create the element
+                    return [scaleX(d.x), scaleY(d.y)].join(",");
+                }).join(" ");
+            })
+            // .attr("transform", translate)
+            .style("fill", gate.config.damColor)
+            .style("stroke", gate.config.damStroke)
+            .style("stroke-width", gate.config.damThickness);
 
         gate.svg.gateGroup = gate.svg.damGroup.append("g")
             .attr("id", "gateGroup")
-            .attr("transform", function() { return gate.isOpen ? "translate(0, 0)" : "translate(0, 20)"});
+            .attr("transform", function () { return gate.isOpen ? "translate(0, 0)" : "translate(0, 20)" });
 
         // falling water
         gate.svg.gateGroup.append("path")
-                .attr("d", "M160.4,397.2H112l4.4-150c0.4-9.6,9.2-17.6,19.6-17.6l0,0c10.8,0,19.6,7.6,19.6,17.6L160.4,397.2z")
-                .attr("transform", "translate(-148, -280) scale(1.5)" )
-                .style("fill", function() { return gate.isOpen ? gate.config.fallingWaterColor : gate.config.backgroundColor; })
-                .style("opacity", function() { return gate.isOpen ? gate.config.fallingWaterOpacity : 1; })
-                .style("stroke", function() { return gate.isOpen ? gate.config.fallingWaterStroke : gate.config.backgroundColor; })
-                .style("stroke-width", function() { return gate.isOpen ? gate.config.fallingWaterThickness : 1; });
+            .attr("d", "M160.4,397.2H112l4.4-150c0.4-9.6,9.2-17.6,19.6-17.6l0,0c10.8,0,19.6,7.6,19.6,17.6L160.4,397.2z")
+            .attr("transform", "translate(-148, -280) scale(1.5)")
+            .style("fill", function () { return gate.isOpen ? "none" : gate.config.backgroundColor; })
+            .style("stroke", function () { return gate.isOpen ? "none" : gate.config.backgroundColor; })
+            .style("stroke-width", function () { return gate.isOpen ? 0 : 1; });
 
         // gate element
         var elem = { w: 62, h: 62, x: 25, y: 55 };
@@ -226,7 +233,7 @@ function GateElement(selector, value, config, isOpen) {
         // general
         // converting the value (scale from config.minValue to config.maxValue) to its equivalent value in a scale from 0 to 60.
         // it is necessary to fulfill only a portion of the svg that corresponds to the part below the dam's gate
-        svg.fillPercent = ((60*(value - config.minValue)) / (config.maxValue - config.minValue)) / 100;
+        svg.fillPercent = ((60 * (value - config.minValue)) / (config.maxValue - config.minValue)) / 100;
 
         // wave
         var range, domain;
@@ -240,7 +247,7 @@ function GateElement(selector, value, config, isOpen) {
 
         svg.waveAnimateTime = config.waveAnimateTime;
         svg.waveHeightScale = d3.scale.linear().range(range).domain(domain);
-        svg.waveHeight = (height/2) * svg.waveHeightScale((svg.fillPercent/0.6) * 100); // converting again to the original scale in order to calcule the wave height. The number 0.6 is the percentage that fulfills the dam.
+        svg.waveHeight = (height / 2) * svg.waveHeightScale((svg.fillPercent / 0.6) * 100); // converting again to the original scale in order to calcule the wave height. The number 0.6 is the percentage that fulfills the dam.
         svg.waveLength = width / config.waveCount;
         svg.waveClipCount = 1 + config.waveCount;
         svg.waveClipWidth = svg.waveLength * svg.waveClipCount;
@@ -264,9 +271,9 @@ function GateElement(selector, value, config, isOpen) {
 
         // The clipping wave area.
         svg.clipArea = d3.svg.area()
-            .x(function(d) { return svg.waveScaleX(d.x); } )
-            .y0(function(d) { return svg.waveScaleY(Math.sin(Math.PI*2*config.waveOffset*-1 + Math.PI*2*(1-config.waveCount) + d.y*2*Math.PI)); })
-            .y1(function(d) { return ((height) + svg.waveHeight); } );
+            .x(function (d) { return svg.waveScaleX(d.x); })
+            .y0(function (d) { return svg.waveScaleY(Math.sin(Math.PI * 2 * config.waveOffset * -1 + Math.PI * 2 * (1 - config.waveCount) + d.y * 2 * Math.PI)); })
+            .y1(function (d) { return ((height) + svg.waveHeight); });
     }
 
     /** @function createWave
@@ -283,7 +290,7 @@ function GateElement(selector, value, config, isOpen) {
         var data = []; // Data for building the clip wave area.
 
         for (var i = 0; i <= 40 * svg.waveClipCount; i++)
-            data.push({ x: i/(40 * svg.waveClipCount), y: (i/(40)) });
+            data.push({ x: i / (40 * svg.waveClipCount), y: (i / (40)) });
 
         //svg.waveGroup = svg.outerGroup.append("defs")
         svg.waveGroup = svg.append("defs")
@@ -301,7 +308,7 @@ function GateElement(selector, value, config, isOpen) {
             .attr("id", "waveGroup")
             .attr("clip-path", "url(#clipWaveGate)");
 
-        var width = parseInt(gate.svg.attr("width")), 
+        var width = parseInt(gate.svg.attr("width")),
             height = parseInt(gate.svg.attr("height"));
 
         svg.innerGroup.append("rect")
@@ -310,15 +317,85 @@ function GateElement(selector, value, config, isOpen) {
             .style("opacity", config.waveOpacity);
 
         if (config.waveRise) {
-            svg.waveGroup.attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(0)+')')
+            svg.waveGroup.attr('transform', 'translate(' + svg.waveGroupXPosition + ',' + svg.waveRiseScale(0) + ')')
                 .transition()
                 .duration(config.waveRiseTime)
-                .attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(svg.fillPercent)+')')
-                .each("start", function(){ svg.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
+                .attr('transform', 'translate(' + svg.waveGroupXPosition + ',' + svg.waveRiseScale(svg.fillPercent) + ')')
+                .each("start", function () { svg.wave.attr('transform', 'translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
         } else
-            svg.waveGroup.attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(svg.fillPercent)+')');
+            svg.waveGroup.attr('transform', 'translate(' + svg.waveGroupXPosition + ',' + svg.waveRiseScale(svg.fillPercent) + ')');
 
         if (config.waveAnimate) animateWave();
+
+        deferred.resolve();
+        return deferred.promise();
+    }
+
+    function resize() {
+
+    }
+
+    function createWaterfall() {
+        var deferred = $.Deferred();
+
+        var svg = gate.svg;
+        var fullWaterfallHeight = 212;
+        var minWaterfallHeight = 30;
+
+        var waterfallHeightScale = d3.scale.linear()
+            .domain([svg.waveRiseScale(0.6), svg.waveRiseScale(0)]) // min/max waterfall size in pixels
+            .range([minWaterfallHeight, fullWaterfallHeight]); // from full wave to empty wave       
+
+        var waterfallHeight = waterfallHeightScale(svg.waveRiseScale(svg.fillPercent));
+
+        gate.waterfall
+            .style("padding-top", "115px")
+            .style("padding-left", 375 / 2 - 33 + "px")
+            .html("<canvas id='waterfall'></canvas>");
+
+        var canvas = d3.select("canvas#waterfall");
+        canvas
+            .style("width", "67px")
+            .style("height", waterfallHeight + 7 + "px");
+
+        var isCanvasSupported = function () {
+            var elem = document.createElement('canvas');
+            return !!(elem.getContext && elem.getContext('2d'));
+        };
+
+        var setupRAF = function () {
+            var lastTime = 0;
+            var vendors = ['ms', 'moz', 'webkit', 'o'];
+            for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+                window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+            };
+
+            if (!window.requestAnimationFrame) {
+                window.requestAnimationFrame = function (callback, element) {
+                    var currTime = new Date().getTime();
+                    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                    var id = window.setTimeout(function () { callback(currTime + timeToCall); }, timeToCall);
+                    lastTime = currTime + timeToCall;
+                    return id;
+                };
+            };
+
+            if (!window.cancelAnimationFrame) {
+                window.cancelAnimationFrame = function (id) {
+                    clearTimeout(id);
+                };
+            };
+        };
+
+        if (isCanvasSupported()) {
+            var c = document.getElementById("waterfall");
+            var cw = c.width = parseFloat(canvas.style("width"));
+            var ch = c.height = parseFloat(canvas.style("height"));
+            svg.waterfall = new waterfallCanvas(c, cw, ch);
+            setupRAF();
+            svg.waterfall.init();
+        }
 
         deferred.resolve();
         return deferred.promise();
@@ -342,6 +419,162 @@ function GateElement(selector, value, config, isOpen) {
             });
     }
 
+    function waterfallCanvas(c, cw, ch) {
+        var _this = this;
+        this.c = c;
+        this.ctx = c.getContext('2d');
+        this.cw = cw;
+        this.ch = ch;
+
+        this.particles = [];
+        this.particleRate = 6;
+        this.gravity = .15;
+
+        this.update = function() {
+            var svg = gate.svg;
+            var fullWaterfallHeight = 212;
+            var minWaterfallHeight = 30;
+
+            var waterfallHeightScale = d3.scale.linear()
+                .domain([svg.waveRiseScale(0.6), svg.waveRiseScale(0)]) // min/max waterfall size in pixels
+                .range([minWaterfallHeight, fullWaterfallHeight]); // from full wave to empty wave       
+
+            var waterfallHeight = waterfallHeightScale(svg.waveRiseScale(svg.fillPercent));
+            var canvas = d3.select("canvas#waterfall");
+            canvas
+                .style("width", "67px")
+                .style("height", waterfallHeight + 7 + "px");
+
+            var newC = document.getElementById("waterfall");
+            var newCw = c.width = parseFloat(canvas.style("width"));
+            var newCh = c.height = parseFloat(canvas.style("height"));
+
+            this.particles = [];
+            this.particleRate = 6;
+            this.gravity = .15;
+
+            this.c = newC;
+            this.cw = newCw;
+            this.ch = newCh;
+
+            var loopIt = function () {
+                // requestAnimationFrame(loopIt, this.c);
+                _this.clearCanvas();
+                _this.createParticles();
+                _this.updateParticles();
+                _this.renderParticles();
+                _this.removeParticles();
+            };
+            loopIt();
+        };
+
+        this.init = function () {
+            this.loop();
+        };
+
+        this.reset = function () {
+            this.ctx.clearRect(0, 0, this.cw, this.ch);
+            this.particles = [];
+        };
+
+        this.rand = function (rMi, rMa) { return ~~((Math.random() * (rMa - rMi + 1)) + rMi); };
+
+        this.Particle = function () {
+            var color = d3.hsl(gate.config.waveColor);
+            var newWidth = _this.rand(1, 20);
+            var newHeight = _this.rand(1, 70);
+
+            this.x = _this.rand((newWidth / 2), _this.cw - (newWidth / 2));
+            this.y = -newHeight;
+            this.vx = 0;
+            this.vy = 0;
+            this.width = newWidth;
+            this.height = newHeight;
+            this.hue = color.h; //_this.rand(200, 220);
+            this.saturation = color.s * 100; //_this.rand(30, 60);
+            this.lightness = color.l * 100; //_this.rand(30, 60);
+        };
+
+        this.Particle.prototype.update = function (i) {
+            this.vx += this.vx;
+            this.vy += _this.gravity;
+            this.x += this.vx;
+            this.y += this.vy;
+        };
+
+        this.Particle.prototype.render = function () {
+            _this.ctx.strokeStyle = 'hsla(' + this.hue + ', ' + this.saturation + '%, ' + this.lightness + '%, .05)';
+            _this.ctx.beginPath();
+            _this.ctx.moveTo(this.x, this.y);
+            _this.ctx.lineTo(this.x, this.y + this.height);
+            _this.ctx.lineWidth = this.width / 2;
+            _this.ctx.lineCap = 'round';
+            _this.ctx.stroke();
+        };
+
+        this.Particle.prototype.renderBubble = function () {
+            _this.ctx.fillStyle = 'hsla(' + this.hue + ', 40%, 40%, 1)';
+            _this.ctx.fillStyle = 'hsla(' + this.hue + ', ' + this.saturation + '%, ' + this.lightness + '%, .3)';
+            _this.ctx.beginPath();
+            _this.ctx.arc(this.x + this.width / 2, _this.ch - 20 - _this.rand(0, 10), _this.rand(1, 8), 0, Math.PI * 2, false);
+            _this.ctx.fill();
+        };
+
+        this.createParticles = function () {
+            var i = this.particleRate;
+            while (i--) {
+                this.particles.push(new this.Particle());
+            }
+        };
+
+        this.removeParticles = function () {
+            var i = this.particleRate;
+            while (i--) {
+                var p = this.particles[i];
+                if (p.y > _this.ch - 20 - p.height) {
+                    p.renderBubble();
+                    _this.particles.splice(i, 1);
+                }
+            }
+        };
+
+        this.updateParticles = function () {
+            var i = this.particles.length;
+            while (i--) {
+                var p = this.particles[i];
+                p.update(i);
+            };
+        };
+
+        this.renderParticles = function () {
+            var i = this.particles.length;
+            while (i--) {
+                var p = this.particles[i];
+                p.render();
+            };
+        };
+
+        this.clearCanvas = function () {
+            this.ctx.globalCompositeOperation = 'destination-out';
+            this.ctx.fillStyle = 'rgba(255,255,255,.06)';
+            this.ctx.fillRect(0, 0, this.cw, this.ch);
+            this.ctx.globalCompositeOperation = 'source-over';
+        };
+
+        this.loop = function () {
+            var loopIt = function () {
+                requestAnimationFrame(loopIt, _this.c);
+                _this.clearCanvas();
+                _this.createParticles();
+                _this.updateParticles();
+                _this.renderParticles();
+                _this.removeParticles();
+            };
+            loopIt();
+        };
+
+    };
+
     /** @function update
      *  @description Update the whole svg.
      *  @param {Number} value - current value, used to rise the wave
@@ -351,27 +584,32 @@ function GateElement(selector, value, config, isOpen) {
         // console.log("Comporta: %s // Valor: %s", isOpen ? "aberta" : "fechada", isOpen ? value : 0);
 
         gate.isOpen = isOpen;
-        gate.isOpen ? setSVGProperties(gate.svg, gate.config, value) : setSVGProperties(gate.svg, gate.config, 0);
+
+        if (gate.isOpen) {
+            setSVGProperties(gate.svg, gate.config, value);
+            gate.waterfall.style("visibility", "visible");
+        }
+        else {
+            setSVGProperties(gate.svg, gate.config, 0);
+            gate.waterfall.style("visibility", "hidden");
+        }
 
         var groupId = gate.svg.gateGroup.attr("id");
-        var fallinWater = d3.select("#"+groupId+" > path");
+        var fallinWater = d3.select("#" + groupId + " > path");
         var newWavePosition = gate.config.waveAnimate ? gate.svg.waveAnimateScale(1) : 0;
 
         gate.svg.gateGroup
             .transition().duration(0)
-            .transition().duration(gate.config.waveRiseTime/2)
+            .transition().duration(gate.config.waveRiseTime / 2)
             .ease("linear")
-            .attr("transform", function() { return gate.isOpen ? "translate(0, 0)" : "translate(0, 20)"; })
-            .each("start", function() {
+            .attr("transform", function () { return gate.isOpen ? "translate(0, 0)" : "translate(0, 20)"; })
+            .each("start", function () {
                 if (!gate.isOpen) {
-                    fallinWater
-                        .transition().duration(0)
+                    var canvas = d3.select("canvas#waterfall");
+                    canvas
                         .transition().duration(gate.config.waveRiseTime)
                         .ease("linear")
-                        .style("fill", gate.config.backgroundColor)
-                        .style("opacity", 1)
-                        .style("stroke", gate.config.backgroundColor)
-                        .style("stroke-width", 1);
+                        .style("visibility", "hidden");
 
                     // wave animation
                     gate.svg.wave.transition()
@@ -379,30 +617,23 @@ function GateElement(selector, value, config, isOpen) {
                         .duration(gate.config.waveAnimate ? (gate.config.waveAnimateTime * (1 - gate.svg.wave.attr('T'))) : (gate.config.waveRiseTime))
                         .ease('linear')
                         .attr('d', gate.svg.clipArea)
-                        .attr('transform','translate('+newWavePosition+', 0)')
-                        .attr('T','1')
-                        .each("end", function() {
+                        .attr('transform', 'translate(' + newWavePosition + ', 0)')
+                        .attr('T', '1')
+                        .each("end", function () {
                             if (gate.config.waveAnimate) {
-                                gate.svg.wave.attr('transform', 'translate('+ gate.svg.waveAnimateScale(0) +', 0)');
+                                gate.svg.wave.attr('transform', 'translate(' + gate.svg.waveAnimateScale(0) + ', 0)');
                                 animateWave(gate.config.waveAnimateTime);
                             }
                         });
 
                     gate.svg.waveGroup.transition()
                         .duration(gate.config.waveRiseTime)
-                        .attr('transform','translate('+gate.svg.waveGroupXPosition+','+gate.svg.waveRiseScale(gate.svg.fillPercent)+')');
+                        .attr('transform', 'translate(' + gate.svg.waveGroupXPosition + ',' + gate.svg.waveRiseScale(gate.svg.fillPercent) + ')');
                 }
             })
-            .each("end", function() {
+            .each("end", function () {
                 if (gate.isOpen) {
-                    fallinWater
-                        .transition().duration(0)
-                        .transition().duration(gate.config.waveRiseTime)
-                        .ease("linear")
-                        .style("fill", gate.config.fallingWaterColor)
-                        .style("opacity", gate.config.fallingWaterOpacity)
-                        .style("stroke", gate.config.fallingWaterStroke)
-                        .style("stroke-width", gate.config.fallingWaterThickness);
+                    gate.svg.waterfall.update();
 
                     // wave animation
                     gate.svg.wave.transition()
@@ -410,18 +641,18 @@ function GateElement(selector, value, config, isOpen) {
                         .duration(gate.config.waveAnimate ? (gate.config.waveAnimateTime * (1 - gate.svg.wave.attr('T'))) : (gate.config.waveRiseTime))
                         .ease('linear')
                         .attr('d', gate.svg.clipArea)
-                        .attr('transform','translate('+newWavePosition+', 0)')
-                        .attr('T','1')
-                        .each("end", function() {
+                        .attr('transform', 'translate(' + newWavePosition + ', 0)')
+                        .attr('T', '1')
+                        .each("end", function () {
                             if (gate.config.waveAnimate) {
-                                gate.svg.wave.attr('transform', 'translate('+ gate.svg.waveAnimateScale(0) +', 0)');
+                                gate.svg.wave.attr('transform', 'translate(' + gate.svg.waveAnimateScale(0) + ', 0)');
                                 animateWave(gate.config.waveAnimateTime);
                             }
                         });
 
                     gate.svg.waveGroup.transition()
                         .duration(gate.config.waveRiseTime)
-                        .attr('transform','translate('+gate.svg.waveGroupXPosition+','+gate.svg.waveRiseScale(gate.svg.fillPercent)+')');
+                        .attr('transform', 'translate(' + gate.svg.waveGroupXPosition + ',' + gate.svg.waveRiseScale(gate.svg.fillPercent) + ')');
                 }
             });
     }
