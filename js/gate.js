@@ -13,7 +13,7 @@ function loadGateSettings() {
         waveHeightScaling: true, // Controls wave size scaling at low and high fill percentages. When true, wave height reaches it's maximum at 50% fill, and minimum at 0% and 100% fill. This helps to prevent the wave from making the wave circle from appear totally full or empty when near it's minimum or maximum fill.
         waveAnimate: true, // Controls if the wave scrolls or is static.
         waveColor: "#178BCA", // The color of the fill wave.
-        waveOpacity: 0.8, // the wave opacity
+        waveOpacity: 0.9, // the wave opacity
         waveOffset: 0, // The amount to initially offset the wave. 0 = no offset. 1 = offset of one full wave.
         valueCountUp: true, // If true, the displayed value counts up from 0 to it's final value upon loading. If false, the final value is displayed.
         // textSize: 0.4, // The relative height of the text to display in the wave circle. 1 = 50%
@@ -38,7 +38,7 @@ function loadGateSettings() {
         damStroke: "#E6E9EE",         // stroke of the dam. 
         damThickness: 2,              // stroke-width of the dam. 
         fallingWaterColor: "#178BCA", // color of the water that is falling from the dam's gate.
-        fallingWaterOpacity: 0.8,     // opacity of the water that is falling from the dam's gate. 
+        fallingWaterOpacity: 0.9,     // opacity of the water that is falling from the dam's gate. 
         fallingWaterStroke: "#178BCA",   // stroke of the falling water. No need to set it up, but still an option.
         fallingWaterThickness: 1,     // stroke-width of the falling water. No need to set it up, but still an option.
         gateColor: "#708090",         // color of the "gate" where the water comes from.
