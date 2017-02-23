@@ -529,6 +529,6 @@ function loadDefaultSettings() {
         liquidColor: "#178BCA", // the color of the liquid
         minTextColor: "#045681", // the color of the text for the minimum value
         maxTextColor: "#045681", // the color of the text for the maximum value
-        liquidOpacity: 0.9 // the liquid opacity
+        liquidOpacity: 0.7 // the liquid opacity
     };
 }
