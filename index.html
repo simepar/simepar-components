@@ -96,7 +96,7 @@
 
         // gate
         var gateConfig = loadGateSettings();
-        var gate = new GateElement("#gate", 92, gateConfig, true);
+        var gate = new GateElement("#gate", 24, gateConfig, true);
         //d3.select("#gate > svg").attr("width", "60%");
 
         // random values (every 3 seconds)
@@ -105,6 +105,7 @@
             // gate random values
             var gateValue = NewValue(gateConfig.minValue, gateConfig.maxValue),
                 isOpen = true; //Math.random() > .5; 
+                
             gate.update(gateValue, isOpen);
         }, 5000);
 
