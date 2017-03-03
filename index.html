@@ -101,8 +101,15 @@
                 <div id="flow" onclick="flow.update(NewValue(flowConfig.minValue, flowConfig.maxValue));"></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Gate</h2>
-                <div id="gate"></div>
+                <h2>Floodgate I</h2>
+                <div id="gate-i"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Floodgate II</h2>
+                <div id="gate-ii"></div>
             </div>
         </div>
 
@@ -125,7 +132,8 @@
     <!-- Custom JS -->
     <script src="js/components.js"></script>
     <script src="js/reservoir.js"></script>
-    <script src="js/gate.js"></script>
+    <script src="js/floodgate.v1.js"></script>
+    <script src="js/floodgate.v2.js"></script>
     <script src="js/flow.js"></script>
     <script src="js/cylinder.js"></script>
 
@@ -209,10 +217,14 @@
         var reConfig = loadReservoirSettings();
         var reservoir = new ReservoirElement("#reservoir", values, reConfig);
 
-        // gate
-        var gateConfig = loadGateSettings();
-        var gate = new GateElement("#gate", 50, gateConfig, false);
-        d3.select("#gate > svg").attr("width", "60%");
+        // floodgate I
+        var floodgateConfig = loadFloodgateSettings();
+        var floodgate1 = new FloodgateElement("#gate-i", 50, floodgateConfig, true);
+        d3.select("#gate-i > svg").attr("width", "60%");
+
+        // floodgate II
+        var waterfallConfig = loadFloodgateWaterfallSettings();
+        var floodgate2 = new FloodgateWaterfallElement("#gate-ii", 50, waterfallConfig, true);
 
         // flow
         var flowConfig = loadFlowSettings();
@@ -226,9 +238,11 @@
             reservoir.update(values);
 
             // gate random values
-            var gateValue = NewValue(gateConfig.minValue, gateConfig.maxValue),
-                isOpen = Math.random() > .4; 
-            gate.update(gateValue, isOpen);
+            var gateValue = NewValue(floodgateConfig.minValue, floodgateConfig.maxValue),
+                isOpen = Math.random() > .5;
+
+            floodgate1.update(gateValue, isOpen);
+            floodgate2.update(gateValue, isOpen);
         }, 5000);
 
         function NewValue(min, max) {
