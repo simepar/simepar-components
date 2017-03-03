@@ -292,8 +292,8 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
             .style("transform", function() {
                 var x, y;
                 
-                //x = (svgWidth / 2) - (d3.selectAll("#gateGroup > path")[0][1].getBoundingClientRect().width / 2.1);
-                x = 87;
+                x = (svgWidth / 2) - (d3.selectAll("#gateGroup > path")[0][1].getBoundingClientRect().width / 2.5);
+                //x = 87;
                 y = svgHeight - (svgHeight * 69/100) ;
 
                 return "translate("+x+"px,"+y+"px)";
