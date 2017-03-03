@@ -1,11 +1,11 @@
 "use strict";
 
-function loadGateSettings() {
+function loadFloodgateWaterfallSettings() {
     return {
         minValue: 0,    // min value. Used to calculate scales and associated stuff.
         maxValue: 100,  // max value. Used to calculate scales and associated stuff.
         scale: 1,       // // scale of the svg's parent div. Shouldn't be used. It is an alternative way to set size.
-        waveHeight: 0/*0.025*/, // The wave height as a percentage of the radius of the wave circle.
+        waveHeight: 0.02, // The wave height as a percentage of the radius of the wave circle.
         waveCount: 1, // The number of full waves per width of the wave circle.
         waveRiseTime: 1000, // The amount of time in milliseconds for the wave to rise from 0 to it's final height.
         waveAnimateTime: 5000, // The amount of time in milliseconds for a full wave to enter the wave circle.
@@ -40,7 +40,7 @@ function loadGateSettings() {
     };
 }
 
-function GateElement(selector, value, config, isOpen) { 
+function FloodgateWaterfallElement(selector, value, config, isOpen) { 
     var gate = this;
 
     // properties
@@ -57,6 +57,11 @@ function GateElement(selector, value, config, isOpen) {
     gate.resize = resize;
     gate.update = update;
 
+
+    /*******************************************************
+     * TODO: Find a way to make this component responsive! *
+     *******************************************************/
+
     /////////////////////////////////////
 
     // creates and displays the svg fully working
@@ -65,8 +70,8 @@ function GateElement(selector, value, config, isOpen) {
             gate.createGate().then(function () {
                 gate.createWave(gate.config, gate.value).then(function () {
                     gate.createWaterfall().then(function () {
-                        window.addEventListener("resize", gate.resize);
-                        gate.resize();
+                //         // window.addEventListener("resize", gate.resize);
+                //         // gate.resize();
                     });
                 });
             });
@@ -80,26 +85,19 @@ function GateElement(selector, value, config, isOpen) {
         var deferred = $.Deferred();
         var container = d3.select(gate.selector);
 
-        var width = 180,
-            height = 200;
+        var width = 158,
+            height = 132;
 
         // appends an svg to the div
         gate.svg = container.style("transform", "scale(" + gate.config.scale + ")")
             .append("svg")
-            .attr("id", "gate-svg")
+            .attr("id", "floodgate-" + gate.selector.split("#")[1])
             .attr({ width: width, height: height })
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + width + " " + height);
 
-        // gate.waterfall = gate.svg.append("foreignObject")
-        //     .attr({ width: "100%", height: "100%" })
-        //     // .attr({ width: width, height: height })
-        //     .append("xhtml:body")
-        //     .attr({ width: "100%", height: "100%" })
-        //     // .attr({ width: width, height: height });
-
         // pile's d element
-        var piles = [
+        var piles = ["M419.2,118c0-3.2-2.4-5.6-5.6-5.6s-5.6,2.4-5.6,5.6c0,2.4,1.6,4.4,3.6,5.2v73.2h3.6v-73.2   C417.6,122.4,419.2,120.4,419.2,118z",
             "M312.8,118c0-3.2-2.4-5.6-5.6-5.6s-5.6,2.4-5.6,5.6c0,2.4,1.6,4.4,3.6,5.2v73.2h3.6v-73.2   C311.2,122.4,312.8,120.4,312.8,118z",
             "M206.4,118c0-3.2-2.4-5.6-5.6-5.6c-3.2,0-5.6,2.4-5.6,5.6c0,2.4,1.6,4.4,3.6,5.2v73.2h3.6v-73.2   C204.8,122.4,206.4,120.4,206.4,118z",
             "M100,118c0-3.2-2.4-5.6-5.6-5.6s-5.6,2.4-5.6,5.6c0,2.4,1.6,4.4,3.6,5.2v73.2H96v-73.2   C98.4,122.4,100,120.4,100,118z"];
@@ -113,7 +111,7 @@ function GateElement(selector, value, config, isOpen) {
         // background group
         gate.svg.fenceGroup = gate.svg.append("g")
             .attr("id", "fenceGroup")
-            .attr("transform", "translate(-50, -72) scale(0.7)");
+            .attr("transform", "translate(-22, -45) scale(0.4)");
 
         // appending piles
         gate.svg.fenceGroup.selectAll("path.pile")
@@ -136,8 +134,8 @@ function GateElement(selector, value, config, isOpen) {
         // appending semi-circle background (under the fence)
         gate.svg.append("rect")
             .attr("id", "barrier")
-            .attr({ width: width, height: (height - 65) })
-            .attr("y", 65)
+            .attr({ width: width, height: (height - 33) })
+            .attr("y", 33)
             .style("fill", gate.config.backgroundColor)
             .style("stroke", gate.config.backgroundStroke)
             .style("stroke-width", gate.config.backgroundThickness);
@@ -153,19 +151,19 @@ function GateElement(selector, value, config, isOpen) {
         var deferred = $.Deferred();
         var container = d3.select(gate.selector);
 
-        var points = [{ "x": 0.03, "y": 0.10 },
-                    { "x": -0.05, "y": 0.9 },
-                    { "x": 0.35, "y": 0.9 },
-                    { "x": 0.27, "y": 0.10 }];
+        var points = [{ "x": 0.03, "y": 0.15 },
+                    { "x": -0.05, "y": 1 },
+                    { "x": 0.35, "y": 1 },
+                    { "x": 0.27, "y": 0.15 }];
 
-        var width = parseInt(gate.svg.style("width"));
-        var height = parseInt(gate.svg.style("height"));
+        var width = 158,
+            height = 132;
 
         // scales to create the dam element
         var scaleX = d3.scale.linear().domain([0, 1]).range([0, width]);
         var scaleY = d3.scale.linear().domain([0, 1]).range([0, height]);
 
-        var translate = "translate(0,25)";
+        var translate = "translate(0, 0)";
 
         // gate group
         gate.svg.damGroup = gate.svg.append("g").attr("id", "damGroup")
@@ -187,21 +185,21 @@ function GateElement(selector, value, config, isOpen) {
 
         gate.svg.gateGroup = gate.svg.damGroup.append("g")
             .attr("id", "gateGroup")
-            .attr("transform", function () { return gate.isOpen ? "translate(0, 0)" : "translate(0, 20)" });
+            .attr("transform", "translate(0, 0)");
 
         // falling water
         gate.svg.gateGroup.append("path")
             .attr("d", "M160.4,397.2H112l4.4-150c0.4-9.6,9.2-17.6,19.6-17.6l0,0c10.8,0,19.6,7.6,19.6,17.6L160.4,397.2z")
-            .attr("transform", "translate(-122.5, -200) scale(1.1)")
-            .style("fill", function () { return gate.isOpen ? gate.config.backgroundColor : gate.config.backgroundColor; })
-            .style("stroke", function () { return gate.isOpen ? gate.config.backgroundColor : gate.config.backgroundColor; })
+            .attr("transform", "translate(-112.2, -205)")
+            .style("fill", gate.config.backgroundColor)
+            .style("stroke", gate.config.backgroundColor)
             .style("stroke-width", function () { return gate.isOpen ? 0 : 1; })
             .style("opacity", 0.5);
 
         // element where the water falls from
         gate.svg.gateGroup.append("path")
             .attr("d", "M234.4,246c-0.8-9.2-9.2-16.4-19.6-16.4l0,0c-10.4,0-18.8,7.2-19.6,16.4H234.4z")
-            .attr("transform", "translate(-209, -200) scale(1.1)")
+            .attr("transform", "translate(-191, -205) ")
             .style("fill", "#324A5E");
 
         // gate element
@@ -239,7 +237,7 @@ function GateElement(selector, value, config, isOpen) {
         //svg.waveGroup = svg.outerGroup.append("defs")
         svg.waveGroup = svg.append("defs")
             .append("clipPath")
-            .attr("id", "clipWaveGate");
+            .attr("id", "clipWaveFloodgate-" + svg.attr("id"));
 
         svg.wave = svg.waveGroup.append("path")
             .datum(data)
@@ -250,10 +248,10 @@ function GateElement(selector, value, config, isOpen) {
         // svg.innerGroup = svg.outerGroup.append("g")
         svg.innerGroup = svg.append("g")
             .attr("id", "waveGroup")
-            .attr("clip-path", "url(#clipWaveGate)");
+            .attr("clip-path", "url(#clipWaveFloodgate-" + svg.attr("id") + ")");
 
-        var width = parseInt(gate.svg.attr("width")),
-            height = parseInt(gate.svg.attr("height"));
+        var width = 158,
+            height = 132;
 
         svg.innerGroup.append("rect")
             .attr({ width: width, height: height })
@@ -284,8 +282,7 @@ function GateElement(selector, value, config, isOpen) {
         var svgHeight = parseFloat(svg.style("height"));
 
         var canvas = container.append("canvas")
-            .attr("id", "canvasWaterfall")
-            .attr({ width: svgWidth, height: svgHeight })
+            .attr("id", "waterfall-" + svg.attr("id"))
             .style("position", "absolute")
             .style("z-index", 2)
             .style("top", 0)
@@ -295,27 +292,30 @@ function GateElement(selector, value, config, isOpen) {
             .style("transform", function() {
                 var x, y;
                 
-                x = (svgWidth / 2) - (d3.selectAll("#gateGroup > path")[0][1].getBoundingClientRect().width / 2.1);
-                y = svgHeight - (svgHeight * 64.7/100) ;
+                //x = (svgWidth / 2) - (d3.selectAll("#gateGroup > path")[0][1].getBoundingClientRect().width / 2.1);
+                x = 87;
+                y = svgHeight - (svgHeight * 69/100) ;
 
                 return "translate("+x+"px,"+y+"px)";
             })
-            .style("width", function() { return d3.selectAll("#gateGroup > path")[0][1].getBoundingClientRect().width + "px"; })
+            .style("width", function() {
+                return 39.1966667175293 + "px";  
+                //return d3.selectAll("#gateGroup > path")[0][1].getBoundingClientRect().width + "px"; 
+            })
             .style("height", function() {
+                var barrierHeight = 98.99147033691406; //d3.select("#barrier")[0][0].getBoundingClientRect().height;
+                var fullWaterfallHeight = barrierHeight;
+                fullWaterfallHeight += gate.value > 7 ? (barrierHeight * 11/100) : (barrierHeight * 7/100)
 
-                if (gate.value > 0) {
-                    var barrierHeight = d3.select("#barrier")[0][0].getBoundingClientRect().height;
-                    var fullWaterfallHeight = barrierHeight + (barrierHeight*11/100); //+ (d3.selectAll("#gateGroup > path")[0][1].getBoundingClientRect().height/2);
-                    var minWaterfallHeight = 21;
+                var minWaterfallHeight = 21;
+                var waterfallHeightScale = d3.scale.linear()
+                    .domain([svg.waveRiseScale(0.62), svg.waveRiseScale(0)]) // input: min/max waterfall size in pixels
+                    .range([minWaterfallHeight, fullWaterfallHeight]);         // output: from full wave to empty wave       
 
-                    var waterfallHeightScale = d3.scale.linear()
-                        .domain([svg.waveRiseScale(0.6), svg.waveRiseScale(0.01)]) // input: min/max waterfall size in pixels
-                        .range([minWaterfallHeight, fullWaterfallHeight]);         // output: from full wave to empty wave       
-
-                    var waterfallHeight = waterfallHeightScale(svg.waveRiseScale(svg.fillPercent));
-                    // console.log(waterfallHeight);
-                    return waterfallHeight + "px";
-                }
+                var waterfallHeight = waterfallHeightScale(svg.waveRiseScale(svg.fillPercent));
+                
+                // se o valor atual for 0, o tamanho da cachoeira tem que ser 0px
+                return svg.fillPercent > 0 ? waterfallHeight + "px" : "0px";
             });
 
         var isCanvasSupported = function () {
@@ -349,7 +349,7 @@ function GateElement(selector, value, config, isOpen) {
         };
 
         if (isCanvasSupported()) {
-            var c = document.getElementById("canvasWaterfall");
+            var c = document.getElementById("waterfall-" + svg.attr("id"));
             var cw = c.width = parseFloat(canvas.style("width"));
             var ch = c.height = parseFloat(canvas.style("height"));
             svg.waterfall = new waterfallCanvas(c, cw, ch);
@@ -361,11 +361,13 @@ function GateElement(selector, value, config, isOpen) {
         return deferred.promise();
     }
 
-    function resize() { 
-        gate.svg.attr({ width: "100%", height: "100%" });
+    /**
+     * TODO: Implement this function
+     */
+    function resize() {
+        // this makes the svg responsive 
+        // gate.svg.attr({ width: "100%", height: "100%" });
 
-        d3.select("canvas#canvasWaterfall").remove();
-        createWaterfall();
     }
 
     /** @function update
@@ -375,7 +377,7 @@ function GateElement(selector, value, config, isOpen) {
     */
     function update(value, isOpen) {
         gate.isOpen = isOpen;
-        var canvas = d3.select("canvas#canvasWaterfall");
+        var canvas = d3.select("canvas#waterfall-" + gate.svg.attr("id"));
 
         if (gate.isOpen) {
             setSVGProperties(gate.svg, gate.config, value);
@@ -452,8 +454,8 @@ function GateElement(selector, value, config, isOpen) {
     */
     function setSVGProperties(svg, config, value) {
         // sets width and height in order to do all the calculations to match the viewBox of the svg. After the SVG is rendered, it is resized to fill fully its container.
-        var width = 180;
-        var height = 200;
+        var width = 158,
+            height = 132;
 
         gate.value = value;
 
@@ -537,7 +539,6 @@ function GateElement(selector, value, config, isOpen) {
 
         this.particles = [];
         this.particleRate = Math.floor(particleRateScale(gate.value));
-        // this.particleRate = Math.floor(particleRateScale(100));
         this.gravity = .15;
 
         this.init = function () {
@@ -559,7 +560,6 @@ function GateElement(selector, value, config, isOpen) {
                 .range([5, 20]);
 
             var newWidth = _this.rand(1, Math.floor(scale(gate.value)));
-            // var newWidth = _this.rand(1, Math.floor(scale(100)));
             var newHeight = _this.rand(1, 70);
 
             this.x = _this.rand((newWidth / 2), _this.cw - (newWidth / 2));
@@ -568,8 +568,8 @@ function GateElement(selector, value, config, isOpen) {
             this.vy = 0;
             this.width = newWidth;
             this.height = newHeight;
-            this.hue = color.h; //_this.rand(200, 220);
-            this.saturation = _this.rand(color.s * 100 + 30, color.s * 100);//color.s * 100; //_this.rand(30, 60);
+            this.hue = color.h;
+            this.saturation = _this.rand(color.s * 100 + 30, color.s * 100);
             this.lightness = _this.rand(color.l * 100 + 30, color.l * 100);
         };
 
