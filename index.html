@@ -67,13 +67,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Floodgate I</h2>
-                <div id="gate-i">
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Floodgate II</h2>
-                <div id="gate-ii">
+                <h2>Waterflow</h2>
+                <div id="waterflow">
                 </div>
             </div>
         </div>
@@ -95,30 +90,34 @@
     <script src="https://d3js.org/d3.v3.min.js"></script>
 
     <!-- Custom JS -->
-    <script src="js/floodgate.v1.js"></script>
-    <script src="js/floodgate.v2.js"></script>
-
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.17.0/TweenMax.min.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/Physics2DPlugin.min.js"></script>
+    <script src="js/waterflow.js"></script>
     <script>
         
 
         // floodgate I
-        var floodgateConfig = loadFloodgateSettings();
-        var floodgate1 = new FloodgateElement("#gate-i", 50, floodgateConfig, true);
-        d3.select("#floodgate-gate-i").attr("width", "73.5%");
+        var waterflowConfig = loadWaterflowSettings();
+        var waterflow = new WaterflowElement("#waterflow", 50, waterflowConfig);
+        /*d3.select("#floodgate-gate-i").attr("width", "60%");
 
         // floodgate II
-        var waterfallConfig = loadFloodgateWaterfallSettings();
-        var floodgate2 = new FloodgateWaterfallElement("#gate-ii", 50, waterfallConfig, true);
+        var floodgateConfig2 = loadFloodgateCanvasSettings();
+        var floodgate2 = new FloodgateCanvasElement("#gate-ii", 50, floodgateConfig2, true);
+
+        // floodgate III
+        var floodgateConfig3 = loadFloodgateWaterfallSettings();
+        var floodgate2 = new FloodgateCanvasElement("#gate-ii", 50, floodgateConfig2, true);
 
         // random values (every 3 seconds)
         setInterval(function() {
             // gate random values
-            var gateValue = NewValue(floodgateConfig.minValue, floodgateConfig.maxValue),
+            var value = NewValue(floodgateConfig1.minValue, floodgateConfig1.maxValue),
                 isOpen = Math.random() > .5; 
             
-            floodgate1.update(gateValue, isOpen);
-            floodgate2.update(gateValue, isOpen);
-        }, 5000);
+            floodgate1.update(value, isOpen);
+            floodgate2.update(value, isOpen);
+        }, 5000);*/
 
         function NewValue(min, max) {
             return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
