@@ -94,30 +94,15 @@
     <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/Physics2DPlugin.min.js"></script>
     <script src="js/waterflow.js"></script>
     <script>
-        
-
-        // floodgate I
         var waterflowConfig = loadWaterflowSettings();
-        var waterflow = new WaterflowElement("#waterflow", 50, waterflowConfig);
-        /*d3.select("#floodgate-gate-i").attr("width", "60%");
+        var waterflow = new WaterflowElement("waterflow", 10, waterflowConfig);
+        //d3.select("#floodgate-gate-i").attr("width", "60%");
 
-        // floodgate II
-        var floodgateConfig2 = loadFloodgateCanvasSettings();
-        var floodgate2 = new FloodgateCanvasElement("#gate-ii", 50, floodgateConfig2, true);
-
-        // floodgate III
-        var floodgateConfig3 = loadFloodgateWaterfallSettings();
-        var floodgate2 = new FloodgateCanvasElement("#gate-ii", 50, floodgateConfig2, true);
-
-        // random values (every 3 seconds)
+        // random values (every 5 seconds)
         setInterval(function() {
-            // gate random values
-            var value = NewValue(floodgateConfig1.minValue, floodgateConfig1.maxValue),
-                isOpen = Math.random() > .5; 
-            
-            floodgate1.update(value, isOpen);
-            floodgate2.update(value, isOpen);
-        }, 5000);*/
+            var value = NewValue(waterflowConfig.minValue, waterflowConfig.maxValue);
+            waterflow.update(value);
+        }, 5000);
 
         function NewValue(min, max) {
             return Math.random() > .5 ? Math.round(Math.random() * (max - min) + min) : (Math.random() * (max - min) + min).toFixed(0);
