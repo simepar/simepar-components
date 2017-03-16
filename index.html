@@ -78,27 +78,8 @@
                 <div id="cylinder" onclick="cylinder.update(NewValue(cylinderConfig.minValue, cylinderConfig.maxValue));"></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Thermometer</h2>
-                <div id="thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Ruler</h2>
-                <div id="ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Leaf Wetness</h2>
-                <div id="leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Reservoir</h2>
-                <div id="reservoir"></div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <h2>Flow</h2>
-                <div id="flow" onclick="flow.update(NewValue(flowConfig.minValue, flowConfig.maxValue));"></div>
+                <h2>Waterflow</h2>
+                <div id="waterflow" onclick="waterflow.update(NewValue(waterflowConfig.minValue, waterflowConfig.maxValue));"></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Floodgate I</h2>
@@ -110,6 +91,29 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Floodgate II</h2>
                 <div id="gate-ii"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Reservoir</h2>
+                <div id="reservoir"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Flow</h2>
+                <div id="flow" onclick="flow.update(NewValue(flowConfig.minValue, flowConfig.maxValue));"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Thermometer</h2>
+                <div id="thermo" onclick="thermo.update(NewValue(thermoConfig.minValue, thermoConfig.maxValue));"></div>
+            </div>
+        </div>
+
+        <div class="row">         
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Ruler</h2>
+                <div id="ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <h2>Leaf Wetness</h2>
+                <div id="leaf" onclick="leaf.update(NewValue(leafConfig.minValue, leafConfig.maxValue));"></div>
             </div>
         </div>
 
@@ -130,12 +134,15 @@
     <script src="https://d3js.org/d3.v3.min.js"></script>
 
     <!-- Custom JS -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.17.0/TweenMax.min.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/Physics2DPlugin.min.js"></script>
     <script src="js/components.js"></script>
     <script src="js/reservoir.js"></script>
     <script src="js/floodgate.v1.js"></script>
     <script src="js/floodgate.v2.js"></script>
     <script src="js/flow.js"></script>
     <script src="js/cylinder.js"></script>
+    <script src="js/waterflow.js"></script>
 
     <script>
         var headerConfig = loadDefaultSettings();
@@ -229,6 +236,11 @@
         // flow
         var flowConfig = loadFlowSettings();
         var flow = new FlowElement("#flow", 55, flowConfig);
+
+        // waterflow
+        var waterflowConfig = loadWaterflowSettings();
+        var waterflow = new WaterflowElement("waterflow", 50, waterflowConfig);
+        d3.select("#waterflow > svg").attr("width", "57%");
 
         // random values (every 3 seconds)
         setInterval(function() {
