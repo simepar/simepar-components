@@ -12,8 +12,8 @@ function include(file)
   document.getElementsByTagName('head').item(0).appendChild(script);
 
 }
-include('js/Physics2DPlugin.min.js');
-include('js/TweenMax.min.js');
+include('Physics2DPlugin.min.js');
+include('TweenMax.min.js');
 
 function loadWaterflowSettings() {
     return {
