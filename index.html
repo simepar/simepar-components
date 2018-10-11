@@ -30,11 +30,11 @@
         .navbar-inverse .navbar-brand {
             color: white;
         }
-        
+
         #simepar-logo {
             color: white;
         }
-        
+
         #drop-header {
             padding-top: 50px;
         }
@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        <div class="row">         
+        <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <h2>Ruler</h2>
                 <div id="ruler" onclick="ruler.update(NewValue(rulerConfig.minValue, rulerConfig.maxValue));"></div>
@@ -165,7 +165,8 @@
         config.waveHeight = 0.05;
         config.waveCount = 1;
         config.minValue = 0;
-        config.maxValue = 100; 
+        config.maxValue = 100;
+        config.centerSVG = true;
         var drop = new Drop("#drop", 50, config);
         d3.select("#drop > svg").attr("width", "65%");
 
@@ -183,9 +184,10 @@
         rulerConfig.liquidColor = "rgb(174, 226, 67)";
         rulerConfig.minTextColor = "rgb(174, 226, 67)";
         rulerConfig.maxTextColor = "rgb(174, 226, 67)";
+        rulerConfig.centerSVG = true;
         var ruler = new Ruler("#ruler", 570, rulerConfig);
         d3.select("#ruler > svg").attr("width", "65%");
-        
+
         var thermoConfig = loadDefaultSettings();
         thermoConfig.waveAnimateTime = 5000;
         thermoConfig.strokeThickness = 0;
@@ -199,9 +201,10 @@
         thermoConfig.liquidOpacity = 0.7;
         thermoConfig.minValue = -10;
         thermoConfig.maxValue = 35;
+        thermoConfig.centerSVG = true;
         var thermo = new Thermo("#thermo", 10, thermoConfig);
         d3.select("#thermo > svg").attr("width", "65%");
-        
+
         var leafConfig = loadDefaultSettings();
         leafConfig.strokeThickness = 8;
         leafConfig.displayPercent = false;
@@ -213,9 +216,10 @@
         leafConfig.maxTextColor = "rgb(35, 99, 31)";
         leafConfig.liquidColor = "rgb(35, 99, 31)";
         leafConfig.liquidOpacity = 0.7;
+        leafConfig.centerSVG = true;
         var leaf = new Leaf("#leaf", 7, leafConfig);
         d3.select("#leaf > svg").attr("width", "65%");
-        
+
         // cylinder
         var cylinderConfig = loadCylinderSettings();
         var cylinder = new CylinderElement("#cylinder", 50, cylinderConfig);
