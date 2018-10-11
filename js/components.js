@@ -29,8 +29,8 @@ function WeatherElement(selector, value, el) {
     function centerGInSVG() {
         console.log(we.svg.node().getBoundingClientRect());
         console.log(we.svg.select("g").node().getBoundingClientRect());
-        var center_x = (we.svg.node().getBoundingClientRect().width - we.svg.select("g").node().getBoundingClientRect().width)/2
-        var center_y = (we.svg.node().getBoundingClientRect().height - we.svg.select("g").node().getBoundingClientRect().height)/2
+        var center_x = (we.svg.node().getBoundingClientRect().width - we.svg.select("g").node().getBoundingClientRect().width)
+        var center_y = (we.svg.node().getBoundingClientRect().height - we.svg.select("g").node().getBoundingClientRect().height)
         we.svg.select("g").attr('transform','translate(' + center_x + ',' + center_y +  ')')
     }
 
