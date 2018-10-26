@@ -379,7 +379,6 @@ function Ruler(selector, value, config) {
  *  @param {Object} config   - object that contains all the properties/values to customize the element
 */
 function Thermo(selector, value, config) {
-    console.log("Thermo")
     var thermo = this;
     thermo.config = config == null ? loadDefaultSettings() : thermo.config = config;
 
@@ -476,8 +475,6 @@ function Thermo(selector, value, config) {
  *  @param {Object} config   - object that contains all the properties/values to customize the element
 */
 function Leaf(selector, value, config) {
-    console.log("Leaf")
-
     var leaf = this;
     leaf.config = config == null ? loadDefaultSettings() : leaf.config = config;
 
