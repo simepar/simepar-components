@@ -44,13 +44,15 @@ function WeatherElement(selector, value, el) {
         $(we.selector).width(we.element.config.width);
         $(we.selector).height(we.element.config.height);
 
+        let svg_attributes = {
+            width: "100%", height: "100%", preserveAspectRatio: "xMinYMid meet",
+            viewBox: `0 0 ${we.element.config.width} ${we.element.config.height}`
+         }
+
         // appending and setting svg's height and width
         we.svg = d3.select(selector)
             .style("transform", "scale("+we.element.config.scale+")")
-            .append("svg")
-                .attr({ width: "100%", height: "100%" })
-                .attr("preserveAspectRatio", "xMinYMid meet")
-                .attr("viewBox", "0 0 "+we.element.config.width+" "+we.element.config.height);
+            .create("svg").attr(svg_attributes)
 
         // append a g element where all contents will be placed in
         we.elementGroup = we.svg.append("g")
