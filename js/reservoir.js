@@ -89,7 +89,8 @@ function ReservoirElement(selector, values, config) {
                 re.createUpStream().then(function() {
                     re.createDam().then(function() {
                         // fit svg to its container div
-                        re.svg.attr({ width: "100%", height: "100%" });
+                        re.svg.attr("width", "100%")
+                            .attr("height", "100%")
                     });
                 });
             });
@@ -110,7 +111,8 @@ function ReservoirElement(selector, values, config) {
         re.svg = container.style("transform", "scale("+re.config.scale+")")
             .append("svg")
                 .attr("id", "reservoir-svg")
-                .attr({ width: width, height: height })
+                .attr("width", width)
+                .attr("height", height)
                 .attr("preserveAspectRatio", "xMinYMin meet")
                 .attr("viewBox", "0 0 " + width + " " + height)
                 .style("margin", "0 auto")  // center svg 
@@ -144,11 +146,11 @@ function ReservoirElement(selector, values, config) {
             .duration(0)
             .transition()
             .duration(config.waveAnimate ? (config.waveAnimateTime * (1 - svg.wave.attr('T'))) : (svg.config.waveRiseTime))
-            .ease('linear')
+            .ease(d3.easeLinear)
             .attr('d', svg.clipArea)
             .attr('transform','translate('+newWavePosition+', 0)')
             .attr('T','1')
-            .each("end", function() {
+            .on("end", function() {
                 if (config.waveAnimate) {
                     svg.wave.attr('transform', 'translate('+ svg.waveAnimateScale(0) +', 0)');
                     animateWave(svg, config.waveAnimateTime);
@@ -193,7 +195,8 @@ function ReservoirElement(selector, values, config) {
         re.downStreamSVG = re.svg.append("svg")
             .attr("id", "downStream")
             .attr("x", width+1) // +1 only to not overlay the downstream group
-            .attr({ width: "50%", height: "100%" })
+            .attr("width", "50%")
+            .attr("height", "100%")
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + width + " " + height);
         
@@ -224,7 +227,8 @@ function ReservoirElement(selector, values, config) {
 
         re.upStreamSVG = re.svg.append("svg")
             .attr("id", "upStream")
-            .attr({ width: "50%", height: "100%" })
+            .attr("width", "50%")
+            .attr("height", "100%")
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + width + " " + height);
                     
@@ -257,8 +261,8 @@ function ReservoirElement(selector, values, config) {
         var height = parseInt(re.svg.style("height"));
 
         // scales to create the dam element
-        var scaleX = d3.scale.linear().domain([0,1]).range([0, width]);
-        var scaleY = d3.scale.linear().domain([0,1]).range([0, height]);
+        var scaleX = d3.scaleLinear().domain([0,1]).range([0, width]);
+        var scaleY = d3.scaleLinear().domain([0,1]).range([0, height]);
 
         // points to create dam element
         var points = [{"x": 0.0, "y": 0.0},
@@ -317,7 +321,7 @@ function ReservoirElement(selector, values, config) {
         }
 
         svg.waveAnimateTime = config.waveAnimateTime;
-        svg.waveHeightScale = d3.scale.linear().range(range).domain(domain);
+        svg.waveHeightScale = d3.scaleLinear().range(range).domain(domain);
         svg.waveHeight = svg.radius * svg.waveHeightScale(svg.fillPercent * 100);
         svg.waveLength = svg.radius * 2 / config.waveCount;
         svg.waveClipCount = 1 + config.waveCount;
@@ -325,23 +329,23 @@ function ReservoirElement(selector, values, config) {
         svg.waveGroupXPosition = svg.radius * 2 - svg.waveClipWidth;
 
         // Scales for controlling the size of the clipping path.
-        svg.waveScaleX = d3.scale.linear().range([0, svg.waveClipWidth]).domain([0, 1]);
-        svg.waveScaleY = d3.scale.linear().range([0, svg.waveHeight]).domain([0, 1]);
+        svg.waveScaleX = d3.scaleLinear().range([0, svg.waveClipWidth]).domain([0, 1]);
+        svg.waveScaleY = d3.scaleLinear().range([0, svg.waveHeight]).domain([0, 1]);
 
         // Scales for controlling the position of the clipping path.
-        svg.waveRiseScale = d3.scale.linear()
+        svg.waveRiseScale = d3.scaleLinear()
             // The clipping area size is the height of the fill circle + the wave height, so we position the clip wave
             // such that the it will overlap the fill circle at all when at 0%, and will totally cover the fill
             // circle at 100%.
             .range([(svg.radius * 2 + svg.waveHeight), (svg.waveHeight)])
             .domain([0, 1]);
 
-        svg.waveAnimateScale = d3.scale.linear()
+        svg.waveAnimateScale = d3.scaleLinear()
             .range([0, svg.waveClipWidth - svg.radius * 2]) // Push the clip area one full wave then snap back.
             .domain([0, 1]);
 
         // The clipping wave area.
-        svg.clipArea = d3.svg.area()
+        svg.clipArea = d3.area()
             .x(function(d) { return svg.waveScaleX(d.x); } )
             .y0(function(d) { return svg.waveScaleY(Math.sin(Math.PI*2*config.waveOffset*-1 + Math.PI*2*(1-config.waveCount) + d.y*2*Math.PI)); })
             .y1(function(d) { return (svg.radius * 2 + svg.waveHeight); } );
@@ -397,7 +401,8 @@ function ReservoirElement(selector, values, config) {
         svg.innerGroup = svg.outerGroup.append("g")
             .attr("clip-path", "url(#clipWave" + svg.attr("id") + ")");
         svg.innerGroup.append("rect")
-            .attr({ width: width, height: height })
+            .style("width", width)
+            .style("height", height)
             .style("fill", config.waveColor)
             .style("opacity", config.waveOpacity);
 
@@ -415,7 +420,7 @@ function ReservoirElement(selector, values, config) {
                 .transition()
                 .duration(config.waveRiseTime)
                 .attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(svg.fillPercent)+')')
-                .each("start", function(){ svg.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
+                .on("start", function(){ svg.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
         } else
             svg.waveGroup.attr('transform','translate('+svg.waveGroupXPosition+','+svg.waveRiseScale(svg.fillPercent)+')');
 
@@ -430,10 +435,10 @@ function ReservoirElement(selector, values, config) {
         svg.wave.attr('transform', 'translate(' + svg.waveAnimateScale(svg.wave.attr('T')) + ',0)');
         svg.wave.transition()
             .duration(svg.waveAnimateTime * (1 - svg.wave.attr('T')))
-            .ease('linear')
+            .ease(d3.easeLinear)
             .attr('transform', 'translate(' + svg.waveAnimateScale(1) + ',0)')
             .attr('T', 1)
-            .each('end', function () {
+            .on('end', function () {
                 svg.wave.attr('T', 0);
                 animateWave(svg, svg.waveAnimateTime);
             });
@@ -476,14 +481,16 @@ function ReservoirElement(selector, values, config) {
         svg.maxText1 // max value text
             .text(svg.textRounder(config.maxValue).toFixed(config.ruler.decimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.max)
+            .attr("x", coords.max.x)
+            .attr("y", coords.max.y)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.valueTextColor);
 
         svg.minText1 // min value text
             .text(svg.textRounder(svg.textStartValue).toFixed(config.ruler.decimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.min)
+            .attr("x", coords.min.x)
+            .attr("y", coords.min.y)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.valueTextColor);
 
@@ -498,14 +505,16 @@ function ReservoirElement(selector, values, config) {
         svg.maxText2 // max value text
             .text(svg.textRounder(config.maxValue).toFixed(config.ruler.decimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.max)
+            .attr("x", coords.max.x)
+            .attr("y", coords.max.y)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.waveTextColor);
 
         svg.minText2 // min value text
             .text(svg.textRounder(svg.textStartValue).toFixed(config.ruler.decimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.min)
+            .attr("x", coords.min.x)
+            .attr("y", coords.min.y)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.waveTextColor);
 

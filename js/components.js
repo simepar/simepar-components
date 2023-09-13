@@ -45,12 +45,12 @@ function WeatherElement(selector, value, el) {
         $(we.selector).height(we.element.config.height);
 
         // appending and setting svg's height and width
-        we.svg = d3.select(selector)
-            .style("transform", "scale("+we.element.config.scale+")")
-            .append("svg")
-                .attr({ width: "100%", height: "100%" })
-                .attr("preserveAspectRatio", "xMinYMid meet")
-                .attr("viewBox", "0 0 "+we.element.config.width+" "+we.element.config.height);
+        we.svg = d3.select(selector).append("svg")
+        .attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMid meet")
+        .attr("viewBox", `0 0 ${we.element.config.width} ${we.element.config.height}`)
+        .style("transform", "scale("+we.element.config.scale+")")
+
+
 
         // append a g element where all contents will be placed in
         we.elementGroup = we.svg.append("g")
@@ -132,11 +132,11 @@ function WeatherElement(selector, value, el) {
             we.fillPercent = (((we.value-(we.element.config.minValue))*100)/(we.element.config.maxValue-we.element.config.minValue))/100;
 
         if(we.element.config.waveHeightScaling){
-            we.waveHeightScale = d3.scale.linear()
+            we.waveHeightScale = d3.scaleLinear()
                 .range([0,we.element.config.waveHeight,0])
                 .domain([0,50,100]);
         } else {
-            we.waveHeightScale = d3.scale.linear()
+            we.waveHeightScale = d3.scaleLinear()
                 .range([we.element.config.waveHeight,we.element.config.waveHeight])
                 .domain([0,100]);
         }
@@ -153,23 +153,23 @@ function WeatherElement(selector, value, el) {
         }
 
         // Scales for controlling the size of the clipping path.
-        we.waveScaleX = d3.scale.linear().range([0, we.waveClipWidth]).domain([0,1]);
-        we.waveScaleY = d3.scale.linear().range([0, we.waveHeight]).domain([0,1]);
+        we.waveScaleX = d3.scaleLinear().range([0, we.waveClipWidth]).domain([0,1]);
+        we.waveScaleY = d3.scaleLinear().range([0, we.waveHeight]).domain([0,1]);
 
         // Scales for controlling the position of the clipping path.
-        we.waveRiseScale = d3.scale.linear()
+        we.waveRiseScale = d3.scaleLinear()
             // The clipping area size is the height of the fill circle + the wave height, so we position the clip wave
             // such that the it will overlap the fill circle at all when at 0%, and will totally cover the fill
             // circle at 100%.
             .range([(we.fillCircleMargin + we.fillCircleRadius * 2 + we.waveHeight),(we.fillCircleMargin - we.waveHeight)])
             .domain([0,1]);
 
-        we.waveAnimateScale = d3.scale.linear()
+        we.waveAnimateScale = d3.scaleLinear()
             .range([0, we.waveClipWidth - we.fillCircleRadius*2]) // Push the clip area one full wave then snap back.
             .domain([0,1]);
 
         // The clipping wave area.
-        we.clipArea = d3.svg.area()
+        we.clipArea = d3.area()
             .x(function(d) { return we.waveScaleX(d.x); } )
             .y0(function(d) { return we.waveScaleY(Math.sin(Math.PI * 2 * we.element.config.waveOffset * -1 + Math.PI * 2 * (1 - we.element.config.waveCount) + d.y * 2 * Math.PI));} )
             .y1(function(d) { return (we.fillCircleRadius*2 + we.waveHeight); } );
@@ -190,7 +190,7 @@ function WeatherElement(selector, value, el) {
                 .transition()
                 .duration(we.element.config.waveRiseTime)
                 .attr('transform','translate('+we.waveGroupXPosition+','+we.waveRiseScale(we.fillPercent)+')')
-                .each("start", function(){ we.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
+                .on("start", function(){ we.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
         } else {
             we.waveGroup.attr('transform','translate('+we.waveGroupXPosition+','+we.waveRiseScale(we.fillPercent)+')');
         }
@@ -205,10 +205,10 @@ function WeatherElement(selector, value, el) {
         we.wave.attr('transform','translate('+we.waveAnimateScale(we.wave.attr('T'))+',0)');
         we.wave.transition()
             .duration(we.element.config.waveAnimateTime * (1-we.wave.attr('T')))
-            .ease('linear')
+            .ease(d3.easeLinear)
             .attr('transform','translate('+we.waveAnimateScale(1)+',0)')
             .attr('T', 1)
-            .each('end', function(){
+            .on('end', function(){
                 we.wave.attr('T', 0);
                 animateWave(we.element.config.waveAnimateTime);
             });
@@ -225,7 +225,7 @@ function WeatherElement(selector, value, el) {
 
         we.waveHeight = we.fillCircleRadius * we.waveHeightScale(we.fillPercent * 100);
 
-        we.waveRiseScale = d3.scale.linear()
+        we.waveRiseScale = d3.scaleLinear()
             // The clipping area size is the height of the fill circle + the wave height, so we position the clip wave
             // such that the it will overlap the fill circle at all when at 0%, and will totally cover the fill
             // circle at 100%.
@@ -233,13 +233,13 @@ function WeatherElement(selector, value, el) {
             .domain([0,1]);
 
         var newHeight = we.waveRiseScale(we.fillPercent);
-        we.waveScaleX = d3.scale.linear().range([0, we.waveClipWidth]).domain([0,1]);
-        we.waveScaleY = d3.scale.linear().range([0, we.waveHeight]).domain([0,1]);
+        we.waveScaleX = d3.scaleLinear().range([0, we.waveClipWidth]).domain([0,1]);
+        we.waveScaleY = d3.scaleLinear().range([0, we.waveHeight]).domain([0,1]);
 
         var newClipArea;
 
         if(we.element.config.waveHeightScaling){
-            newClipArea = d3.svg.area()
+            newClipArea = d3.area()
                 .x(function(d) { return we.waveScaleX(d.x); } )
                 .y0(function(d) { return we.waveScaleY(Math.sin(Math.PI*2*we.element.config.waveOffset*-1 + Math.PI*2*(1-we.element.config.waveCount) + d.y*2*Math.PI));} )
                 .y1(function(d) { return (we.fillCircleRadius*2 + we.waveHeight); } );
@@ -252,7 +252,7 @@ function WeatherElement(selector, value, el) {
             .duration(0)
             .transition()
             .duration(we.element.config.waveAnimate ? (we.element.config.waveAnimateTime * (1-we.wave.attr('T'))):(we.element.config.waveRiseTime))
-            .ease('linear')
+            .ease(d3.easeLinear)
             .attr('d', newClipArea)
             .attr('transform','translate('+newWavePosition+',0)')
             .attr('T','1')
