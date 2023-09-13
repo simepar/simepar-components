@@ -414,7 +414,7 @@ function FlowElement(selector, value, config) {
                 });
         } 
         else { // dont make the value count up
-            var bbox = svg.valueText2[0][0].getBBox(); // getting the text's length so that I can place the unit text correctly
+            var bbox = svg.valueText2._groups[0][0].getBBox(); // getting the text's length so that I can place the unit text correctly
 
             svg.unitText1 // svg's title unit
                 .text(config.unit)
