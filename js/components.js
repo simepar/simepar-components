@@ -252,7 +252,7 @@ function WeatherElement(selector, value, el) {
             .duration(0)
             .transition()
             .duration(we.element.config.waveAnimate ? (we.element.config.waveAnimateTime * (1-we.wave.attr('T'))):(we.element.config.waveRiseTime))
-            .ease('linear')
+            .ease(d3.easeLinear)
             .attr('d', newClipArea)
             .attr('transform','translate('+newWavePosition+',0)')
             .attr('T','1')
