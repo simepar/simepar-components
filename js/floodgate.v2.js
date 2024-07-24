@@ -92,7 +92,8 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
         gate.svg = container.style("transform", "scale(" + gate.config.scale + ")")
             .append("svg")
             .attr("id", "floodgate-" + gate.selector.split("#")[1])
-            .attr({ width: width, height: height })
+            .attr("width", width)
+            .attr("height", height)
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + width + " " + height);
 
@@ -134,7 +135,8 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
         // appending semi-circle background (under the fence)
         gate.svg.append("rect")
             .attr("id", "barrier")
-            .attr({ width: width, height: (height - 33) })
+            .attr("width", width)
+            .attr("height", (height - 33))
             .attr("y", 33)
             .style("fill", gate.config.backgroundColor)
             .style("stroke", gate.config.backgroundStroke)
@@ -160,8 +162,8 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
             height = 132;
 
         // scales to create the dam element
-        var scaleX = d3.scale.linear().domain([0, 1]).range([0, width]);
-        var scaleY = d3.scale.linear().domain([0, 1]).range([0, height]);
+        var scaleX = d3.scaleLinear().domain([0, 1]).range([0, width]);
+        var scaleY = d3.scaleLinear().domain([0, 1]).range([0, height]);
 
         var translate = "translate(0, 0)";
 
@@ -254,7 +256,8 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
             height = 132;
 
         svg.innerGroup.append("rect")
-            .attr({ width: width, height: height })
+            .attr("width", width)
+            .attr("height", height)
             .style("fill", config.waveColor)
             .style("opacity", config.waveOpacity);
 
@@ -263,7 +266,7 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
                 .transition()
                 .duration(config.waveRiseTime)
                 .attr('transform', 'translate(' + svg.waveGroupXPosition + ',' + svg.waveRiseScale(svg.fillPercent) + ')')
-                .each("start", function () { svg.wave.attr('transform', 'translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
+                .on("start", function () { svg.wave.attr('transform', 'translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
         } else
             svg.waveGroup.attr('transform', 'translate(' + svg.waveGroupXPosition + ',' + svg.waveRiseScale(svg.fillPercent) + ')');
 
@@ -292,7 +295,7 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
             .style("transform", function() {
                 var x, y;
                 
-                x = (svgWidth / 2) - (d3.selectAll("#gateGroup > path")[0][1].getBoundingClientRect().width / 2.5);
+                x = (svgWidth / 2) - (d3.selectAll("#gateGroup > path")._groups[0][1].getBoundingClientRect().width / 2.5);
                 //x = 87;
                 y = svgHeight - (svgHeight * 69/100) ;
 
@@ -308,7 +311,7 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
                 fullWaterfallHeight += gate.value > 7 ? (barrierHeight * 11/100) : (barrierHeight * 7/100)
 
                 var minWaterfallHeight = 21;
-                var waterfallHeightScale = d3.scale.linear()
+                var waterfallHeightScale = d3.scaleLinear()
                     .domain([svg.waveRiseScale(0.62), svg.waveRiseScale(0)]) // input: min/max waterfall size in pixels
                     .range([minWaterfallHeight, fullWaterfallHeight]);         // output: from full wave to empty wave       
 
@@ -393,9 +396,9 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
         gate.svg.gateGroup
             .transition().duration(0)
             .transition().duration(gate.config.waveRiseTime / 2)
-            .ease("linear")
+            .ease(d3.easeLinear)
             // .attr("transform", function () { return gate.isOpen ? "translate(0, 0)" : "translate(0, 20)"; })
-            .each("start", function () {
+            .on("start", function () {
                 if (!gate.isOpen) {
                     canvas.remove();
 
@@ -403,11 +406,11 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
                     gate.svg.wave.transition()
                         .duration(0).transition()
                         .duration(gate.config.waveAnimate ? (gate.config.waveAnimateTime * (1 - gate.svg.wave.attr('T'))) : (gate.config.waveRiseTime))
-                        .ease('linear')
+                        .ease(d3.easeLinear)
                         .attr('d', gate.svg.clipArea)
                         .attr('transform', 'translate(' + newWavePosition + ', 0)')
                         .attr('T', '1')
-                        .each("end", function () {
+                        .on("end", function () {
                             if (gate.config.waveAnimate) {
                                 gate.svg.wave.attr('transform', 'translate(' + gate.svg.waveAnimateScale(0) + ', 0)');
                                 animateWave(gate.config.waveAnimateTime);
@@ -419,7 +422,7 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
                         .attr('transform', 'translate(' + gate.svg.waveGroupXPosition + ',' + gate.svg.waveRiseScale(gate.svg.fillPercent) + ')');
                 }
             })
-            .each("end", function () {
+            .on("end", function () {
                 if (gate.isOpen) {
                     canvas.remove();
                     createWaterfall();
@@ -428,11 +431,11 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
                     gate.svg.wave.transition()
                         .duration(0).transition()
                         .duration(gate.config.waveAnimate ? (gate.config.waveAnimateTime * (1 - gate.svg.wave.attr('T'))) : (gate.config.waveRiseTime))
-                        .ease('linear')
+                        .ease(d3.easeLinear)
                         .attr('d', gate.svg.clipArea)
                         .attr('transform', 'translate(' + newWavePosition + ', 0)')
                         .attr('T', '1')
-                        .each("end", function () {
+                        .on("end", function () {
                             if (gate.config.waveAnimate) {
                                 gate.svg.wave.attr('transform', 'translate(' + gate.svg.waveAnimateScale(0) + ', 0)');
                                 animateWave(gate.config.waveAnimateTime);
@@ -478,7 +481,7 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
         }
 
         svg.waveAnimateTime = config.waveAnimateTime;
-        svg.waveHeightScale = d3.scale.linear().range(range).domain(domain);
+        svg.waveHeightScale = d3.scaleLinear().range(range).domain(domain);
         svg.waveHeight = (height / 2) * svg.waveHeightScale((svg.fillPercent / 0.60) * 100); // converting again to the original scale in order to calcule the wave height. The number 0.6 is the percentage that fulfills the dam.
         svg.waveLength = width / config.waveCount;
         svg.waveClipCount = 1 + config.waveCount;
@@ -486,23 +489,23 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
         svg.waveGroupXPosition = width - svg.waveClipWidth;
 
         // Scales for controlling the size of the clipping path.
-        svg.waveScaleX = d3.scale.linear().range([0, svg.waveClipWidth]).domain([0, 1]);
-        svg.waveScaleY = d3.scale.linear().range([0, svg.waveHeight]).domain([0, 1]);
+        svg.waveScaleX = d3.scaleLinear().range([0, svg.waveClipWidth]).domain([0, 1]);
+        svg.waveScaleY = d3.scaleLinear().range([0, svg.waveHeight]).domain([0, 1]);
 
         // Scales for controlling the position of the clipping path.
-        svg.waveRiseScale = d3.scale.linear()
+        svg.waveRiseScale = d3.scaleLinear()
             // The clipping area size is the height of the fill circle + the wave height, so we position the clip wave
             // such that the it will overlap the fill circle at all when at 0%, and will totally cover the fill
             // circle at 100%.
             .range([(height + svg.waveHeight), (svg.waveHeight)])
             .domain([0, 1]);
 
-        svg.waveAnimateScale = d3.scale.linear()
+        svg.waveAnimateScale = d3.scaleLinear()
             .range([0, svg.waveClipWidth - width]) // Push the clip area one full wave then snap back.
             .domain([0, 1]);
 
         // The clipping wave area.
-        svg.clipArea = d3.svg.area()
+        svg.clipArea = d3.area()
             .x(function (d) { return svg.waveScaleX(d.x); })
             .y0(function (d) { return svg.waveScaleY(Math.sin(Math.PI * 2 * config.waveOffset * -1 + Math.PI * 2 * (1 - config.waveCount) + d.y * 2 * Math.PI)); })
             .y1(function (d) { return ((height) + svg.waveHeight); });
@@ -517,10 +520,10 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
         svg.wave.attr('transform', 'translate(' + svg.waveAnimateScale(svg.wave.attr('T')) + ',0)');
         svg.wave.transition()
             .duration(svg.waveAnimateTime * (1 - svg.wave.attr('T')))
-            .ease('linear')
+            .ease(d3.easeLinear)
             .attr('transform', 'translate(' + svg.waveAnimateScale(1) + ',0)')
             .attr('T', 1)
-            .each('end', function () {
+            .on('end', function () {
                 svg.wave.attr('T', 0);
                 animateWave(svg.waveAnimateTime);
             });
@@ -533,7 +536,7 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
         this.cw = cw;
         this.ch = ch;
 
-        var particleRateScale = d3.scale.linear()
+        var particleRateScale = d3.scaleLinear()
             .domain([gate.config.minValue, gate.config.maxValue])
             .range([1, 10]);
 
@@ -555,7 +558,7 @@ function FloodgateWaterfallElement(selector, value, config, isOpen) {
         this.Particle = function () {
             var color = d3.hsl(gate.config.waveColor);
 
-            var scale = d3.scale.linear()
+            var scale = d3.scaleLinear()
                 .domain([gate.config.minValue, gate.config.maxValue])
                 .range([5, 20]);
 

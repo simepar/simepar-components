@@ -83,7 +83,8 @@ function FlowElement(selector, value, config) {
     updateTextLabels(value);
 
     // Fits svg to its container div.
-    svg.attr({ width: "100%", height: "100%" });
+    svg.attr("width", "100%")
+    svg.attr("height", "100%")
 
     /////////////////////////////////////////
 
@@ -104,15 +105,19 @@ function FlowElement(selector, value, config) {
         var svg = container.style("transform", "scale("+ config.scale +")")
                     .append("svg")
                         .attr("id", "flow-svg")
-                        .attr({ width: width, height: height })
+                        .attr("width", width)
+                        .attr("height", height)
                         .attr("preserveAspectRatio", "xMinYMin meet")
                         .attr("viewBox", "0 0 " + width + " " + height)
-                        .style({ margin: "0 auto", display: "block" });
+                        .style("margin", "0 auto")
+                        .style("display", "block");
 
         svg.append("rect")
             .attr("id", "backgroundBorder")
-            .attr({ width: width-10, height: height-10 })
-            .attr({ x: 5, y: 5 })
+            .attr("width", width-10)
+            .attr("height", height-10)
+            .attr("x", 5)
+            .attr("y", 5)
             .style("fill", config.background.color)
             .style("stroke", config.background.stroke)
             .style("stroke-width", config.background.thickness);
@@ -160,8 +165,10 @@ function FlowElement(selector, value, config) {
         svg.innerGroup = svg.outerGroup.append("g")
             .attr("clip-path", "url(#clipWaveFlow)");
         svg.waveRect = svg.innerGroup.append("rect")
-            .attr({ width: width-10, height: height-10 })
-            .attr({ x: 5, y: 5 })
+            .attr("width", width-10)
+            .attr("height", height-10)
+            .attr("x", 5)
+            .attr("y", 5)
             .style("fill", properties.waveColor)
             .style("opacity", config.waveOpacity);
 
@@ -178,7 +185,7 @@ function FlowElement(selector, value, config) {
                 .transition()
                 .duration(config.waveRiseTime)
                 .attr('transform','translate('+properties.waveGroupXPosition+','+properties.waveRiseScale(properties.fillPercent)+')')
-                .each("start", function(){ svg.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
+                .on("start", function(){ svg.wave.attr('transform','translate(1,0)'); }); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
         } else
             svg.waveGroup.attr('transform','translate('+properties.waveGroupXPosition+','+properties.waveRiseScale(properties.fillPercent)+')');
 
@@ -196,10 +203,10 @@ function FlowElement(selector, value, config) {
         svg.wave.attr('transform', 'translate(' + properties.waveAnimateScale(svg.wave.attr('T')) + ',0)');
         svg.wave.transition()
             .duration(waveAnimateTime * (1 - svg.wave.attr('T')))
-            .ease('linear')
+            .ease(d3.easeLinear)
             .attr('transform', 'translate(' + properties.waveAnimateScale(1) + ',0)')
             .attr('T', 1)
-            .each('end', function () {
+            .on('end', function () {
                 svg.wave.attr('T', 0);
                 animateWave(waveAnimateTime);
             });
@@ -233,7 +240,7 @@ function FlowElement(selector, value, config) {
 
         properties.waveColor = waveConfig.waveColor;
         properties.waveAnimateTime = waveConfig.waveAnimateTime;
-        properties.waveHeightScale = d3.scale.linear().range(range).domain(domain);
+        properties.waveHeightScale = d3.scaleLinear().range(range).domain(domain);
         properties.waveHeight = (height/2) * properties.waveHeightScale(properties.fillPercent * 100);
         properties.waveLength = width / config.waveCount;
         properties.waveClipCount = 1 + config.waveCount;
@@ -241,23 +248,23 @@ function FlowElement(selector, value, config) {
         properties.waveGroupXPosition = width - properties.waveClipWidth;
 
         // Scales for controlling the size of the clipping path.
-        properties.waveScaleX = d3.scale.linear().range([0, properties.waveClipWidth]).domain([0, 1]);
-        properties.waveScaleY = d3.scale.linear().range([0, properties.waveHeight]).domain([0, 1]);
+        properties.waveScaleX = d3.scaleLinear().range([0, properties.waveClipWidth]).domain([0, 1]);
+        properties.waveScaleY = d3.scaleLinear().range([0, properties.waveHeight]).domain([0, 1]);
 
         // Scales for controlling the position of the clipping path.
-        properties.waveRiseScale = d3.scale.linear()
+        properties.waveRiseScale = d3.scaleLinear()
             // The clipping area size is the height of the fill circle + the wave height, so we position the clip wave
             // such that the it will overlap the fill circle at all when at 0%, and will totally cover the fill
             // circle at 100%.
             .range([(height + properties.waveHeight), (properties.waveHeight)])
             .domain([0, 1]);
 
-        properties.waveAnimateScale = d3.scale.linear()
+        properties.waveAnimateScale = d3.scaleLinear()
             .range([0, properties.waveClipWidth - width]) // Push the clip area one full wave then snap back.
             .domain([0, 1]);
 
         // The clipping wave area.
-        properties.clipArea = d3.svg.area()
+        properties.clipArea = d3.area()
             .x(function(d) { return properties.waveScaleX(d.x); } )
             .y0(function(d) { return properties.waveScaleY(Math.sin(Math.PI*2*config.waveOffset*-1 + Math.PI*2*(1-config.waveCount) + d.y*2*Math.PI)); })
             .y1(function(d) { return ((height) + properties.waveHeight); } );
@@ -304,7 +311,8 @@ function FlowElement(selector, value, config) {
             .text(config.title)
             .attr("text-anchor", "start")
             .attr("font-size", properties.titleTextPixels + "px")
-            .attr({ x: 10, y: properties.titleTextPixels })
+            .attr("x", 10)
+            .attr("y", properties.titleTextPixels)
             .style("fill", config.text.titleTextColor);
 
         svg.valueText1 // current value text
@@ -318,14 +326,16 @@ function FlowElement(selector, value, config) {
         svg.maxText1 // max value text
             .text(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.max)
+            .attr("x", coords.max.x)
+            .attr("y", coords.max.y)
             .attr("font-size", properties.maxTextPixels + "px")
             .style("fill", config.text.maxTextColor);
 
         svg.minText1 // min value text
             .text(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.min)
+            .attr("x", coords.min.x)
+            .attr("y", coords.min.y)
             .attr("font-size", properties.minTextPixels + "px")
             .style("fill", config.text.minTextColor);
 
@@ -337,7 +347,8 @@ function FlowElement(selector, value, config) {
             .text(config.title)
             .attr("text-anchor", "start")
             .attr("font-size", properties.titleTextPixels + "px")
-            .attr({ x: 10, y: properties.titleTextPixels })
+            .attr("x", 10)
+            .attr("y", properties.titleTextPixels)
             .style("fill", config.text.titleWaveTextColor);
 
         svg.valueText2 // current value text
@@ -350,14 +361,16 @@ function FlowElement(selector, value, config) {
         svg.maxText2 // max value text
             .text(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.max)
+            .attr("x", coords.max.x)
+            .attr("y", coords.max.y)
             .attr("font-size", properties.maxTextPixels + "px")
             .style("fill", config.text.maxWaveTextColor);
 
         svg.minText2 // min value text
             .text(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.min)
+            .attr("x", coords.min.x)
+            .attr("y", coords.min.y)
             .attr("font-size", properties.minTextPixels + "px")
             .style("fill", config.text.minWaveTextColor);
 
@@ -372,14 +385,15 @@ function FlowElement(selector, value, config) {
                 .duration(config.waveRiseTime)
                 .attr('transform', translate)
                 .tween("text", textTween)
-                .each("end", function() {
+                .on("end", function() {
                     var bbox = this.getBBox();
 
                     svg.unitText1 // svg's title unit
                         .text(config.unit)
                         .attr("text-anchor", "start")
                         .attr("font-size", properties.unitTextPixels + "px")
-                        .attr({ x: properties.textWidth+bbox.width/2, y: properties.textHeight-5 })
+                        .attr("x", properties.textWidth+bbox.width/2)
+                        .attr("y", properties.textHeight-5)
                         .style("fill", config.text.unitTextColor);
                 });
 
@@ -387,32 +401,35 @@ function FlowElement(selector, value, config) {
                 .duration(config.waveRiseTime)
                 .attr('transform', translate)
                 .tween("text", textTween)
-                .each("end", function() {
+                .on("end", function() {
                     var bbox = this.getBBox();
 
                     svg.unitText2 // svg's title unit
                         .text(config.unit)
                         .attr("text-anchor", "start")
                         .attr("font-size", properties.unitTextPixels + "px")
-                        .attr({ x: properties.textWidth+(bbox.width/2), y: properties.textHeight-5 })
+                        .attr("x", properties.textWidth+(bbox.width/2))
+                        .attr("y", properties.textHeight-5)
                         .style("fill", config.text.unitWaveTextColor);
                 });
         } 
         else { // dont make the value count up
-            var bbox = svg.valueText2[0][0].getBBox(); // getting the text's length so that I can place the unit text correctly
+            var bbox = svg.valueText2._groups[0][0].getBBox(); // getting the text's length so that I can place the unit text correctly
 
             svg.unitText1 // svg's title unit
                 .text(config.unit)
                 .attr("text-anchor", "start")
                 .attr("font-size", properties.unitTextPixels + "px")
-                .attr({ x: properties.textWidth+bbox.width/2, y: properties.textHeight-5 })
+                .attr("x", properties.textWidth+bbox.width/2)
+                .attr("y", properties.textHeight-5)
                 .style("fill", config.text.unitTextColor);
 
             svg.unitText2 // svg's title unit
                 .text(config.unit)
                 .attr("text-anchor", "start")
                 .attr("font-size", properties.unitTextPixels + "px")
-                .attr({ x: properties.textWidth+(bbox.width/2), y: properties.textHeight-5 })
+                .attr("x", properties.textWidth+(bbox.width/2))
+                .attr("y", properties.textHeight-5)
                 .style("fill", config.text.unitWaveTextColor);
         }
     }
@@ -427,9 +444,9 @@ function FlowElement(selector, value, config) {
         var steps    = config.stepsWaveColor;
         var interval = (config.maxValue - config.minValue) / steps;
         
-        var colorScale     = d3.scale.linear().domain([-1, steps]).range([config.startWaveColor, config.endWaveColor]); // -1 so that the first shade is a light blue, not white.
-        var animationScale = d3.scale.linear().domain([-1, steps]).range([10000, 500]); // 18000 = soft wave ~ 500 = strong wave
-        var waveCountScale = d3.scale.linear().domain([0, steps]).range([1, 5]);       // 1 to 5 waves
+        var colorScale     = d3.scaleLinear().domain([-1, steps]).range([config.startWaveColor, config.endWaveColor]); // -1 so that the first shade is a light blue, not white.
+        var animationScale = d3.scaleLinear().domain([-1, steps]).range([10000, 500]); // 18000 = soft wave ~ 500 = strong wave
+        var waveCountScale = d3.scaleLinear().domain([0, steps]).range([1, 5]);       // 1 to 5 waves
 
         var start = config.minValue;
         var end = start + interval;
@@ -474,11 +491,11 @@ function FlowElement(selector, value, config) {
                 .duration(0)
                 .transition()
                 .duration(config.waveAnimate ? (properties.waveAnimateTime * (1 - svg.wave.attr('T'))) : (config.waveRiseTime))
-                .ease('linear')
+                .ease(d3.easeLinear)
                 .attr('d', properties.clipArea)
                 .attr('transform','translate('+newWavePosition+', 0)')
                 .attr('T','1')
-                .each("end", function() {
+                .on("end", function() {
                     if (config.waveAnimate) {
                         svg.wave.attr('transform', 'translate('+ properties.waveAnimateScale(0) +', 0)');
                         animateWave(properties.waveAnimateTime);
@@ -491,7 +508,7 @@ function FlowElement(selector, value, config) {
 
             svg.waveRect.transition()
                 .duration(config.waveRiseTime)
-                .ease("linear")
+                .ease(d3.easeLinear)
                 .style("fill", properties.waveColor);
 
             // make the value count up
@@ -508,24 +525,26 @@ function FlowElement(selector, value, config) {
                     .duration(config.waveRiseTime)
                     .attr('transform', translate)
                     .tween("text", textTween)
-                    .each("end", function() {
+                    .on("end", function() {
                         var bbox = this.getBBox();
 
                         svg.unitText1.transition() // svg's updates title unit
                             .duration(500)
-                            .attr({ x: properties.textWidth+(bbox.width/2), y: properties.textHeight-5 });
+                            .attr("x", properties.textWidth+(bbox.width/2))
+                            .attr("y", properties.textHeight-5)
                     });
 
                 svg.valueText2.transition()
                     .duration(config.waveRiseTime)
                     .attr('transform', translate)
                     .tween("text", textTween)
-                    .each("end", function() {
+                    .on("end", function() {
                         var bbox = this.getBBox();
                         
                         svg.unitText2.transition() // svg's updates title unit
                             .duration(500)
-                            .attr({ x: properties.textWidth+(bbox.width/2), y: properties.textHeight-5 });
+                            .attr("x", properties.textWidth+(bbox.width/2))
+                            .attr("y", properties.textHeight-5)
                     });
             }
             else {
@@ -537,10 +556,12 @@ function FlowElement(selector, value, config) {
 
                 var bbox = svg.valueText1[0][0].getBBox();
                 svg.unitText1
-                    .attr({ x: properties.textWidth+(bbox.width/2), y: properties.textHeight-5 });
+                    .attr("x", properties.textWidth+(bbox.width/2))
+                    .attr("y", properties.textHeight-5)
 
                 svg.unitText2
-                    .attr({ x: properties.textWidth+(bbox.width/2), y: properties.textHeight-5 });
+                    .attr("x", properties.textWidth+(bbox.width/2))
+                    .attr("y", properties.textHeight-5)
             }
         }
     }

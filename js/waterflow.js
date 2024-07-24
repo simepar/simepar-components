@@ -61,7 +61,8 @@ function WaterflowElement(elementId, value, config) {
         var svg = container.style("transform", "scale(" + config.scale + ")")
             .append("svg")
             .attr("id", "waterflow-" + waterflow.id)
-            .attr({ width: width, height: height })
+            .attr("width", width)
+            .attr("height", height)
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + width + " " + height)
             .style("max-width", "100%")
@@ -84,10 +85,10 @@ function WaterflowElement(elementId, value, config) {
         var fillCircleRadius = radius - fillCircleMargin;
 
         // Scales for drawing the outer circle.
-        var scaleCircleX = d3.scale.linear().domain([0, 1]).range([0, 2 * Math.PI]);
-        var scaleCircleY = d3.scale.linear().domain([0, radius]).range([0, radius]);
+        var scaleCircleX = d3.scaleLinear().domain([0, 1]).range([0, 2 * Math.PI]);
+        var scaleCircleY = d3.scaleLinear().domain([0, radius]).range([0, radius]);
 
-        var circleArc = d3.svg.arc()
+        var circleArc = d3.arc()
             .startAngle(scaleCircleX(0))
             .endAngle(scaleCircleX(1))
             .outerRadius(scaleCircleY(radius))
@@ -242,7 +243,7 @@ function WaterflowElement(elementId, value, config) {
 
         // Creates a speed scale so that the ripple will go faster/slower based on the current value.
         // 10 = slow ~ 2.5 = fast
-        var speedScale = d3.scale.linear().domain([config.minValue, config.maxValue]).range([10, 2.5]);
+        var speedScale = d3.scaleLinear().domain([config.minValue, config.maxValue]).range([10, 2.5]);
         var speed = speedScale(value);
 
         rippleTl.to(ripple, speed, {
@@ -351,7 +352,7 @@ function WaterflowElement(elementId, value, config) {
 
         // Creates a speed scale so that the ripple will go faster/slower based on the current value.
         // 10 = slow ~ 2.5 = fast
-        var speedScale = d3.scale.linear().domain([config.minValue, config.maxValue]).range([10, 2.5]);
+        var speedScale = d3.scaleLinear().domain([config.minValue, config.maxValue]).range([10, 2.5]);
         var speed = speedScale(value);
 
         rippleTl.to(ripple, speed, {

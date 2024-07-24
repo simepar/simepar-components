@@ -76,7 +76,8 @@ function CylinderElement(selector, value, config) {
             cylinder.createCylinder().then(function() {
                 cylinder.createWave().then(function() {
                     // Fits svg to its container div.
-                    cylinder.svg.attr({ width: "100%", height: "100%" });
+                    cylinder.svg.attr("width", "100%")
+                    cylinder.svg.attr("height", "100%")
                 });
             });
         });
@@ -98,7 +99,8 @@ function CylinderElement(selector, value, config) {
         cylinder.svg = container.style("transform", "scale("+ config.scale +")")
                     .append("svg")
                         .attr("id", "cylinder-svg")
-                        .attr({ width: width, height: height })
+                        .attr("width", width)
+                        .attr("height", height)
                         .attr("preserveAspectRatio", "xMinYMin meet")
                         .attr("viewBox", "0 0 " + width + " " + height);
                         //.style({ margin: "0 auto", display: "block" });
@@ -179,7 +181,7 @@ function CylinderElement(selector, value, config) {
                 .transition()
                 .duration(config.waveRiseTime)
                 .attr('transform','translate('+properties.waveGroupXPosition+','+properties.waveRiseScale(properties.fillPercent)+')')
-                .each("start", function(){ 
+                .on("start", function(){
                     svg.wave.attr('transform','translate(1,0)'); // This transform is necessary to get the clip wave positioned correctly when waveRise=true and waveAnimate=false. The wave will not position correctly without this, but it's not clear why this is actually necessary.
 
                     if (cylinder.value != config.maxValue)
@@ -187,7 +189,7 @@ function CylinderElement(selector, value, config) {
                             .style("fill", config.cylinder.top.color)
                             .style("opacity", 1); 
                 })
-                .each("end", function() {
+                .on("end", function() {
                     if (cylinder.value == config.maxValue)
                         svg.top
                             .style("fill", config.waveColor)
@@ -212,10 +214,10 @@ function CylinderElement(selector, value, config) {
         svg.wave.attr('transform', 'translate(' + properties.waveAnimateScale(svg.wave.attr('T')) + ',0)');
         svg.wave.transition()
             .duration(properties.waveAnimateTime * (1 - svg.wave.attr('T')))
-            .ease('linear')
+            .ease(d3.easeLinear)
             .attr('transform', 'translate(' + properties.waveAnimateScale(1) + ',0)')
             .attr('T', 1)
-            .each('end', function () {
+            .on('end', function () {
                 svg.wave.attr('T', 0);
                 animateWave(properties.waveAnimateTime);
             });
@@ -239,7 +241,7 @@ function CylinderElement(selector, value, config) {
             .duration(0)
             .transition()
             .duration(config.waveAnimate ? (config.waveAnimateTime * (1 - svg.wave.attr('T'))) : (config.waveRiseTime))
-            .ease('linear')
+            .ease(d3.easeLinear)
             .attr('d', properties.clipArea)
             .attr('transform','translate('+newWavePosition+', 0)')
             .attr('T','1')
@@ -291,7 +293,7 @@ function CylinderElement(selector, value, config) {
         }
 
         properties.waveAnimateTime = config.waveAnimateTime;
-        properties.waveHeightScale = d3.scale.linear().range(range).domain(domain);
+        properties.waveHeightScale = d3.scaleLinear().range(range).domain(domain);
         properties.waveHeight = (height/2) * properties.waveHeightScale(properties.fillPercent * 100);
         properties.waveLength = width / config.waveCount;
         properties.waveClipCount = 1 + config.waveCount;
@@ -299,23 +301,23 @@ function CylinderElement(selector, value, config) {
         properties.waveGroupXPosition = width - properties.waveClipWidth + 81; // +81 because it is translated. See cylinderGroup element.
 
         // Scales for controlling the size of the clipping path.
-        properties.waveScaleX = d3.scale.linear().range([0, properties.waveClipWidth]).domain([0, 1]);
-        properties.waveScaleY = d3.scale.linear().range([0, properties.waveHeight]).domain([0, 1]);
+        properties.waveScaleX = d3.scaleLinear().range([0, properties.waveClipWidth]).domain([0, 1]);
+        properties.waveScaleY = d3.scaleLinear().range([0, properties.waveHeight]).domain([0, 1]);
 
         // Scales for controlling the position of the clipping path.
-        properties.waveRiseScale = d3.scale.linear()
+        properties.waveRiseScale = d3.scaleLinear()
             // The clipping area size is the height of the fill circle + the wave height, so we position the clip wave
             // such that the it will overlap the fill circle at all when at 0%, and will totally cover the fill
             // circle at 100%.
             .range([(height + properties.waveHeight+75), (properties.waveHeight+75)]) // +75 because it is translated. See cylinderGroup element.
             .domain([0, 1]);
 
-        properties.waveAnimateScale = d3.scale.linear()
+        properties.waveAnimateScale = d3.scaleLinear()
             .range([0, properties.waveClipWidth - width]) // Push the clip area one full wave then snap back.
             .domain([0, 1]);
 
         // The clipping wave area.
-        properties.clipArea = d3.svg.area()
+        properties.clipArea = d3.area()
             .x(function(d) { return properties.waveScaleX(d.x); } )
             .y0(function(d) { return properties.waveScaleY(Math.sin(Math.PI*2*config.waveOffset*-1 + Math.PI*2*(1-config.waveCount) + d.y*2*Math.PI)); })
             .y1(function(d) { return ((height) + properties.waveHeight); } );
@@ -342,9 +344,7 @@ function CylinderElement(selector, value, config) {
         var properties = getSVGProperties(config, value);
 
         var textAnchor = "start";   // text anchor for min/max values.
-        var coords = {};
-        coords.min = { x: 520-81, y: 500 }; // x,y coordinates for positioning the min text element
-        coords.max = { x: 520-81, y: properties.maxTextPixels };       // x,y coordinates for positioning the max text element
+
 
         /** 
          * Texts where the wave does not overlap
@@ -352,14 +352,16 @@ function CylinderElement(selector, value, config) {
         svg.maxText1 // max value text
             .text(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.max)
+            .attr("x", 520-81)
+            .attr("y", properties.maxTextPixels)
             .attr("font-size", properties.maxTextPixels + "px")
             .style("fill", config.text.maxTextColor);
 
         svg.minText1 // min value text
             .text(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces))
             .attr("text-anchor", textAnchor)
-            .attr(coords.min)
+            .attr("x", 520-81)
+            .attr("y", 500)
             .attr("font-size", properties.minTextPixels + "px")
             .style("fill", config.text.minTextColor);
 
