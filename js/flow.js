@@ -304,6 +304,11 @@ function FlowElement(selector, value, config) {
         coords.min = { x: 490, y: height-10 }; // x,y coordinates for positioning the min text element
         coords.max = { x: 490, y: properties.maxTextPixels };       // x,y coordinates for positioning the max text element
 
+        const localeCode = Intl.DateTimeFormat().resolvedOptions().locale;
+        const valueNumberFormat = new Intl.NumberFormat(localeCode, config.text.valueDecimalPlaces);
+        const minNumberFormat = new Intl.NumberFormat(localeCode, config.text.minValueDecimalPlaces);
+        const maxNumberFormat = new Intl.NumberFormat(localeCode, config.text.maxValueDecimalPlaces);
+
         /** 
          * Texts where the wave does not overlap
         */
@@ -315,24 +320,26 @@ function FlowElement(selector, value, config) {
             .attr("y", properties.titleTextPixels)
             .style("fill", config.text.titleTextColor);
 
+        const valueText1 = valueNumberFormat.format(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces));
         svg.valueText1 // current value text
-            .text(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces))
-            // .text("marco")
+            .text(valueText1)
             .attr("text-anchor", "middle")
             .attr("font-size", properties.textPixels + "px")
             .style("fill", config.text.valueTextColor)
             .attr('transform', translate)
-            
+
+        const maxText1 = minNumberFormat.format(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces));
         svg.maxText1 // max value text
-            .text(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces))
+            .text(maxText1)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.max.x)
             .attr("y", coords.max.y)
             .attr("font-size", properties.maxTextPixels + "px")
             .style("fill", config.text.maxTextColor);
 
+        const minText1 = minNumberFormat.format(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces));
         svg.minText1 // min value text
-            .text(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces))
+            .text(minText1)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.min.x)
             .attr("y", coords.min.y)
@@ -351,23 +358,26 @@ function FlowElement(selector, value, config) {
             .attr("y", properties.titleTextPixels)
             .style("fill", config.text.titleWaveTextColor);
 
+        const valueText2 = valueNumberFormat.format(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces));
         svg.valueText2 // current value text
-            .text(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces))
+            .text(valueText2)
             .attr("text-anchor", "middle")
             .attr("font-size", properties.textPixels + "px")
             .style("fill", config.text.valueWaveTextColor)
             .attr('transform', translate);
 
+        const maxText2 = maxNumberFormat.format(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces));
         svg.maxText2 // max value text
-            .text(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces))
+            .text(maxText2)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.max.x)
             .attr("y", coords.max.y)
             .attr("font-size", properties.maxTextPixels + "px")
             .style("fill", config.text.maxWaveTextColor);
 
+        const minText2 = minNumberFormat.format(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces));
         svg.minText2 // min value text
-            .text(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces))
+            .text(minText2)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.min.x)
             .attr("y", coords.min.y)
