@@ -275,7 +275,7 @@ function FlowElement(selector, value, config) {
         properties.minTextPixels = (config.text.minTextSize * height / 2.5);
         properties.maxTextPixels = (config.text.maxTextSize * height / 2.5);
         properties.textPixels = (config.text.valueTextSize * height / 2.5);
-        properties.textFinalValue = parseFloat(value).toFixed(config.valueDecimalPlaces);
+        properties.textFinalValue = parseFloat(value).toFixed(config.text.valueDecimalPlaces);
         properties.textStartValue = config.valueCountUp ? config.minValue : properties.textFinalValue;
         properties.textWidth  = width/2; 
         properties.textHeight = height/1.6; //properties.waveRiseScale(0.40);
@@ -304,7 +304,7 @@ function FlowElement(selector, value, config) {
         coords.min = { x: 490, y: height-10 }; // x,y coordinates for positioning the min text element
         coords.max = { x: 490, y: properties.maxTextPixels };       // x,y coordinates for positioning the max text element
 
-        const localeCode = Intl.DateTimeFormat().resolvedOptions().locale;
+        const localeCode = (new Intl.Locale(navigator.language)).baseName;
         const valueNumberFormat = new Intl.NumberFormat(localeCode, config.text.valueDecimalPlaces);
         const minNumberFormat = new Intl.NumberFormat(localeCode, config.text.minValueDecimalPlaces);
         const maxNumberFormat = new Intl.NumberFormat(localeCode, config.text.maxValueDecimalPlaces);
@@ -388,7 +388,9 @@ function FlowElement(selector, value, config) {
         if (config.valueCountUp) {
             var textTween = function(){
                 var i = d3.interpolate(this.textContent, properties.textFinalValue);
-                return function(t) { this.textContent = properties.textRounder(i(t)).toFixed(config.text.valueDecimalPlaces); }
+                return function(t) {
+                    this.textContent = valueNumberFormat.format(properties.textRounder(i(t)).toFixed(config.text.valueDecimalPlaces));
+                }
             };
 
             svg.valueText1.transition()
@@ -497,6 +499,9 @@ function FlowElement(selector, value, config) {
 
             var newWavePosition = config.waveAnimate ? properties.waveAnimateScale(1) : 0;
 
+            const localeCode = (new Intl.Locale(navigator.language)).baseName;
+            const valueNumberFormat = new Intl.NumberFormat(localeCode, config.text.valueDecimalPlaces);
+
             svg.wave.transition()
                 .duration(0)
                 .transition()
@@ -526,8 +531,8 @@ function FlowElement(selector, value, config) {
                 var translate = "translate("+(properties.textWidth)+","+(properties.textHeight)+")"; // move the current value to the middle of the svg
                 var textTween = function(){
                     var i = d3.interpolate(this.textContent, properties.textFinalValue);
-                    return function(t) { 
-                        this.textContent = properties.textRounder(i(t)).toFixed(config.text.valueDecimalPlaces);
+                    return function(t) {
+                        this.textContent = valueNumberFormat.format(properties.textRounder(i(t)).toFixed(config.text.valueDecimalPlaces));
                     }
                 };
 
@@ -558,11 +563,15 @@ function FlowElement(selector, value, config) {
                     });
             }
             else {
+                const value1 = properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces);
+                const valueText1 = valueNumberFormat.format(value1);
                 svg.valueText1 // updates current value text
-                    .text(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces));
+                    .text(valueText1);
 
+                const value2 = properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces);
+                const valueText2 = valueNumberFormat.format(value2);
                 svg.valueText2 // updates current value text
-                    .text(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces));
+                    .text(valueText2);
 
                 var bbox = svg.valueText1[0][0].getBBox();
                 svg.unitText1
