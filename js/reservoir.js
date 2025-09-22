@@ -66,7 +66,7 @@ function loadReservoirSettings() {
 
 function ReservoirElement(selector, values, config) {
     var re = this;
-    
+
     // properties
     re.selector = selector;
     re.config = config == null ? loadReservoirSettings() : config;
@@ -141,6 +141,8 @@ function ReservoirElement(selector, values, config) {
         setSVGProperties(svg, config, value);
 
         var newWavePosition = config.waveAnimate ? svg.waveAnimateScale(1) : 0;
+        const localeCode = (new Intl.Locale(navigator.language)).baseName;
+        const numberFormat = new Intl.NumberFormat(localeCode, config.decimalPlaces);
 
         svg.wave.transition()
             .duration(0)
@@ -168,8 +170,12 @@ function ReservoirElement(selector, values, config) {
             translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
 
         var textTween = function(){
-            var i = d3.interpolate(this.textContent, value);
-            return function(t) { this.textContent = svg.textRounder(i(t)).toFixed(config.decimalPlaces); }
+            var i = d3.interpolate(parseFloat(this.textContent), value);
+            return function(t) {
+                const valueFloat = svg.textRounder(i(t));
+                const valueFixed = valueFloat.toFixed(config.decimalPlaces);
+                this.textContent = numberFormat.format(valueFixed);
+            }
         };
 
         svg.valueText1.transition()
@@ -456,6 +462,10 @@ function ReservoirElement(selector, values, config) {
         var coords = {};
         var textAnchor, translate;
 
+        const localeCode = Intl.DateTimeFormat().resolvedOptions().locale;
+        const numberFormat = new Intl.NumberFormat(localeCode, config.ruler.decimalPlaces);
+        const streamNumberFormat = new Intl.NumberFormat(localeCode, config.decimalPlaces);
+
         // calculate the coordinates for all text elements
         if (svg.attr("id") == "downStream") {
             coords.max = { x: width-22, y: (svg.rulerTextPixels-((20 * svg.rulerTextPixels)/100)) };
@@ -471,23 +481,26 @@ function ReservoirElement(selector, values, config) {
         }
 
         // Texts where the wave does not overlap
+        const valueText1 = numberFormat.format(svg.textStartValue);
         svg.valueText1 // current value text
-            .text(svg.textStartValue)
+            .text(valueText1)
             .attr("text-anchor", "middle")
             .attr("font-size", svg.textPixels + "px")
             .style("fill", config.valueTextColor)
             .attr('transform', translate);
 
+        const maxText1 = numberFormat.format(svg.textRounder(config.maxValue).toFixed(config.ruler.decimalPlaces));
         svg.maxText1 // max value text
-            .text(svg.textRounder(config.maxValue).toFixed(config.ruler.decimalPlaces))
+            .text(maxText1)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.max.x)
             .attr("y", coords.max.y)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.valueTextColor);
 
+        const minText1 = numberFormat.format(svg.textRounder(svg.textStartValue).toFixed(config.ruler.decimalPlaces));
         svg.minText1 // min value text
-            .text(svg.textRounder(svg.textStartValue).toFixed(config.ruler.decimalPlaces))
+            .text(minText1)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.min.x)
             .attr("y", coords.min.y)
@@ -495,23 +508,26 @@ function ReservoirElement(selector, values, config) {
             .style("fill", config.valueTextColor);
 
         // Texts where the wave does overlap
+        const valueText2 = numberFormat.format(svg.textStartValue);
         svg.valueText2 // current value text
-            .text(svg.textStartValue)
+            .text(valueText2)
             .attr("text-anchor", "middle")
             .attr("font-size", svg.textPixels + "px")
             .style("fill", config.waveTextColor)
             .attr('transform', translate);
 
+        const maxText2 = numberFormat.format(svg.textRounder(config.maxValue).toFixed(config.ruler.decimalPlaces));
         svg.maxText2 // max value text
-            .text(svg.textRounder(config.maxValue).toFixed(config.ruler.decimalPlaces))
+            .text(maxText2)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.max.x)
             .attr("y", coords.max.y)
             .attr("font-size", svg.rulerTextPixels + "px")
             .style("fill", config.waveTextColor);
 
+        const minText2 = numberFormat.format(svg.textRounder(svg.textStartValue).toFixed(config.ruler.decimalPlaces));
         svg.minText2 // min value text
-            .text(svg.textRounder(svg.textStartValue).toFixed(config.ruler.decimalPlaces))
+            .text(minText2)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.min.x)
             .attr("y", coords.min.y)
@@ -521,8 +537,12 @@ function ReservoirElement(selector, values, config) {
         // make the value count up
         if (config.valueCountUp) {
             var textTween = function(){
-                var i = d3.interpolate(this.textContent, svg.textFinalValue);
-                return function(t) { this.textContent = svg.textRounder(i(t)).toFixed(config.decimalPlaces); }
+                var i = d3.interpolate(parseFloat(this.textContent), svg.textFinalValue);
+                return function(t) {
+                    const valueFloat = svg.textRounder(i(t));
+                    const valueFixed = valueFloat.toFixed(config.decimalPlaces);
+                    this.textContent = streamNumberFormat.format(valueFixed);
+                }
             };
 
             svg.valueText1.transition()

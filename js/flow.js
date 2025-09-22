@@ -275,7 +275,7 @@ function FlowElement(selector, value, config) {
         properties.minTextPixels = (config.text.minTextSize * height / 2.5);
         properties.maxTextPixels = (config.text.maxTextSize * height / 2.5);
         properties.textPixels = (config.text.valueTextSize * height / 2.5);
-        properties.textFinalValue = parseFloat(value).toFixed(config.valueDecimalPlaces);
+        properties.textFinalValue = parseFloat(value).toFixed(config.text.valueDecimalPlaces);
         properties.textStartValue = config.valueCountUp ? config.minValue : properties.textFinalValue;
         properties.textWidth  = width/2; 
         properties.textHeight = height/1.6; //properties.waveRiseScale(0.40);
@@ -304,6 +304,11 @@ function FlowElement(selector, value, config) {
         coords.min = { x: 490, y: height-10 }; // x,y coordinates for positioning the min text element
         coords.max = { x: 490, y: properties.maxTextPixels };       // x,y coordinates for positioning the max text element
 
+        const localeCode = (new Intl.Locale(navigator.language)).baseName;
+        const valueNumberFormat = new Intl.NumberFormat(localeCode, config.text.valueDecimalPlaces);
+        const minNumberFormat = new Intl.NumberFormat(localeCode, config.text.minValueDecimalPlaces);
+        const maxNumberFormat = new Intl.NumberFormat(localeCode, config.text.maxValueDecimalPlaces);
+
         /** 
          * Texts where the wave does not overlap
         */
@@ -315,24 +320,26 @@ function FlowElement(selector, value, config) {
             .attr("y", properties.titleTextPixels)
             .style("fill", config.text.titleTextColor);
 
+        const valueText1 = valueNumberFormat.format(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces));
         svg.valueText1 // current value text
-            .text(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces))
-            // .text("marco")
+            .text(valueText1)
             .attr("text-anchor", "middle")
             .attr("font-size", properties.textPixels + "px")
             .style("fill", config.text.valueTextColor)
             .attr('transform', translate)
-            
+
+        const maxText1 = minNumberFormat.format(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces));
         svg.maxText1 // max value text
-            .text(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces))
+            .text(maxText1)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.max.x)
             .attr("y", coords.max.y)
             .attr("font-size", properties.maxTextPixels + "px")
             .style("fill", config.text.maxTextColor);
 
+        const minText1 = minNumberFormat.format(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces));
         svg.minText1 // min value text
-            .text(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces))
+            .text(minText1)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.min.x)
             .attr("y", coords.min.y)
@@ -351,23 +358,26 @@ function FlowElement(selector, value, config) {
             .attr("y", properties.titleTextPixels)
             .style("fill", config.text.titleWaveTextColor);
 
+        const valueText2 = valueNumberFormat.format(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces));
         svg.valueText2 // current value text
-            .text(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces))
+            .text(valueText2)
             .attr("text-anchor", "middle")
             .attr("font-size", properties.textPixels + "px")
             .style("fill", config.text.valueWaveTextColor)
             .attr('transform', translate);
 
+        const maxText2 = maxNumberFormat.format(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces));
         svg.maxText2 // max value text
-            .text(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces))
+            .text(maxText2)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.max.x)
             .attr("y", coords.max.y)
             .attr("font-size", properties.maxTextPixels + "px")
             .style("fill", config.text.maxWaveTextColor);
 
+        const minText2 = minNumberFormat.format(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces));
         svg.minText2 // min value text
-            .text(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces))
+            .text(minText2)
             .attr("text-anchor", textAnchor)
             .attr("x", coords.min.x)
             .attr("y", coords.min.y)
@@ -378,7 +388,9 @@ function FlowElement(selector, value, config) {
         if (config.valueCountUp) {
             var textTween = function(){
                 var i = d3.interpolate(this.textContent, properties.textFinalValue);
-                return function(t) { this.textContent = properties.textRounder(i(t)).toFixed(config.text.valueDecimalPlaces); }
+                return function(t) {
+                    this.textContent = valueNumberFormat.format(properties.textRounder(i(t)).toFixed(config.text.valueDecimalPlaces));
+                }
             };
 
             svg.valueText1.transition()
@@ -487,6 +499,9 @@ function FlowElement(selector, value, config) {
 
             var newWavePosition = config.waveAnimate ? properties.waveAnimateScale(1) : 0;
 
+            const localeCode = (new Intl.Locale(navigator.language)).baseName;
+            const valueNumberFormat = new Intl.NumberFormat(localeCode, config.text.valueDecimalPlaces);
+
             svg.wave.transition()
                 .duration(0)
                 .transition()
@@ -516,8 +531,8 @@ function FlowElement(selector, value, config) {
                 var translate = "translate("+(properties.textWidth)+","+(properties.textHeight)+")"; // move the current value to the middle of the svg
                 var textTween = function(){
                     var i = d3.interpolate(this.textContent, properties.textFinalValue);
-                    return function(t) { 
-                        this.textContent = properties.textRounder(i(t)).toFixed(config.text.valueDecimalPlaces);
+                    return function(t) {
+                        this.textContent = valueNumberFormat.format(properties.textRounder(i(t)).toFixed(config.text.valueDecimalPlaces));
                     }
                 };
 
@@ -548,11 +563,15 @@ function FlowElement(selector, value, config) {
                     });
             }
             else {
+                const value1 = properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces);
+                const valueText1 = valueNumberFormat.format(value1);
                 svg.valueText1 // updates current value text
-                    .text(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces));
+                    .text(valueText1);
 
+                const value2 = properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces);
+                const valueText2 = valueNumberFormat.format(value2);
                 svg.valueText2 // updates current value text
-                    .text(properties.textRounder(properties.textStartValue).toFixed(config.text.valueDecimalPlaces));
+                    .text(valueText2);
 
                 var bbox = svg.valueText1[0][0].getBBox();
                 svg.unitText1

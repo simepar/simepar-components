@@ -64,6 +64,8 @@ function WeatherElement(selector, value, el) {
     */
     function createOuterElement() {
         var deferred = $.Deferred();
+        const localeCode = Intl.DateTimeFormat().resolvedOptions().locale;
+        const numberFormat = new Intl.NumberFormat(localeCode, 2);
 
         // outer element properties
         we.elementGroup.append("path")
@@ -75,7 +77,7 @@ function WeatherElement(selector, value, el) {
 
         // text min
         we.elementGroup.append("text")
-            .text(we.element.config.minValue)
+            .text(numberFormat.format(we.element.config.minValue))
             .attr("text-anchor", we.element.textMinAnchor)
             .attr("font-size", we.element.textPixels + "px")
             .style("fill", we.element.config.minTextColor)
@@ -83,7 +85,7 @@ function WeatherElement(selector, value, el) {
 
         // text max
         we.elementGroup.append("text")
-            .text(we.element.config.maxValue)
+            .text(numberFormat.format(we.element.config.maxValue))
             .attr("text-anchor", we.element.textMaxAnchor)
             .attr("font-size", we.element.textPixels + "px")
             .style("fill", we.element.config.maxTextColor)

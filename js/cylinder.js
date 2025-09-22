@@ -326,8 +326,6 @@ function CylinderElement(selector, value, config) {
         properties.minTextPixels = (config.text.minTextSize * height / 2.5);
         properties.maxTextPixels = (config.text.maxTextSize * height / 2.5);
         properties.textPixels = (config.text.valueTextSize * height / 2.5);
-        properties.textFinalValue = parseFloat(value).toFixed(config.valueDecimalPlaces);
-        properties.textStartValue = config.valueCountUp ? config.minValue : properties.textFinalValue;
         properties.textWidth  = width/2; 
         properties.textHeight = height/1.6; //properties.waveRiseScale(0.40);
 
@@ -344,21 +342,28 @@ function CylinderElement(selector, value, config) {
         var properties = getSVGProperties(config, value);
 
         var textAnchor = "start";   // text anchor for min/max values.
-
+        
+        const localeCode = (new Intl.Locale(navigator.language)).baseName;
+        const minNumberFormat = new Intl.NumberFormat(localeCode, config.text.minValueDecimalPlaces);
+        const maxNumberFormat = new Intl.NumberFormat(localeCode, config.text.maxValueDecimalPlaces);
 
         /** 
          * Texts where the wave does not overlap
-        */            
+        */
+        const max1 = properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces);
+        const maxText1 = maxNumberFormat.format(max1);
         svg.maxText1 // max value text
-            .text(properties.textRounder(config.maxValue).toFixed(config.text.maxValueDecimalPlaces))
+            .text(maxText1)
             .attr("text-anchor", textAnchor)
             .attr("x", 520-81)
             .attr("y", properties.maxTextPixels)
             .attr("font-size", properties.maxTextPixels + "px")
             .style("fill", config.text.maxTextColor);
 
+        const min1 = properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces);
+        const minText1 = minNumberFormat.format(min1);
         svg.minText1 // min value text
-            .text(properties.textRounder(config.minValue).toFixed(config.text.minValueDecimalPlaces))
+            .text(minText1)
             .attr("text-anchor", textAnchor)
             .attr("x", 520-81)
             .attr("y", 500)
