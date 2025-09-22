@@ -141,6 +141,8 @@ function ReservoirElement(selector, values, config) {
         setSVGProperties(svg, config, value);
 
         var newWavePosition = config.waveAnimate ? svg.waveAnimateScale(1) : 0;
+        const localeCode = (new Intl.Locale(navigator.language)).baseName;
+        const numberFormat = new Intl.NumberFormat(localeCode, config.decimalPlaces);
 
         svg.wave.transition()
             .duration(0)
@@ -168,8 +170,12 @@ function ReservoirElement(selector, values, config) {
             translate = "translate("+(svg.radius-15)+","+ svg.textHeight +")";
 
         var textTween = function(){
-            var i = d3.interpolate(this.textContent, value);
-            return function(t) { this.textContent = svg.textRounder(i(t)).toFixed(config.decimalPlaces); }
+            var i = d3.interpolate(parseFloat(this.textContent), value);
+            return function(t) {
+                const valueFloat = svg.textRounder(i(t));
+                const valueFixed = valueFloat.toFixed(config.decimalPlaces);
+                this.textContent = numberFormat.format(valueFixed);
+            }
         };
 
         svg.valueText1.transition()
@@ -458,6 +464,7 @@ function ReservoirElement(selector, values, config) {
 
         const localeCode = Intl.DateTimeFormat().resolvedOptions().locale;
         const numberFormat = new Intl.NumberFormat(localeCode, config.ruler.decimalPlaces);
+        const streamNumberFormat = new Intl.NumberFormat(localeCode, config.decimalPlaces);
 
         // calculate the coordinates for all text elements
         if (svg.attr("id") == "downStream") {
@@ -530,8 +537,12 @@ function ReservoirElement(selector, values, config) {
         // make the value count up
         if (config.valueCountUp) {
             var textTween = function(){
-                var i = d3.interpolate(this.textContent, svg.textFinalValue);
-                return function(t) { this.textContent = svg.textRounder(i(t)).toFixed(config.decimalPlaces); }
+                var i = d3.interpolate(parseFloat(this.textContent), svg.textFinalValue);
+                return function(t) {
+                    const valueFloat = svg.textRounder(i(t));
+                    const valueFixed = valueFloat.toFixed(config.decimalPlaces);
+                    this.textContent = streamNumberFormat.format(valueFixed);
+                }
             };
 
             svg.valueText1.transition()
