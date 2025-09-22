@@ -164,15 +164,15 @@
         config.waveAnimateTime = 5000;
         config.waveHeight = 0.05;
         config.waveCount = 1;
-        config.minValue = 0;
-        config.maxValue = 100;
+        config.minValue = 0.5;
+        config.maxValue = 100.6;
         config.centerSVG = true;
         var drop = new Drop("#drop", 50, config);
         d3.select("#drop > svg").attr("width", "65%");
 
         var rulerConfig = loadDefaultSettings();
-        rulerConfig.maxValue = 1000;
-        rulerConfig.minValue = 0;
+        rulerConfig.maxValue = 1000.9;
+        rulerConfig.minValue = 0.5;
         rulerConfig.waveAnimateTime = 5000;
         rulerConfig.waveHeight = 0.05;
         rulerConfig.waveCount = 1;
@@ -199,8 +199,8 @@
         thermoConfig.minTextColor = "rgb(194, 106, 62)";
         thermoConfig.maxTextColor = "rgb(194, 106, 62)";
         thermoConfig.liquidOpacity = 0.7;
-        thermoConfig.minValue = -10;
-        thermoConfig.maxValue = 35;
+        thermoConfig.minValue = -10.5;
+        thermoConfig.maxValue = 35.5;
         thermoConfig.centerSVG = true;
         var thermo = new Thermo("#thermo", 10, thermoConfig);
         d3.select("#thermo > svg").attr("width", "65%");
@@ -208,8 +208,8 @@
         var leafConfig = loadDefaultSettings();
         leafConfig.strokeThickness = 8;
         leafConfig.displayPercent = false;
-        leafConfig.minValue = 0;
-        leafConfig.maxValue = 10;
+        leafConfig.minValue = 0.5;
+        leafConfig.maxValue = 10.8;
         leafConfig.outerColor = "none";
         leafConfig.strokeColor = "rgb(35, 99, 31)";
         leafConfig.minTextColor = "rgb(35, 99, 31)";
@@ -222,12 +222,21 @@
 
         // cylinder
         var cylinderConfig = loadCylinderSettings();
+        cylinderConfig.minValue = 1.5;
+        cylinderConfig.maxValue = 100.7;
+        cylinderConfig.text.minValueDecimalPlaces = 2;
+        cylinderConfig.text.maxValueDecimalPlaces = 2;
         var cylinder = new CylinderElement("#cylinder", 50, cylinderConfig);
         d3.select("#cylinder > svg").attr("width", "50%");
 
         // reservoir
         var values = { down: 30, up: 70 };
         var reConfig = loadReservoirSettings();
+        reConfig.downStream.minValue = 5.6;
+        reConfig.downStream.maxValue = 99.6;
+        reConfig.upStream.minValue = 2.6;
+        reConfig.upStream.maxValue = 50.5;
+
         var reservoir = new ReservoirElement("#reservoir", values, reConfig);
 
         // floodgate I
@@ -241,7 +250,13 @@
 
         // flow
         var flowConfig = loadFlowSettings();
-        var flow = new FlowElement("#flow", 55, flowConfig);
+        flowConfig.minValue = 4.5;
+        flowConfig.maxValue = 102.3;
+        flowConfig.text.valueDecimalPlaces = 4;
+        flowConfig.text.minValueDecimalPlaces = 2;
+        flowConfig.text.maxValueDecimalPlaces = 2;
+        flowConfig.valueCountUp = true;
+        var flow = new FlowElement("#flow", 55.2, flowConfig);
 
         // waterflow
         var waterflowConfig = loadWaterflowSettings();
