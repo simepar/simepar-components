@@ -65,7 +65,7 @@ function WeatherElement(selector, value, el) {
     function createOuterElement() {
         var deferred = $.Deferred();
         const localeCode = Intl.DateTimeFormat().resolvedOptions().locale;
-        const numberFormat = new Intl.NumberFormat(localeCode, 3);
+        const numberFormat = new Intl.NumberFormat(localeCode, 2);
 
         // outer element properties
         we.elementGroup.append("path")

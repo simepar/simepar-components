@@ -326,8 +326,6 @@ function CylinderElement(selector, value, config) {
         properties.minTextPixels = (config.text.minTextSize * height / 2.5);
         properties.maxTextPixels = (config.text.maxTextSize * height / 2.5);
         properties.textPixels = (config.text.valueTextSize * height / 2.5);
-        // properties.textFinalValue = parseFloat(value).toFixed(config.text.valueDecimalPlaces);
-        // properties.textStartValue = config.valueCountUp ? config.minValue : properties.textFinalValue;
         properties.textWidth  = width/2; 
         properties.textHeight = height/1.6; //properties.waveRiseScale(0.40);
 
