@@ -462,7 +462,7 @@ function ReservoirElement(selector, values, config) {
         var coords = {};
         var textAnchor, translate;
 
-        const localeCode = Intl.DateTimeFormat().resolvedOptions().locale;
+        const localeCode = (new Intl.Locale(navigator.language)).baseName;
         const numberFormat = new Intl.NumberFormat(localeCode, config.ruler.decimalPlaces);
         const streamNumberFormat = new Intl.NumberFormat(localeCode, config.decimalPlaces);
 
